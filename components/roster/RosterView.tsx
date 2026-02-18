@@ -35,8 +35,7 @@ function PitcherRow({
   onClick: () => void;
 }) {
   const logoSrc = pitcher.team?.logo || getEspnLogoUrl(pitcher.team_id);
-  const validHeadshot = pitcher.headshot?.startsWith('http') && !pitcher.headshot.includes('supabase.co') ? pitcher.headshot : null;
-  const imgSrc = validHeadshot || logoSrc;
+  const imgSrc = pitcher.headshot?.startsWith('http') ? pitcher.headshot : logoSrc;
   const pos = (pitcher.position || '').toUpperCase();
   const isLHP = pos.includes('LHP') || pos.includes('LEFT');
   const isRHP = pos.includes('RHP') || pos.includes('RIGHT');
