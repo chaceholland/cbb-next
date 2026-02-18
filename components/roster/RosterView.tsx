@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase/client';
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
@@ -163,6 +164,20 @@ export function RosterView() {
     return result;
   }, [pitchers, conference, hand, searchQuery, showFavorites, favorites]);
 
+  // Group filtered pitchers by team, sorted alphabetically
+  const teamGroups = useMemo(() => {
+    const groups = new Map<string, { team: CbbTeam; pitchers: EnrichedPitcher[] }>();
+    filteredPitchers.forEach(p => {
+      if (!groups.has(p.team_id)) {
+        groups.set(p.team_id, { team: p.team, pitchers: [] });
+      }
+      groups.get(p.team_id)!.pitchers.push(p);
+    });
+    return Array.from(groups.values()).sort((a, b) =>
+      a.team.display_name.localeCompare(b.team.display_name)
+    );
+  }, [filteredPitchers]);
+
   const handleToggleFavorite = (id: string) => {
     setFavorites(prev => {
       if (prev.includes(id)) return prev.filter(f => f !== id);
@@ -226,25 +241,62 @@ export function RosterView() {
       />
 
       <p className="text-sm text-slate-500 mb-6">
-        Showing <span className="font-semibold text-slate-700">{filteredPitchers.length.toLocaleString()}</span> of {pitchers.length.toLocaleString()} pitchers
+        Showing <span className="font-semibold text-slate-700">{filteredPitchers.length.toLocaleString()}</span> of{' '}
+        {pitchers.length.toLocaleString()} pitchers across{' '}
+        <span className="font-semibold text-slate-700">{teamGroups.length}</span> teams
       </p>
 
-      {/* Grid */}
-      {filteredPitchers.length === 0 ? (
+      {/* Team-grouped sections */}
+      {teamGroups.length === 0 ? (
         <div className="text-center py-16 text-slate-400">
           No pitchers found matching your filters.
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
-          {filteredPitchers.map((pitcher, i) => (
-            <PitcherCard
-              key={pitcher.pitcher_id}
-              pitcher={pitcher}
-              index={i}
-              onClick={() => setSelectedPitcher(pitcher)}
-              isFavorite={favorites.includes(pitcher.pitcher_id)}
-              onToggleFavorite={handleToggleFavorite}
-            />
+        <div className="space-y-8">
+          {teamGroups.map(({ team, pitchers: teamPitchers }) => (
+            <div key={team.team_id}>
+              {/* Team card header */}
+              <div className="flex items-center gap-4 mb-4 pb-3 border-b border-slate-200">
+                {team.logo ? (
+                  <div className="w-12 h-12 shrink-0 flex items-center justify-center">
+                    <Image
+                      src={team.logo}
+                      alt={team.display_name}
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#1a73e8] to-[#ea4335] flex items-center justify-center shrink-0">
+                    <span className="text-white font-bold text-sm">
+                      {team.display_name.split(' ').map(w => w[0]).join('').slice(0, 2)}
+                    </span>
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg font-bold text-slate-800 leading-tight">{team.display_name}</h2>
+                  <p className="text-xs text-slate-400 mt-0.5">{team.conference}</p>
+                </div>
+                <span className="text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full shrink-0">
+                  {teamPitchers.length} pitcher{teamPitchers.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+
+              {/* Pitchers grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+                {teamPitchers.map((pitcher, i) => (
+                  <PitcherCard
+                    key={pitcher.pitcher_id}
+                    pitcher={pitcher}
+                    index={i}
+                    onClick={() => setSelectedPitcher(pitcher)}
+                    isFavorite={favorites.includes(pitcher.pitcher_id)}
+                    onToggleFavorite={handleToggleFavorite}
+                  />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       )}

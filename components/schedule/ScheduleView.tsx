@@ -5,7 +5,9 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
 import { CbbGame, CbbTeam } from '@/lib/supabase/types';
 import { GameCard } from './GameCard';
+import { GameDetailModal } from './GameDetailModal';
 import { ScheduleFilterPills } from '@/components/FilterPills';
+import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 
 export function ScheduleView() {
   const [games, setGames] = useState<CbbGame[]>([]);
@@ -13,6 +15,9 @@ export function ScheduleView() {
   const [trackedTeamIds, setTrackedTeamIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
+  const [favorites] = useLocalStorage<string[]>('cbb-favorites', []);
+  const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
   const [conference, setConference] = useState('All');
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
 
@@ -234,6 +239,7 @@ export function ScheduleView() {
                       game={game}
                       teams={teams}
                       trackedTeamIds={trackedTeamIds}
+                      onClick={() => setSelectedGame(game)}
                     />
                   </motion.div>
                 ))}
@@ -248,6 +254,13 @@ export function ScheduleView() {
           </div>
         )}
       </div>
+
+      <GameDetailModal
+        game={selectedGame}
+        teams={teams}
+        favoritePitcherIds={favoritePitcherIds}
+        onClose={() => setSelectedGame(null)}
+      />
     </div>
   );
 }

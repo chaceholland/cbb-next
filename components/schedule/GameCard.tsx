@@ -6,6 +6,7 @@ interface Props {
   game: CbbGame;
   teams: Record<string, CbbTeam>;
   trackedTeamIds: Set<string>;
+  onClick?: () => void;
 }
 
 function TeamLogo({ team, size = 40 }: { team: CbbTeam | undefined; size?: number }) {
@@ -53,7 +54,7 @@ function TeamLogo({ team, size = 40 }: { team: CbbTeam | undefined; size?: numbe
   );
 }
 
-export function GameCard({ game, teams, trackedTeamIds }: Props) {
+export function GameCard({ game, teams, trackedTeamIds, onClick }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
 
@@ -79,7 +80,10 @@ export function GameCard({ game, teams, trackedTeamIds }: Props) {
   }
 
   return (
-    <div className="rounded-2xl bg-white shadow-md hover:shadow-xl transition-shadow duration-200 p-4 border border-slate-100">
+    <div
+      className="rounded-2xl bg-white shadow-md hover:shadow-xl transition-all duration-200 p-4 border border-slate-100 cursor-pointer active:scale-[0.98]"
+      onClick={onClick}
+    >
       {/* Top row: week pill + result badge */}
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
