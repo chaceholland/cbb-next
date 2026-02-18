@@ -97,8 +97,8 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
 
               <div className="flex flex-col md:flex-row overflow-y-auto max-h-[90vh]">
                 {/* Left: Photo */}
-                <div className="md:w-64 shrink-0">
-                  <div className="relative aspect-square md:h-full min-h-[200px] bg-gradient-to-br from-[#0A1628] to-[#1E3A5F]">
+                <div className="md:w-64 shrink-0 overflow-hidden">
+                  <div className="relative aspect-square md:aspect-auto md:h-full min-h-[200px] bg-gradient-to-br from-[#0A1628] to-[#1E3A5F]">
                     {showHeadshot ? (
                       <Image
                         src={pitcher.headshot!}
