@@ -74,14 +74,12 @@ export function HeroSection() {
     });
   }, [controls]);
 
-  if (!mounted) return null;
-
   return (
     <section className="relative min-h-[65vh] flex items-center justify-center overflow-hidden">
       {/* Animated gradient background */}
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-[#0A1628] via-[#1E3A5F] to-[#0A1628]"
-        animate={controls}
+        animate={mounted ? controls : {}}
         style={{ backgroundSize: '200% 200%' }}
       />
 
