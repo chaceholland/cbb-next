@@ -23,37 +23,71 @@ interface Props {
   onClose: () => void;
 }
 
-function Stat({ label, value }: { label: string; value: string | undefined }) {
+const normalizeName = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+
+function PitcherAvatar({ name, headshot, size = 28 }: { name: string; headshot?: string; size?: number }) {
+  if (headshot) {
+    return (
+      <div
+        className="rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200"
+        style={{ width: size, height: size }}
+      >
+        <Image
+          src={headshot}
+          alt={name}
+          width={size}
+          height={size}
+          className="object-cover w-full h-full"
+          onError={(e) => {
+            const el = e.target as HTMLImageElement;
+            el.style.display = 'none';
+          }}
+        />
+      </div>
+    );
+  }
+  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
   return (
-    <div className="flex flex-col items-center">
-      <span className="text-xs font-bold text-slate-800">{value ?? '—'}</span>
-      <span className="text-[10px] text-slate-400">{label}</span>
+    <div
+      className="rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-bold shrink-0"
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.35) }}
+    >
+      {initials}
     </div>
   );
 }
 
 function TeamPitching({
   team,
+  fallbackName,
   rows,
   favoriteNames,
+  headshotMap,
   label,
 }: {
   team: CbbTeam | undefined;
+  fallbackName?: string;
   rows: ParticipationRow[];
   favoriteNames: Set<string>;
+  headshotMap: Record<string, string>;
   label: string;
 }) {
+  const displayName = team?.display_name ?? fallbackName ?? 'Unknown';
+
   return (
     <div className="flex-1 min-w-0">
       {/* Team header */}
       <div className="flex items-center gap-2 mb-3">
         {team?.logo ? (
-          <Image src={team.logo} alt={team?.display_name ?? ''} width={32} height={32} className="object-contain shrink-0" />
+          <Image src={team.logo} alt={displayName} width={32} height={32} className="object-contain shrink-0" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0" />
+          <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-500 font-bold text-xs">
+            {displayName.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
+          </div>
         )}
         <div className="min-w-0">
-          <div className="text-sm font-bold text-slate-800 truncate">{team?.display_name ?? 'Unknown'}</div>
+          <div className="text-sm font-bold text-slate-800 truncate">{displayName}</div>
           <div className="text-[10px] text-slate-400">{label}</div>
         </div>
       </div>
@@ -72,6 +106,7 @@ function TeamPitching({
           </div>
           {rows.map(row => {
             const isFav = favoriteNames.has(normalizeName(row.pitcher_name));
+            const headshot = headshotMap[normalizeName(row.pitcher_name)];
             return (
               <div
                 key={row.id}
@@ -80,7 +115,8 @@ function TeamPitching({
                   isFav ? 'bg-yellow-50 border border-yellow-200' : 'bg-slate-50'
                 )}
               >
-                <div className="flex items-center gap-1.5 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <PitcherAvatar name={row.pitcher_name} headshot={headshot} size={28} />
                   {isFav && (
                     <svg className="w-3 h-3 text-yellow-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -101,12 +137,10 @@ function TeamPitching({
   );
 }
 
-const normalizeName = (s: string) =>
-  s.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
-
 export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Props) {
   const [participation, setParticipation] = useState<ParticipationRow[]>([]);
   const [favoriteNames, setFavoriteNames] = useState<Set<string>>(new Set());
+  const [headshotMap, setHeadshotMap] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -114,6 +148,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
     setLoading(true);
     setParticipation([]);
     setFavoriteNames(new Set());
+    setHeadshotMap({});
 
     const favIds = [...favoritePitcherIds];
 
@@ -132,12 +167,27 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
             .in('pitcher_id', favIds)
             .in('team_id', [game.home_team_id, game.away_team_id])
         : Promise.resolve({ data: [] }),
-    ]).then(([partResult, favResult]) => {
+
+      // Fetch headshots for pitchers on both teams
+      supabase
+        .from('cbb_pitchers')
+        .select('name, headshot')
+        .in('team_id', [game.home_team_id, game.away_team_id])
+        .not('headshot', 'is', null),
+    ]).then(([partResult, favResult, headshotResult]) => {
       setParticipation(partResult.data || []);
+
       const names = new Set(
         (favResult.data || []).map((p: { name: string }) => normalizeName(p.name))
       );
       setFavoriteNames(names);
+
+      const hsMap: Record<string, string> = {};
+      ((headshotResult as { data: { name: string; headshot: string }[] | null }).data || []).forEach(p => {
+        if (p.headshot) hsMap[normalizeName(p.name)] = p.headshot;
+      });
+      setHeadshotMap(hsMap);
+
       setLoading(false);
     });
   }, [game, favoritePitcherIds]);
@@ -267,9 +317,23 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                   <p className="text-sm text-slate-400 text-center py-10">No pitching data available for this game.</p>
                 ) : (
                   <div className="flex gap-6">
-                    <TeamPitching team={awayTeam} rows={awayRows} favoriteNames={favoriteNames} label="Away" />
+                    <TeamPitching
+                      team={awayTeam}
+                      fallbackName={game.away_name ?? undefined}
+                      rows={awayRows}
+                      favoriteNames={favoriteNames}
+                      headshotMap={headshotMap}
+                      label="Away"
+                    />
                     <div className="w-px bg-slate-200 shrink-0" />
-                    <TeamPitching team={homeTeam} rows={homeRows} favoriteNames={favoriteNames} label="Home" />
+                    <TeamPitching
+                      team={homeTeam}
+                      fallbackName={game.home_name ?? undefined}
+                      rows={homeRows}
+                      favoriteNames={favoriteNames}
+                      headshotMap={headshotMap}
+                      label="Home"
+                    />
                   </div>
                 )}
               </div>
