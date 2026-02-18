@@ -57,6 +57,7 @@ function PitcherRow({
           width={56}
           height={56}
           className="object-cover w-full h-full"
+          unoptimized
           onError={(e) => { (e.target as HTMLImageElement).src = logoSrc; }}
         />
       </div>
@@ -381,6 +382,7 @@ export function RosterView() {
                     width={40}
                     height={40}
                     className="object-contain w-full h-full"
+                    unoptimized
                     onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                   />
                 </div>

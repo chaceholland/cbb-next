@@ -54,7 +54,7 @@ function HorizontalBar({ label, value, max, color, logo }: {
       {logo && (
         <div className="w-6 h-6 shrink-0">
           <Image src={logo} alt={label} width={24} height={24} className="object-contain w-full h-full"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+            unoptimized onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         </div>
       )}
       <div className="w-28 shrink-0 text-xs text-slate-600 truncate text-right">{label}</div>
