@@ -49,12 +49,12 @@ function PitcherRow({
       onClick={onClick}
     >
       {/* Headshot */}
-      <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-sm">
+      <div className="w-20 h-20 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-sm">
         <Image
           src={imgSrc}
           alt={pitcher.name}
-          width={56}
-          height={56}
+          width={80}
+          height={80}
           className="object-cover w-full h-full"
           unoptimized
           onError={(e) => { (e.target as HTMLImageElement).src = logoSrc; }}

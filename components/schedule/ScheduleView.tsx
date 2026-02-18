@@ -29,6 +29,8 @@ export function ScheduleView() {
   const [participationByGame, setParticipationByGame] = useState<Record<string, ParticipationRow[]>>({});
   const [loadedWeeks, setLoadedWeeks] = useState<Set<number>>(new Set());
   const [loadingWeeks, setLoadingWeeks] = useState<Set<number>>(new Set());
+  // pitcher_id → headshot URL map for showing headshots on game cards
+  const [headshotsMap, setHeadshotsMap] = useState<Record<string, string | null>>({});
 
   useEffect(() => {
     async function fetchData() {
@@ -48,6 +50,25 @@ export function ScheduleView() {
         });
         setTeams(teamsMap);
         setTrackedTeamIds(teamIds);
+
+        // Load pitcher headshots (lightweight: just pitcher_id + headshot)
+        const allPitchers: { pitcher_id: string; headshot: string | null }[] = [];
+        let pitcherPage = 0;
+        while (true) {
+          const { data: pd } = await supabase
+            .from('cbb_pitchers')
+            .select('pitcher_id, headshot')
+            .range(pitcherPage * 1000, (pitcherPage + 1) * 1000 - 1);
+          if (!pd || pd.length === 0) break;
+          allPitchers.push(...pd);
+          if (pd.length < 1000) break;
+          pitcherPage++;
+        }
+        const hMap: Record<string, string | null> = {};
+        allPitchers.forEach(p => {
+          if (p.headshot?.startsWith('http')) hMap[p.pitcher_id] = p.headshot;
+        });
+        setHeadshotsMap(hMap);
 
         // Server-side filter: only games involving our 64 tracked teams
         const teamIdList = [...teamIds];
@@ -376,6 +397,7 @@ export function ScheduleView() {
                       teams={teams}
                       trackedTeamIds={trackedTeamIds}
                       participation={participationByGame[game.game_id] || []}
+                      headshotsMap={headshotsMap}
                       onClick={() => setSelectedGame(game)}
                     />
                   </motion.div>

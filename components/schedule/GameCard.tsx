@@ -7,22 +7,27 @@ interface Props {
   teams: Record<string, CbbTeam>;
   trackedTeamIds: Set<string>;
   participation: ParticipationRow[];
+  headshotsMap?: Record<string, string | null>;
   onClick?: () => void;
 }
 
 function TeamLogo({ team, teamId, size = 40 }: { team: CbbTeam | undefined; teamId: string; size?: number }) {
-  const logoSrc = team?.logo || getEspnLogoUrl(teamId);
+  // Only use ESPN CDN for tracked teams (team is defined). For untracked teams,
+  // just show a blank circle to avoid 404 errors from unknown ESPN IDs.
+  const logoSrc = team?.logo || (team ? getEspnLogoUrl(teamId) : null);
   return (
-    <div className="relative rounded-full overflow-hidden bg-white shadow-sm shrink-0" style={{ width: size, height: size }}>
-      <Image
-        src={logoSrc}
-        alt={team?.display_name ?? teamId}
-        width={size}
-        height={size}
-        className="object-contain p-0.5"
-        unoptimized
-        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-      />
+    <div className="relative rounded-full overflow-hidden bg-slate-100 shadow-sm shrink-0" style={{ width: size, height: size }}>
+      {logoSrc && (
+        <Image
+          src={logoSrc}
+          alt={team?.display_name ?? teamId}
+          width={size}
+          height={size}
+          className="object-contain p-0.5"
+          unoptimized
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+        />
+      )}
     </div>
   );
 }
@@ -31,38 +36,49 @@ function PitcherRow({
   row,
   teamId,
   teams,
+  headshotSrc,
 }: {
   row: ParticipationRow;
   teamId: string;
   teams: Record<string, CbbTeam>;
+  headshotSrc?: string | null;
 }) {
   const team = teams[teamId];
-  const fallbackSrc = team?.logo || getEspnLogoUrl(teamId);
+  const fallbackSrc = team?.logo || (team ? getEspnLogoUrl(teamId) : null);
+  // Use actual headshot if available, otherwise fall back to team logo
+  const imgSrc = headshotSrc || fallbackSrc;
 
-  // Determine position from stats or pitcher_name context
   const ip = row.stats?.IP;
   const k = row.stats?.K;
   const er = row.stats?.ER;
 
   return (
     <div className="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">
-      {/* Large headshot */}
+      {/* Headshot */}
       <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-sm">
-        <Image
-          src={fallbackSrc}
-          alt={row.pitcher_name}
-          width={48}
-          height={48}
-          className="object-cover w-full h-full"
-          unoptimized
-          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-        />
+        {imgSrc && (
+          <Image
+            src={imgSrc}
+            alt={row.pitcher_name}
+            width={48}
+            height={48}
+            className="object-cover w-full h-full"
+            unoptimized
+            onError={(e) => {
+              const img = e.target as HTMLImageElement;
+              if (fallbackSrc && img.src !== fallbackSrc) {
+                img.src = fallbackSrc;
+              } else {
+                img.style.display = 'none';
+              }
+            }}
+          />
+        )}
       </div>
 
       {/* Name + stats */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          {/* Played indicator */}
           <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" title="Pitched in this game" />
           <span className="text-xs font-semibold text-slate-800 truncate">{row.pitcher_name}</span>
         </div>
@@ -92,6 +108,7 @@ function TeamColumn({
   label,
   rows,
   teams,
+  headshotsMap,
 }: {
   team: CbbTeam | undefined;
   teamId: string;
@@ -102,6 +119,7 @@ function TeamColumn({
   label: string;
   rows: ParticipationRow[];
   teams: Record<string, CbbTeam>;
+  headshotsMap?: Record<string, string | null>;
 }) {
   const displayName = team?.display_name ?? name ?? 'Unknown';
 
@@ -137,6 +155,7 @@ function TeamColumn({
                 row={row}
                 teamId={teamId}
                 teams={teams}
+                headshotSrc={headshotsMap?.[row.pitcher_id] ?? null}
               />
             ))}
             {rows.length > 4 && (
@@ -149,7 +168,7 @@ function TeamColumn({
   );
 }
 
-export function GameCard({ game, teams, trackedTeamIds, participation, onClick }: Props) {
+export function GameCard({ game, teams, trackedTeamIds, participation, headshotsMap, onClick }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
 
@@ -226,6 +245,7 @@ export function GameCard({ game, teams, trackedTeamIds, participation, onClick }
             label="Away"
             rows={awayRows}
             teams={teams}
+            headshotsMap={headshotsMap}
           />
           <div className="w-px bg-slate-100 shrink-0" />
           <TeamColumn
@@ -238,6 +258,7 @@ export function GameCard({ game, teams, trackedTeamIds, participation, onClick }
             label="Home"
             rows={homeRows}
             teams={teams}
+            headshotsMap={headshotsMap}
           />
         </div>
       ) : (
