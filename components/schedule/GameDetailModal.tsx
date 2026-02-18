@@ -4,17 +4,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
-import { CbbGame, CbbTeam } from '@/lib/supabase/types';
-import { cn, formatGameDate } from '@/lib/utils';
-
-interface ParticipationRow {
-  id: number;
-  game_id: string;
-  team_id: string;
-  pitcher_id: string;
-  pitcher_name: string;
-  stats: Record<string, string>;
-}
+import { CbbGame, CbbTeam, ParticipationRow } from '@/lib/supabase/types';
+import { cn, formatGameDate, getEspnLogoUrl } from '@/lib/utils';
 
 interface Props {
   game: CbbGame | null;
@@ -26,40 +17,40 @@ interface Props {
 const normalizeName = (s: string) =>
   s.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
 
-function PitcherAvatar({ name, headshot, size = 28 }: { name: string; headshot?: string; size?: number }) {
-  if (headshot) {
-    return (
-      <div
-        className="rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200"
-        style={{ width: size, height: size }}
-      >
+function PitcherAvatar({ name, headshot, teamId, teamLogo, size = 28 }: { name: string; headshot?: string; teamId?: string; teamLogo?: string | null; size?: number }) {
+  // Priority: headshot → team logo from tracked teams → ESPN CDN
+  const fallbackSrc = teamLogo || (teamId ? getEspnLogoUrl(teamId) : null);
+  const imgSrc = headshot || fallbackSrc;
+
+  return (
+    <div
+      className="rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200"
+      style={{ width: size, height: size }}
+    >
+      {imgSrc ? (
         <Image
-          src={headshot}
+          src={imgSrc}
           alt={name}
           width={size}
           height={size}
           className="object-cover w-full h-full"
-          onError={(e) => {
-            const el = e.target as HTMLImageElement;
-            el.style.display = 'none';
-          }}
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
         />
-      </div>
-    );
-  }
-  const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
-  return (
-    <div
-      className="rounded-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-bold shrink-0"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.35) }}
-    >
-      {initials}
+      ) : (
+        <div
+          className="w-full h-full bg-gradient-to-br from-slate-300 to-slate-400 flex items-center justify-center text-white font-bold"
+          style={{ fontSize: Math.round(size * 0.35) }}
+        >
+          {name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+        </div>
+      )}
     </div>
   );
 }
 
 function TeamPitching({
   team,
+  teamId,
   fallbackName,
   rows,
   favoriteNames,
@@ -67,6 +58,7 @@ function TeamPitching({
   label,
 }: {
   team: CbbTeam | undefined;
+  teamId: string;
   fallbackName?: string;
   rows: ParticipationRow[];
   favoriteNames: Set<string>;
@@ -74,18 +66,16 @@ function TeamPitching({
   label: string;
 }) {
   const displayName = team?.display_name ?? fallbackName ?? 'Unknown';
+  const logoSrc = team?.logo || getEspnLogoUrl(teamId);
 
   return (
     <div className="flex-1 min-w-0">
       {/* Team header */}
       <div className="flex items-center gap-2 mb-3">
-        {team?.logo ? (
-          <Image src={team.logo} alt={displayName} width={32} height={32} className="object-contain shrink-0" />
-        ) : (
-          <div className="w-8 h-8 rounded-full bg-slate-200 shrink-0 flex items-center justify-center text-slate-500 font-bold text-xs">
-            {displayName.split(' ').map((w: string) => w[0]).join('').slice(0, 2).toUpperCase()}
-          </div>
-        )}
+        <div className="w-8 h-8 shrink-0">
+          <Image src={logoSrc} alt={displayName} width={32} height={32} className="object-contain w-full h-full"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        </div>
         <div className="min-w-0">
           <div className="text-sm font-bold text-slate-800 truncate">{displayName}</div>
           <div className="text-[10px] text-slate-400">{label}</div>
@@ -97,12 +87,14 @@ function TeamPitching({
       ) : (
         <div className="space-y-1.5">
           {/* Column headers */}
-          <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wide px-2">
+          <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wide px-2">
             <span>Pitcher</span>
             <span>IP</span>
             <span>K</span>
             <span>H</span>
+            <span>BB</span>
             <span>ER</span>
+            <span>PC</span>
           </div>
           {rows.map(row => {
             const isFav = favoriteNames.has(normalizeName(row.pitcher_name));
@@ -111,12 +103,18 @@ function TeamPitching({
               <div
                 key={row.id}
                 className={cn(
-                  'grid grid-cols-[1fr_auto_auto_auto_auto] gap-x-3 items-center px-2 py-1.5 rounded-lg',
+                  'grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 items-center px-2 py-1.5 rounded-lg',
                   isFav ? 'bg-yellow-50 border border-yellow-200' : 'bg-slate-50'
                 )}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <PitcherAvatar name={row.pitcher_name} headshot={headshot} size={28} />
+                  <PitcherAvatar
+                    name={row.pitcher_name}
+                    headshot={headshot}
+                    teamId={teamId}
+                    teamLogo={team?.logo}
+                    size={28}
+                  />
                   {isFav && (
                     <svg className="w-3 h-3 text-yellow-500 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -127,7 +125,9 @@ function TeamPitching({
                 <span className="text-xs font-bold text-slate-800 tabular-nums">{row.stats.IP ?? '—'}</span>
                 <span className="text-xs text-slate-600 tabular-nums">{row.stats.K ?? '—'}</span>
                 <span className="text-xs text-slate-600 tabular-nums">{row.stats.H ?? '—'}</span>
+                <span className="text-xs text-slate-600 tabular-nums">{row.stats.BB ?? '—'}</span>
                 <span className="text-xs text-slate-600 tabular-nums">{row.stats.ER ?? '—'}</span>
+                <span className="text-xs text-slate-400 tabular-nums">{row.stats.PC ?? '—'}</span>
               </div>
             );
           })}
@@ -319,6 +319,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                   <div className="flex gap-6">
                     <TeamPitching
                       team={awayTeam}
+                      teamId={game.away_team_id}
                       fallbackName={game.away_name ?? undefined}
                       rows={awayRows}
                       favoriteNames={favoriteNames}
@@ -328,6 +329,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                     <div className="w-px bg-slate-200 shrink-0" />
                     <TeamPitching
                       team={homeTeam}
+                      teamId={game.home_team_id}
                       fallbackName={game.home_name ?? undefined}
                       rows={homeRows}
                       favoriteNames={favoriteNames}

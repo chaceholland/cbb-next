@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase/client';
-import { CbbGame, CbbTeam } from '@/lib/supabase/types';
+import { CbbGame, CbbTeam, ParticipationRow } from '@/lib/supabase/types';
 import { GameCard } from './GameCard';
 import { GameDetailModal } from './GameDetailModal';
 import { ScheduleFilterPills } from '@/components/FilterPills';
@@ -21,16 +21,19 @@ export function ScheduleView() {
   const [conference, setConference] = useState('All');
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
 
+  // Participation data: keyed by game_id
+  const [participationByGame, setParticipationByGame] = useState<Record<string, ParticipationRow[]>>({});
+  const [loadedWeeks, setLoadedWeeks] = useState<Set<number>>(new Set());
+  const [loadingWeeks, setLoadingWeeks] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     async function fetchData() {
       try {
         setLoading(true);
 
-        // Fetch all teams first
         const { data: teamsData, error: teamsError } = await supabase
           .from('cbb_teams')
           .select('*');
-
         if (teamsError) throw teamsError;
 
         const teamsMap: Record<string, CbbTeam> = {};
@@ -42,34 +45,27 @@ export function ScheduleView() {
         setTeams(teamsMap);
         setTrackedTeamIds(teamIds);
 
-        // Fetch all games in pages of 1000
         const allGames: CbbGame[] = [];
         let page = 0;
         const pageSize = 1000;
-
         while (true) {
           const { data, error: gamesError } = await supabase
             .from('cbb_games')
             .select('*')
             .range(page * pageSize, (page + 1) * pageSize - 1)
             .order('date', { ascending: true });
-
           if (gamesError) throw gamesError;
           if (!data || data.length === 0) break;
-
           allGames.push(...data);
           if (data.length < pageSize) break;
           page++;
         }
 
-        // Filter to only games involving our 64 tracked teams
         const filteredGames = allGames.filter(
           g => teamIds.has(g.home_team_id) || teamIds.has(g.away_team_id)
         );
-
         setGames(filteredGames);
 
-        // Default: expand the first 3 weeks
         const weeks = [...new Set(filteredGames.map(g => g.week))].sort((a, b) => a - b);
         setExpandedWeeks(new Set(weeks.slice(0, 3)));
       } catch (err) {
@@ -79,18 +75,53 @@ export function ScheduleView() {
         setLoading(false);
       }
     }
-
     fetchData();
   }, []);
 
-  // Conference counts based on home team's conference
+  // Fetch participation for a week's completed games
+  const fetchWeekParticipation = useCallback(async (week: number, weekGames: CbbGame[]) => {
+    if (loadedWeeks.has(week) || loadingWeeks.has(week)) return;
+
+    const completedGameIds = weekGames.filter(g => g.completed).map(g => g.game_id);
+    if (completedGameIds.length === 0) {
+      setLoadedWeeks(prev => new Set([...prev, week]));
+      return;
+    }
+
+    setLoadingWeeks(prev => new Set([...prev, week]));
+
+    // Fetch in chunks of 200 to stay within URL limits
+    const chunkSize = 200;
+    const allRows: ParticipationRow[] = [];
+    for (let i = 0; i < completedGameIds.length; i += chunkSize) {
+      const chunk = completedGameIds.slice(i, i + chunkSize);
+      const { data } = await supabase
+        .from('cbb_pitcher_participation')
+        .select('*')
+        .in('game_id', chunk);
+      if (data) allRows.push(...data);
+    }
+
+    setParticipationByGame(prev => {
+      const next = { ...prev };
+      allRows.forEach(row => {
+        if (!next[row.game_id]) next[row.game_id] = [];
+        next[row.game_id].push(row);
+      });
+      return next;
+    });
+
+    setLoadedWeeks(prev => new Set([...prev, week]));
+    setLoadingWeeks(prev => { const s = new Set(prev); s.delete(week); return s; });
+  }, [loadedWeeks, loadingWeeks]);
+
+  // Conference counts
   const conferenceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     games.forEach(g => {
       const homeTeam = teams[g.home_team_id];
       const conf = homeTeam?.conference;
       if (conf) {
-        // Map to the pill label
         let label = conf;
         if (conf.includes('SEC')) label = 'SEC';
         else if (conf.includes('ACC')) label = 'ACC';
@@ -109,12 +140,10 @@ export function ScheduleView() {
     return counts;
   }, [games, teams]);
 
-  // Filtered games
   const filteredGames = useMemo(() => {
     if (conference === 'All') return games;
     return games.filter(g => {
-      const homeTeam = teams[g.home_team_id];
-      const conf = homeTeam?.conference || '';
+      const conf = teams[g.home_team_id]?.conference || '';
       if (conference === 'SEC') return conf.includes('SEC');
       if (conference === 'ACC') return conf.includes('ACC');
       if (conference === 'Big 12') return conf.includes('Big 12');
@@ -125,14 +154,10 @@ export function ScheduleView() {
       if (conference === 'C-USA') return conf.includes('C-USA') || conf.includes('Conference USA');
       if (conference === 'Mountain West') return conf.includes('Mountain West');
       if (conference === 'MAC') return conf.includes('MAC');
-      // Other
-      return !['SEC', 'ACC', 'Big 12', 'Big Ten', 'Pac-12', 'American', 'Sun Belt', 'C-USA', 'Mountain West', 'MAC'].some(
-        c => conf.includes(c)
-      );
+      return !['SEC','ACC','Big 12','Big Ten','Pac-12','American','Sun Belt','C-USA','Mountain West','MAC'].some(c => conf.includes(c));
     });
   }, [games, teams, conference]);
 
-  // Group by week
   const gamesByWeek = useMemo(() => {
     const groups: Record<number, CbbGame[]> = {};
     filteredGames.forEach(g => {
@@ -147,11 +172,26 @@ export function ScheduleView() {
   const toggleWeek = (week: number) => {
     setExpandedWeeks(prev => {
       const next = new Set(prev);
-      if (next.has(week)) next.delete(week);
-      else next.add(week);
+      if (next.has(week)) {
+        next.delete(week);
+      } else {
+        next.add(week);
+        // Trigger participation fetch for this week
+        fetchWeekParticipation(week, gamesByWeek[week] || []);
+      }
       return next;
     });
   };
+
+  // Fetch participation for initially expanded weeks once games load
+  useEffect(() => {
+    if (games.length === 0) return;
+    expandedWeeks.forEach(week => {
+      const weekGames = games.filter(g => g.week === week);
+      fetchWeekParticipation(week, weekGames);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [games]);
 
   if (loading) {
     return (
@@ -167,10 +207,7 @@ export function ScheduleView() {
       <div className="flex items-center justify-center py-24">
         <div className="text-center">
           <p className="text-red-500 font-medium mb-2">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="text-blue-500 hover:underline text-sm"
-          >
+          <button onClick={() => window.location.reload()} className="text-blue-500 hover:underline text-sm">
             Reload page
           </button>
         </div>
@@ -180,7 +217,6 @@ export function ScheduleView() {
 
   return (
     <div>
-      {/* Filter Pills */}
       <ScheduleFilterPills
         conference={conference}
         conferenceCounts={conferenceCounts}
@@ -193,11 +229,9 @@ export function ScheduleView() {
         {conference !== 'All' && ` in ${conference}`}
       </p>
 
-      {/* Weeks */}
       <div className="space-y-6">
         {weeks.map(week => (
           <div key={week} className="space-y-3">
-            {/* Week header */}
             <button
               onClick={() => toggleWeek(week)}
               className="flex items-center gap-3 w-full text-left group"
@@ -206,9 +240,10 @@ export function ScheduleView() {
                 <span className="text-sm font-bold text-slate-600 bg-gradient-to-r from-[#1a73e8]/10 to-[#ea4335]/10 border border-blue-200 px-3 py-1 rounded-full">
                   Week {week}
                 </span>
-                <span className="text-xs text-slate-400">
-                  {gamesByWeek[week].length} games
-                </span>
+                <span className="text-xs text-slate-400">{gamesByWeek[week].length} games</span>
+                {loadingWeeks.has(week) && (
+                  <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                )}
               </div>
               <div className="flex-1 h-px bg-slate-200" />
               <svg
@@ -219,7 +254,6 @@ export function ScheduleView() {
               </svg>
             </button>
 
-            {/* Games grid */}
             {expandedWeeks.has(week) && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -233,12 +267,13 @@ export function ScheduleView() {
                     key={game.game_id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.03, duration: 0.3 }}
+                    transition={{ delay: i * 0.02, duration: 0.3 }}
                   >
                     <GameCard
                       game={game}
                       teams={teams}
                       trackedTeamIds={trackedTeamIds}
+                      participation={participationByGame[game.game_id] || []}
                       onClick={() => setSelectedGame(game)}
                     />
                   </motion.div>

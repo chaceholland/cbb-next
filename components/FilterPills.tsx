@@ -52,6 +52,8 @@ interface RosterFilterPillsProps {
   onConferenceChange: (conf: string) => void;
   onHandChange: (hand: string) => void;
   onFavoritesToggle: () => void;
+  hideConference?: boolean;
+  hideHand?: boolean;
 }
 
 export function RosterFilterPills({
@@ -65,42 +67,48 @@ export function RosterFilterPills({
   onConferenceChange,
   onHandChange,
   onFavoritesToggle,
+  hideConference,
+  hideHand,
 }: RosterFilterPillsProps) {
   const conferenceOptions = ['All', ...CONFERENCES];
 
   return (
     <div className="space-y-4 py-4">
       {/* Conference Filter */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Conference</h3>
-        <div className="flex gap-2 overflow-x-auto pb-2 flex-wrap">
-          {conferenceOptions.map(conf => (
-            <Pill
-              key={conf}
-              label={conf}
-              count={conf === 'All' ? totalCount : conferenceCounts[conf]}
-              active={conference === conf}
-              onClick={() => onConferenceChange(conf)}
-            />
-          ))}
+      {!hideConference && (
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Conference</h3>
+          <div className="flex gap-2 overflow-x-auto pb-2 flex-wrap">
+            {conferenceOptions.map(conf => (
+              <Pill
+                key={conf}
+                label={conf}
+                count={conf === 'All' ? totalCount : conferenceCounts[conf]}
+                active={conference === conf}
+                onClick={() => onConferenceChange(conf)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Hand Filter */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Throws</h3>
-        <div className="flex gap-2">
-          {['All', 'RHP', 'LHP'].map(h => (
-            <Pill
-              key={h}
-              label={h}
-              count={handCounts[h]}
-              active={hand === h}
-              onClick={() => onHandChange(h)}
-            />
-          ))}
+      {!hideHand && (
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Throws</h3>
+          <div className="flex gap-2">
+            {['All', 'RHP', 'LHP'].map(h => (
+              <Pill
+                key={h}
+                label={h}
+                count={handCounts[h]}
+                active={hand === h}
+                onClick={() => onHandChange(h)}
+              />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Favorites Toggle */}
       <div className="flex items-center gap-3">

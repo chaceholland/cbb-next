@@ -25,6 +25,10 @@ export function formatGameDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
+export function getEspnLogoUrl(teamId: string): string {
+  return `https://a.espncdn.com/i/teamlogos/ncaa/500/${teamId}.png`;
+}
+
 export function formatGameTime(dateStr: string): string {
   try {
     const d = new Date(dateStr);

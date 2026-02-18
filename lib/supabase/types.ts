@@ -41,3 +41,12 @@ export interface CbbGame {
 export interface EnrichedPitcher extends CbbPitcher {
   team: CbbTeam;
 }
+
+export interface ParticipationRow {
+  id: number;
+  game_id: string;
+  team_id: string;
+  pitcher_id: string;
+  pitcher_name: string;
+  stats: Record<string, string>;
+}
