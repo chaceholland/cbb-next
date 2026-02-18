@@ -2,15 +2,18 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
+type Tab = 'schedule' | 'rosters' | 'analytics';
+
 interface Props {
-  activeTab: 'schedule' | 'rosters';
-  onTabChange: (tab: 'schedule' | 'rosters') => void;
+  activeTab: Tab;
+  onTabChange: (tab: Tab) => void;
 }
 
 export function TabBar({ activeTab, onTabChange }: Props) {
   const tabs = [
     { id: 'schedule' as const, label: '📅 Schedule' },
     { id: 'rosters' as const, label: '⚾ Rosters' },
+    { id: 'analytics' as const, label: '📊 Analytics' },
   ];
 
   return (

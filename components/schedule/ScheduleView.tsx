@@ -8,6 +8,7 @@ import { GameCard } from './GameCard';
 import { GameDetailModal } from './GameDetailModal';
 import { ScheduleFilterPills } from '@/components/FilterPills';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+import { cn } from '@/lib/utils';
 
 export function ScheduleView() {
   const [games, setGames] = useState<CbbGame[]>([]);
@@ -19,6 +20,9 @@ export function ScheduleView() {
   const [favorites] = useLocalStorage<string[]>('cbb-favorites', []);
   const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
   const [conference, setConference] = useState('All');
+  const [teamSearch, setTeamSearch] = useState('');
+  const [showFavorites, setShowFavorites] = useState(false);
+  const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(new Set());
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
 
   // Participation data: keyed by game_id
@@ -45,6 +49,10 @@ export function ScheduleView() {
         setTeams(teamsMap);
         setTrackedTeamIds(teamIds);
 
+        // Server-side filter: only games involving our 64 tracked teams
+        const teamIdList = [...teamIds];
+        const orFilter = `home_team_id.in.(${teamIdList.join(',')}),away_team_id.in.(${teamIdList.join(',')})`;
+
         const allGames: CbbGame[] = [];
         let page = 0;
         const pageSize = 1000;
@@ -52,6 +60,7 @@ export function ScheduleView() {
           const { data, error: gamesError } = await supabase
             .from('cbb_games')
             .select('*')
+            .or(orFilter)
             .range(page * pageSize, (page + 1) * pageSize - 1)
             .order('date', { ascending: true });
           if (gamesError) throw gamesError;
@@ -61,13 +70,16 @@ export function ScheduleView() {
           page++;
         }
 
-        const filteredGames = allGames.filter(
-          g => teamIds.has(g.home_team_id) || teamIds.has(g.away_team_id)
-        );
-        setGames(filteredGames);
+        setGames(allGames);
 
-        const weeks = [...new Set(filteredGames.map(g => g.week))].sort((a, b) => a - b);
-        setExpandedWeeks(new Set(weeks.slice(0, 3)));
+        // Compute weeks from dates (season starts ~Feb 14)
+        const seasonStart = new Date('2026-02-14');
+        const computeWeek = (dateStr: string) => {
+          const d = new Date(dateStr);
+          return Math.max(1, Math.floor((d.getTime() - seasonStart.getTime()) / (1000 * 60 * 60 * 24 * 7)) + 1);
+        };
+        const weeks = [...new Set(allGames.map(g => computeWeek(g.date)))].sort((a, b) => a - b);
+        setExpandedWeeks(new Set(weeks.slice(0, 1)));
       } catch (err) {
         console.error('Error fetching schedule:', err);
         setError('Failed to load schedule. Please try again.');
@@ -77,6 +89,21 @@ export function ScheduleView() {
     }
     fetchData();
   }, []);
+
+  // Resolve which teams have favorited pitchers (for favorites filter)
+  useEffect(() => {
+    if (favorites.length === 0) {
+      setFavoriteTeamIds(new Set());
+      return;
+    }
+    supabase
+      .from('cbb_pitchers')
+      .select('team_id')
+      .in('pitcher_id', favorites)
+      .then(({ data }) => {
+        setFavoriteTeamIds(new Set((data || []).map((p: { team_id: string }) => p.team_id)));
+      });
+  }, [favorites]);
 
   // Fetch participation for a week's completed games
   const fetchWeekParticipation = useCallback(async (week: number, weekGames: CbbGame[]) => {
@@ -90,7 +117,6 @@ export function ScheduleView() {
 
     setLoadingWeeks(prev => new Set([...prev, week]));
 
-    // Fetch in chunks of 200 to stay within URL limits
     const chunkSize = 200;
     const allRows: ParticipationRow[] = [];
     for (let i = 0; i < completedGameIds.length; i += chunkSize) {
@@ -115,57 +141,96 @@ export function ScheduleView() {
     setLoadingWeeks(prev => { const s = new Set(prev); s.delete(week); return s; });
   }, [loadedWeeks, loadingWeeks]);
 
+  // Helper: get the tracked team's conference for a game
+  const getGameConference = useCallback((g: CbbGame): string => {
+    const homeTeam = teams[g.home_team_id];
+    const awayTeam = teams[g.away_team_id];
+    return (homeTeam?.conference || awayTeam?.conference || '');
+  }, [teams]);
+
   // Conference counts
   const conferenceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     games.forEach(g => {
-      const homeTeam = teams[g.home_team_id];
-      const conf = homeTeam?.conference;
-      if (conf) {
-        let label = conf;
-        if (conf.includes('SEC')) label = 'SEC';
-        else if (conf.includes('ACC')) label = 'ACC';
-        else if (conf.includes('Big 12')) label = 'Big 12';
-        else if (conf.includes('Big Ten')) label = 'Big Ten';
-        else if (conf.includes('Pac-12') || conf.includes('Pac 12')) label = 'Pac-12';
-        else if (conf.includes('American')) label = 'American';
-        else if (conf.includes('Sun Belt')) label = 'Sun Belt';
-        else if (conf.includes('C-USA') || conf.includes('Conference USA')) label = 'C-USA';
-        else if (conf.includes('Mountain West')) label = 'Mountain West';
-        else if (conf.includes('MAC')) label = 'MAC';
-        else label = 'Other';
-        counts[label] = (counts[label] || 0) + 1;
-      }
+      const conf = getGameConference(g);
+      if (!conf) return;
+      let label: string;
+      if (conf.includes('SEC')) label = 'SEC';
+      else if (conf.includes('ACC')) label = 'ACC';
+      else if (conf.includes('Big 12')) label = 'Big 12';
+      else if (conf.includes('Big Ten')) label = 'Big Ten';
+      else if (conf.includes('Pac-12') || conf.includes('Pac 12')) label = 'Pac-12';
+      else if (conf.includes('American')) label = 'American';
+      else if (conf.includes('Sun Belt')) label = 'Sun Belt';
+      else if (conf.includes('C-USA') || conf.includes('Conference USA')) label = 'C-USA';
+      else if (conf.includes('Mountain West')) label = 'Mountain West';
+      else if (conf.includes('MAC')) label = 'MAC';
+      else label = 'Other';
+      counts[label] = (counts[label] || 0) + 1;
     });
     return counts;
-  }, [games, teams]);
+  }, [games, getGameConference]);
 
   const filteredGames = useMemo(() => {
-    if (conference === 'All') return games;
-    return games.filter(g => {
-      const conf = teams[g.home_team_id]?.conference || '';
-      if (conference === 'SEC') return conf.includes('SEC');
-      if (conference === 'ACC') return conf.includes('ACC');
-      if (conference === 'Big 12') return conf.includes('Big 12');
-      if (conference === 'Big Ten') return conf.includes('Big Ten');
-      if (conference === 'Pac-12') return conf.includes('Pac-12') || conf.includes('Pac 12');
-      if (conference === 'American') return conf.includes('American');
-      if (conference === 'Sun Belt') return conf.includes('Sun Belt');
-      if (conference === 'C-USA') return conf.includes('C-USA') || conf.includes('Conference USA');
-      if (conference === 'Mountain West') return conf.includes('Mountain West');
-      if (conference === 'MAC') return conf.includes('MAC');
-      return !['SEC','ACC','Big 12','Big Ten','Pac-12','American','Sun Belt','C-USA','Mountain West','MAC'].some(c => conf.includes(c));
-    });
-  }, [games, teams, conference]);
+    let result = games;
+
+    // Conference filter (checks either tracked team)
+    if (conference !== 'All') {
+      result = result.filter(g => {
+        const conf = getGameConference(g);
+        if (conference === 'SEC') return conf.includes('SEC');
+        if (conference === 'ACC') return conf.includes('ACC');
+        if (conference === 'Big 12') return conf.includes('Big 12');
+        if (conference === 'Big Ten') return conf.includes('Big Ten');
+        if (conference === 'Pac-12') return conf.includes('Pac-12') || conf.includes('Pac 12');
+        if (conference === 'American') return conf.includes('American');
+        if (conference === 'Sun Belt') return conf.includes('Sun Belt');
+        if (conference === 'C-USA') return conf.includes('C-USA') || conf.includes('Conference USA');
+        if (conference === 'Mountain West') return conf.includes('Mountain West');
+        if (conference === 'MAC') return conf.includes('MAC');
+        return !['SEC','ACC','Big 12','Big Ten','Pac-12','American','Sun Belt','C-USA','Mountain West','MAC'].some(c => conf.includes(c));
+      });
+    }
+
+    // Team search
+    if (teamSearch.trim()) {
+      const q = teamSearch.toLowerCase().trim();
+      result = result.filter(g => {
+        const hn = (teams[g.home_team_id]?.display_name || g.home_name || '').toLowerCase();
+        const an = (teams[g.away_team_id]?.display_name || g.away_name || '').toLowerCase();
+        return hn.includes(q) || an.includes(q);
+      });
+    }
+
+    // Favorites filter
+    if (showFavorites && favoriteTeamIds.size > 0) {
+      result = result.filter(g =>
+        favoriteTeamIds.has(g.home_team_id) || favoriteTeamIds.has(g.away_team_id)
+      );
+    }
+
+    return result;
+  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference]);
+
+  // Compute week from date (season starts ~Feb 14 each year)
+  const getWeekFromDate = useCallback((dateStr: string): number => {
+    const date = new Date(dateStr);
+    const year = date.getFullYear();
+    // Season opener is typically the second Friday in February
+    const seasonStart = new Date(`${year}-02-14`);
+    const daysDiff = Math.floor((date.getTime() - seasonStart.getTime()) / (1000 * 60 * 60 * 24));
+    return Math.max(1, Math.floor(daysDiff / 7) + 1);
+  }, []);
 
   const gamesByWeek = useMemo(() => {
     const groups: Record<number, CbbGame[]> = {};
     filteredGames.forEach(g => {
-      if (!groups[g.week]) groups[g.week] = [];
-      groups[g.week].push(g);
+      const week = getWeekFromDate(g.date);
+      if (!groups[week]) groups[week] = [];
+      groups[week].push(g);
     });
     return groups;
-  }, [filteredGames]);
+  }, [filteredGames, getWeekFromDate]);
 
   const weeks = useMemo(() => Object.keys(gamesByWeek).map(Number).sort((a, b) => a - b), [gamesByWeek]);
 
@@ -176,7 +241,6 @@ export function ScheduleView() {
         next.delete(week);
       } else {
         next.add(week);
-        // Trigger participation fetch for this week
         fetchWeekParticipation(week, gamesByWeek[week] || []);
       }
       return next;
@@ -187,7 +251,7 @@ export function ScheduleView() {
   useEffect(() => {
     if (games.length === 0) return;
     expandedWeeks.forEach(week => {
-      const weekGames = games.filter(g => g.week === week);
+      const weekGames = games.filter(g => getWeekFromDate(g.date) === week);
       fetchWeekParticipation(week, weekGames);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -224,8 +288,46 @@ export function ScheduleView() {
         onConferenceChange={setConference}
       />
 
+      {/* Search + Favorites row */}
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <input
+          type="text"
+          value={teamSearch}
+          onChange={e => setTeamSearch(e.target.value)}
+          placeholder="Search teams..."
+          className={cn(
+            'px-4 py-2 rounded-xl text-sm w-56',
+            'bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400',
+            'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 shadow-sm'
+          )}
+        />
+        <button
+          onClick={() => setShowFavorites(prev => !prev)}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+            showFavorites
+              ? 'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white shadow-lg shadow-blue-500/30'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+          )}
+        >
+          <svg className="w-4 h-4" fill={showFavorites ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          Favorites Only
+          {favoriteTeamIds.size > 0 && (
+            <span className={cn(
+              'text-xs px-2 py-0.5 rounded-full border',
+              showFavorites ? 'bg-white/20 text-white border-white/30' : 'bg-slate-200 text-slate-600 border-slate-300'
+            )}>
+              {favoriteTeamIds.size} teams
+            </span>
+          )}
+        </button>
+      </div>
+
       <p className="text-sm text-slate-500 mb-6">
-        Showing <span className="font-semibold text-slate-700">{filteredGames.length.toLocaleString()}</span> games
+        Showing <span className="font-semibold text-slate-700">{filteredGames.length.toLocaleString()}</span> of{' '}
+        <span className="font-semibold text-slate-700">{games.length.toLocaleString()}</span> tracked games
         {conference !== 'All' && ` in ${conference}`}
       </p>
 

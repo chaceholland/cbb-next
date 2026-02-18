@@ -5,8 +5,9 @@ import { HeroSection } from '@/components/HeroSection';
 import { TabBar } from '@/components/TabBar';
 import { ScheduleView } from '@/components/schedule/ScheduleView';
 import { RosterView } from '@/components/roster/RosterView';
+import { AnalyticsView } from '@/components/analytics/AnalyticsView';
 
-type Tab = 'schedule' | 'rosters';
+type Tab = 'schedule' | 'rosters' | 'analytics';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>('schedule');
@@ -14,11 +15,11 @@ export default function Home() {
   // Sync tab with URL hash
   useEffect(() => {
     const hash = window.location.hash.slice(1) as Tab;
-    if (hash === 'schedule' || hash === 'rosters') setActiveTab(hash);
+    if (hash === 'schedule' || hash === 'rosters' || hash === 'analytics') setActiveTab(hash);
 
     const handler = () => {
       const h = window.location.hash.slice(1) as Tab;
-      if (h === 'schedule' || h === 'rosters') setActiveTab(h);
+      if (h === 'schedule' || h === 'rosters' || h === 'analytics') setActiveTab(h);
     };
     window.addEventListener('hashchange', handler);
     return () => window.removeEventListener('hashchange', handler);
@@ -38,7 +39,9 @@ export default function Home() {
           <div className="flex justify-center mb-8">
             <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
           </div>
-          {activeTab === 'schedule' ? <ScheduleView /> : <RosterView />}
+          {activeTab === 'schedule' && <ScheduleView />}
+          {activeTab === 'rosters' && <RosterView />}
+          {activeTab === 'analytics' && <AnalyticsView />}
         </div>
       </main>
     </>
