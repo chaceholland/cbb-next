@@ -5,17 +5,110 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase/client';
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
-import { PitcherCard } from './PitcherCard';
 import { PitcherModal } from './PitcherModal';
-import { RosterFilterPills } from '@/components/FilterPills';
-import { cn } from '@/lib/utils';
+import { CONFERENCES } from '@/components/FilterPills';
+import { cn, getEspnLogoUrl } from '@/lib/utils';
+
+function getConfLabel(conf: string): string {
+  if (conf.includes('SEC')) return 'SEC';
+  if (conf.includes('ACC')) return 'ACC';
+  if (conf.includes('Big 12')) return 'Big 12';
+  if (conf.includes('Big Ten')) return 'Big Ten';
+  if (conf.includes('Pac-12') || conf.includes('Pac 12')) return 'Pac-12';
+  if (conf.includes('American')) return 'American';
+  if (conf.includes('Sun Belt')) return 'Sun Belt';
+  if (conf.includes('C-USA') || conf.includes('Conference USA')) return 'C-USA';
+  if (conf.includes('Mountain West')) return 'Mountain West';
+  if (conf.includes('MAC')) return 'MAC';
+  return 'Other';
+}
+
+function PitcherRow({
+  pitcher,
+  isFavorite,
+  onToggleFavorite,
+  onClick,
+}: {
+  pitcher: EnrichedPitcher;
+  isFavorite: boolean;
+  onToggleFavorite: (id: string) => void;
+  onClick: () => void;
+}) {
+  const logoSrc = pitcher.team?.logo || getEspnLogoUrl(pitcher.team_id);
+  const validHeadshot = pitcher.headshot?.startsWith('http') ? pitcher.headshot : null;
+  const imgSrc = validHeadshot || logoSrc;
+  const pos = (pitcher.position || '').toUpperCase();
+  const isLHP = pos.includes('LHP') || pos.includes('LEFT');
+  const isRHP = pos.includes('RHP') || pos.includes('RIGHT');
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-slate-50 transition-colors',
+        isFavorite ? 'bg-yellow-50' : ''
+      )}
+      onClick={onClick}
+    >
+      {/* Headshot */}
+      <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-sm">
+        <Image
+          src={imgSrc}
+          alt={pitcher.name}
+          width={56}
+          height={56}
+          className="object-cover w-full h-full"
+          onError={(e) => { (e.target as HTMLImageElement).src = logoSrc; }}
+        />
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5">
+          {pitcher.number && (
+            <span className="text-[10px] text-slate-400 font-mono">#{pitcher.number}</span>
+          )}
+          <span className="text-sm font-bold text-slate-800 truncate">{pitcher.name}</span>
+        </div>
+        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+          {(isRHP || isLHP) && (
+            <span className={cn(
+              'text-[10px] font-bold px-1.5 py-0.5 rounded border',
+              isLHP
+                ? 'bg-green-50 text-green-700 border-green-200'
+                : 'bg-blue-50 text-blue-700 border-blue-200'
+            )}>
+              {isLHP ? 'LHP' : 'RHP'}
+            </span>
+          )}
+          {pitcher.year && (
+            <span className="text-[10px] text-slate-400 capitalize">{pitcher.year}</span>
+          )}
+        </div>
+      </div>
+
+      {/* Favorite star */}
+      <button
+        onClick={e => { e.stopPropagation(); onToggleFavorite(pitcher.pitcher_id); }}
+        className="p-1 shrink-0 transition-colors"
+      >
+        <svg
+          className={cn('w-4 h-4', isFavorite ? 'text-yellow-400 fill-current' : 'text-slate-300 hover:text-yellow-300')}
+          fill={isFavorite ? 'currentColor' : 'none'}
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+        </svg>
+      </button>
+    </div>
+  );
+}
 
 export function RosterView() {
   const [pitchers, setPitchers] = useState<EnrichedPitcher[]>([]);
   const [teams, setTeams] = useState<CbbTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedPitcher, setSelectedPitcher] = useState<EnrichedPitcher | null>(null);
   const [favorites, setFavorites] = useLocalStorage<string[]>('cbb-favorites', []);
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,75 +162,16 @@ export function RosterView() {
     fetchData();
   }, []);
 
-  // Pitchers grouped by team
-  const pitchersByTeam = useMemo(() => {
-    const map: Record<string, EnrichedPitcher[]> = {};
-    pitchers.forEach(p => {
-      if (!map[p.team_id]) map[p.team_id] = [];
-      map[p.team_id].push(p);
-    });
-    return map;
-  }, [pitchers]);
+  const handleToggleFavorite = (id: string) => {
+    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
 
-  // Conference counts (for filter pills — based on all pitchers)
-  const conferenceCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    pitchers.forEach(p => {
-      const conf = p.team.conference;
-      if (!conf) return;
-      let label = 'Other';
-      if (conf.includes('SEC')) label = 'SEC';
-      else if (conf.includes('ACC')) label = 'ACC';
-      else if (conf.includes('Big 12')) label = 'Big 12';
-      else if (conf.includes('Big Ten')) label = 'Big Ten';
-      else if (conf.includes('Pac-12') || conf.includes('Pac 12')) label = 'Pac-12';
-      else if (conf.includes('American')) label = 'American';
-      else if (conf.includes('Sun Belt')) label = 'Sun Belt';
-      else if (conf.includes('C-USA') || conf.includes('Conference USA')) label = 'C-USA';
-      else if (conf.includes('Mountain West')) label = 'Mountain West';
-      else if (conf.includes('MAC')) label = 'MAC';
-      counts[label] = (counts[label] || 0) + 1;
-    });
-    return counts;
-  }, [pitchers]);
+  // Filtered pitchers (global filters)
+  const filteredPitchers = useMemo(() => {
+    let result = pitchers;
 
-  const handCounts = useMemo(() => {
-    const counts: Record<string, number> = { All: pitchers.length, RHP: 0, LHP: 0 };
-    pitchers.forEach(p => {
-      const pos = (p.position || '').toUpperCase();
-      if (pos.includes('LHP') || pos.includes('LEFT')) counts.LHP++;
-      else if (pos.includes('RHP') || pos.includes('RIGHT')) counts.RHP++;
-    });
-    return counts;
-  }, [pitchers]);
-
-  // Filtered teams for the team tile grid
-  const filteredTeams = useMemo(() => {
-    return teams.filter(t => {
-      const conf = t.conference || '';
-      if (conference === 'All') return true;
-      if (conference === 'SEC') return conf.includes('SEC');
-      if (conference === 'ACC') return conf.includes('ACC');
-      if (conference === 'Big 12') return conf.includes('Big 12');
-      if (conference === 'Big Ten') return conf.includes('Big Ten');
-      if (conference === 'Pac-12') return conf.includes('Pac-12') || conf.includes('Pac 12');
-      if (conference === 'American') return conf.includes('American');
-      if (conference === 'Sun Belt') return conf.includes('Sun Belt');
-      if (conference === 'C-USA') return conf.includes('C-USA') || conf.includes('Conference USA');
-      if (conference === 'Mountain West') return conf.includes('Mountain West');
-      if (conference === 'MAC') return conf.includes('MAC');
-      return !['SEC','ACC','Big 12','Big Ten','Pac-12','American','Sun Belt','C-USA','Mountain West','MAC'].some(c => conf.includes(c));
-    });
-  }, [teams, conference]);
-
-  // Filtered pitchers for the selected team view
-  const teamPitchers = useMemo(() => {
-    if (!selectedTeamId) return [];
-    let result = pitchersByTeam[selectedTeamId] || [];
-
-    if (showFavorites) {
-      const favSet = new Set(favorites);
-      result = result.filter(p => favSet.has(p.pitcher_id));
+    if (conference !== 'All') {
+      result = result.filter(p => getConfLabel(p.team.conference || '') === conference);
     }
     if (hand !== 'All') {
       result = result.filter(p => {
@@ -147,19 +181,67 @@ export function RosterView() {
         return true;
       });
     }
+    if (showFavorites) {
+      const favSet = new Set(favorites);
+      result = result.filter(p => favSet.has(p.pitcher_id));
+    }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       result = result.filter(p =>
         p.name.toLowerCase().includes(q) ||
-        (p.display_name || '').toLowerCase().includes(q)
+        (p.display_name || '').toLowerCase().includes(q) ||
+        p.team.display_name.toLowerCase().includes(q)
       );
     }
-    return result;
-  }, [selectedTeamId, pitchersByTeam, showFavorites, favorites, hand, searchQuery]);
 
-  const handleToggleFavorite = (id: string) => {
-    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
-  };
+    return result;
+  }, [pitchers, conference, hand, showFavorites, favorites, searchQuery]);
+
+  // Group filtered pitchers by team, maintaining team sort order
+  const pitchersByTeam = useMemo(() => {
+    const map: Record<string, EnrichedPitcher[]> = {};
+    filteredPitchers.forEach(p => {
+      if (!map[p.team_id]) map[p.team_id] = [];
+      map[p.team_id].push(p);
+    });
+    return map;
+  }, [filteredPitchers]);
+
+  // Teams that have at least one pitcher after filtering
+  const visibleTeams = useMemo(() => {
+    return teams.filter(t => {
+      // Conference filter at team level too
+      if (conference !== 'All' && getConfLabel(t.conference || '') !== conference) return false;
+      // Must have pitchers after filtering (or if searching by team name, show even if no pitchers match)
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const teamNameMatch = t.display_name.toLowerCase().includes(q);
+        if (teamNameMatch) return true; // show team if name matches, even if no pitchers match
+        return (pitchersByTeam[t.team_id] || []).length > 0;
+      }
+      return (pitchersByTeam[t.team_id] || []).length > 0;
+    });
+  }, [teams, conference, pitchersByTeam, searchQuery]);
+
+  // Conference counts for filter pills
+  const conferenceCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    pitchers.forEach(p => {
+      const label = getConfLabel(p.team.conference || '');
+      counts[label] = (counts[label] || 0) + 1;
+    });
+    return counts;
+  }, [pitchers]);
+
+  const handCounts = useMemo(() => {
+    const counts = { All: pitchers.length, RHP: 0, LHP: 0 };
+    pitchers.forEach(p => {
+      const pos = (p.position || '').toUpperCase();
+      if (pos.includes('LHP') || pos.includes('LEFT')) counts.LHP++;
+      else if (pos.includes('RHP') || pos.includes('RIGHT')) counts.RHP++;
+    });
+    return counts;
+  }, [pitchers]);
 
   if (loading) {
     return (
@@ -183,155 +265,170 @@ export function RosterView() {
     );
   }
 
-  // ── Team roster drill-down view ──
-  if (selectedTeamId) {
-    const selectedTeam = teams.find(t => t.team_id === selectedTeamId);
-    return (
-      <div>
-        {/* Back button */}
-        <button
-          onClick={() => { setSelectedTeamId(null); setSearchQuery(''); }}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 mb-5 group transition-colors"
-        >
-          <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          All Teams
-        </button>
-
-        {/* Team header */}
-        <div className="flex items-center gap-4 mb-6">
-          {selectedTeam?.logo ? (
-            <div className="w-16 h-16 shrink-0 flex items-center justify-center">
-              <Image src={selectedTeam.logo} alt={selectedTeam.display_name} width={64} height={64} className="object-contain" />
-            </div>
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1a73e8] to-[#ea4335] flex items-center justify-center shrink-0">
-              <span className="text-white font-bold text-lg">
-                {selectedTeam?.display_name.split(' ').map(w => w[0]).join('').slice(0, 2)}
-              </span>
-            </div>
-          )}
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800">{selectedTeam?.display_name}</h2>
-            <p className="text-sm text-slate-400">{selectedTeam?.conference}</p>
-          </div>
-          <span className="ml-auto text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
-            {(pitchersByTeam[selectedTeamId] || []).length} pitchers
-          </span>
-        </div>
-
-        {/* Search + hand filter for this team */}
-        <div className="flex items-center gap-3 mb-5">
+  return (
+    <div>
+      {/* Filters bar */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 mb-6 space-y-3">
+        {/* Search + hand + favorites row */}
+        <div className="flex items-center gap-3 flex-wrap">
           <input
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Search pitchers..."
+            placeholder="Search pitchers or teams..."
             className={cn(
-              'flex-1 max-w-xs px-4 py-2 rounded-xl text-sm',
-              'bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 shadow-sm'
+              'flex-1 min-w-[200px] max-w-xs px-4 py-2 rounded-xl text-sm',
+              'bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400',
+              'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500'
             )}
           />
-          <RosterFilterPills
-            conference={conference}
-            hand={hand}
-            showFavorites={showFavorites}
-            conferenceCounts={conferenceCounts}
-            handCounts={handCounts}
-            totalCount={pitchers.length}
-            favoritesCount={favorites.length}
-            onConferenceChange={setConference}
-            onHandChange={setHand}
-            onFavoritesToggle={() => setShowFavorites(prev => !prev)}
-            hideConference
-          />
-        </div>
 
-        {teamPitchers.length === 0 ? (
-          <div className="text-center py-16 text-slate-400">No pitchers found.</div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
-            {teamPitchers.map((pitcher, i) => (
-              <PitcherCard
-                key={pitcher.pitcher_id}
-                pitcher={pitcher}
-                index={i}
-                onClick={() => setSelectedPitcher(pitcher)}
-                isFavorite={favorites.includes(pitcher.pitcher_id)}
-                onToggleFavorite={handleToggleFavorite}
-              />
+          {/* Hand filter */}
+          <div className="flex gap-1">
+            {['All', 'RHP', 'LHP'].map(h => (
+              <button
+                key={h}
+                onClick={() => setHand(h)}
+                className={cn(
+                  'px-3 py-1.5 rounded-full text-sm font-medium transition-all',
+                  hand === h
+                    ? 'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white shadow-md'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+                )}
+              >
+                {h}
+                {h !== 'All' && (
+                  <span className="ml-1 text-[10px] opacity-70">{handCounts[h as keyof typeof handCounts]}</span>
+                )}
+              </button>
             ))}
           </div>
-        )}
 
-        <PitcherModal
-          pitcher={selectedPitcher}
-          onClose={() => setSelectedPitcher(null)}
-          isFavorite={selectedPitcher ? favorites.includes(selectedPitcher.pitcher_id) : false}
-          onToggleFavorite={handleToggleFavorite}
-        />
+          {/* Favorites toggle */}
+          <button
+            onClick={() => setShowFavorites(prev => !prev)}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all',
+              showFavorites
+                ? 'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white shadow-md'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+            )}
+          >
+            <svg className="w-3.5 h-3.5" fill={showFavorites ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+            Favs Only
+            {favorites.length > 0 && (
+              <span className={cn(
+                'text-[10px] px-1.5 rounded-full',
+                showFavorites ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
+              )}>
+                {favorites.length}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Conference filter */}
+        <div className="flex gap-2 overflow-x-auto pb-1 flex-wrap">
+          {['All', ...CONFERENCES].map(conf => (
+            <button
+              key={conf}
+              onClick={() => setConference(conf)}
+              className={cn(
+                'flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all',
+                conference === conf
+                  ? 'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white shadow-md'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200'
+              )}
+            >
+              {conf}
+              <span className={cn(
+                'text-[10px] px-1.5 py-0.5 rounded-full',
+                conference === conf ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-500'
+              )}>
+                {conf === 'All' ? pitchers.length : (conferenceCounts[conf] || 0)}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
-    );
-  }
 
-  // ── Team tiles grid ──
-  return (
-    <div>
-      {/* Conference filter */}
-      <RosterFilterPills
-        conference={conference}
-        hand={hand}
-        showFavorites={showFavorites}
-        conferenceCounts={conferenceCounts}
-        handCounts={handCounts}
-        totalCount={pitchers.length}
-        favoritesCount={favorites.length}
-        onConferenceChange={setConference}
-        onHandChange={setHand}
-        onFavoritesToggle={() => setShowFavorites(prev => !prev)}
-        hideHand
-      />
-
-      <p className="text-sm text-slate-500 mb-6">
-        <span className="font-semibold text-slate-700">{filteredTeams.length}</span> teams · <span className="font-semibold text-slate-700">{pitchers.length.toLocaleString()}</span> pitchers tracked
+      {/* Summary line */}
+      <p className="text-sm text-slate-500 mb-5">
+        <span className="font-semibold text-slate-700">{visibleTeams.length}</span> teams ·{' '}
+        <span className="font-semibold text-slate-700">{filteredPitchers.length.toLocaleString()}</span> pitchers
+        {favorites.length > 0 && (
+          <span className="ml-2 text-yellow-600">· ★ {favorites.length} favorited</span>
+        )}
       </p>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-        {filteredTeams.map(team => {
-          const count = (pitchersByTeam[team.team_id] || []).length;
-          const favCount = (pitchersByTeam[team.team_id] || []).filter(p => favorites.includes(p.pitcher_id)).length;
+      {/* Team + pitcher list */}
+      <div className="columns-1 md:columns-2 xl:columns-3 gap-4 space-y-4">
+        {visibleTeams.map(team => {
+          const teamPitchers = pitchersByTeam[team.team_id] || [];
+          const favCount = teamPitchers.filter(p => favorites.includes(p.pitcher_id)).length;
+          const logoSrc = team.logo || getEspnLogoUrl(team.team_id);
+
           return (
-            <button
-              key={team.team_id}
-              onClick={() => setSelectedTeamId(team.team_id)}
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
-            >
-              {team.logo ? (
-                <div className="w-14 h-14 flex items-center justify-center">
-                  <Image src={team.logo} alt={team.display_name} width={56} height={56} className="object-contain" />
+            <div key={team.team_id} className="break-inside-avoid bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-4">
+              {/* Team header */}
+              <div className="flex items-center gap-3 p-3 border-b border-slate-100 bg-slate-50">
+                <div className="w-10 h-10 shrink-0">
+                  <Image
+                    src={logoSrc}
+                    alt={team.display_name}
+                    width={40}
+                    height={40}
+                    className="object-contain w-full h-full"
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
                 </div>
-              ) : (
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#1a73e8] to-[#ea4335] flex items-center justify-center">
-                  <span className="text-white font-bold text-base">
-                    {team.display_name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-slate-800 truncate">{team.display_name}</p>
+                  <p className="text-[10px] text-slate-400">{team.conference}</p>
+                </div>
+                <div className="flex flex-col items-end gap-0.5 shrink-0">
+                  <span className="text-xs font-semibold text-slate-500 bg-slate-200 px-2 py-0.5 rounded-full">
+                    {teamPitchers.length}P
                   </span>
+                  {favCount > 0 && (
+                    <span className="text-[10px] text-yellow-600">★ {favCount}</span>
+                  )}
                 </div>
-              )}
-              <div className="min-w-0 w-full">
-                <p className="text-xs font-semibold text-slate-700 leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
-                  {team.display_name}
-                </p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{count} pitchers</p>
-                {favCount > 0 && (
-                  <p className="text-[10px] text-yellow-600 mt-0.5">★ {favCount} favorited</p>
+              </div>
+
+              {/* Pitchers */}
+              <div className="divide-y divide-slate-50">
+                {teamPitchers.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic text-center py-4">No pitchers match filters</p>
+                ) : (
+                  teamPitchers.map(pitcher => (
+                    <PitcherRow
+                      key={pitcher.pitcher_id}
+                      pitcher={pitcher}
+                      isFavorite={favorites.includes(pitcher.pitcher_id)}
+                      onToggleFavorite={handleToggleFavorite}
+                      onClick={() => setSelectedPitcher(pitcher)}
+                    />
+                  ))
                 )}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
+
+      {visibleTeams.length === 0 && (
+        <div className="text-center py-16 text-slate-400">No pitchers found for this filter.</div>
+      )}
+
+      <PitcherModal
+        pitcher={selectedPitcher}
+        onClose={() => setSelectedPitcher(null)}
+        isFavorite={selectedPitcher ? favorites.includes(selectedPitcher.pitcher_id) : false}
+        onToggleFavorite={handleToggleFavorite}
+      />
     </div>
   );
 }
