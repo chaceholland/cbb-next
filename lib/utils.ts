@@ -25,8 +25,14 @@ export function formatGameDate(dateStr: string): string {
   return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
 
+// Mapping for ESPN team IDs where the API ID differs from the logo URL ID
+const ESPN_LOGO_ID_MAP: Record<string, string> = {
+  '354': '2230', // Fordham Rams
+};
+
 export function getEspnLogoUrl(teamId: string): string {
-  return `https://a.espncdn.com/i/teamlogos/ncaa/500/${teamId}.png`;
+  const logoId = ESPN_LOGO_ID_MAP[teamId] || teamId;
+  return `https://a.espncdn.com/i/teamlogos/ncaa/500/${logoId}.png`;
 }
 
 export function formatGameTime(dateStr: string): string {
