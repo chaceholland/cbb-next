@@ -19,7 +19,7 @@ const normalizeName = (s: string) =>
 
 function PitcherAvatar({ name, headshot, teamId, teamLogo, size = 28 }: { name: string; headshot?: string; teamId?: string; teamLogo?: string | null; size?: number }) {
   // Priority: headshot → team logo from tracked teams → ESPN CDN
-  const fallbackSrc = teamLogo || (teamId ? getEspnLogoUrl(teamId) : null);
+  const fallbackSrc = teamLogo || (teamId ? getEspnLogoUrl(teamId) : undefined);
   const imgSrc = headshot || fallbackSrc;
 
   return (
@@ -253,9 +253,15 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                 <div className="flex items-center gap-3">
                   {/* Away */}
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    {awayTeam?.logo && (
-                      <Image src={awayTeam.logo} alt={awayTeam.display_name} width={40} height={40} className="object-contain shrink-0" />
-                    )}
+                    <Image
+                      src={awayTeam?.logo || getEspnLogoUrl(game.away_team_id)}
+                      alt={awayTeam?.display_name ?? game.away_name ?? ''}
+                      width={40}
+                      height={40}
+                      className="object-contain shrink-0"
+                      unoptimized
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
                     <div className="min-w-0">
                       <div className={cn('text-sm font-bold truncate', awayWon ? 'text-slate-900' : 'text-slate-500')}>
                         {awayTeam?.display_name ?? game.away_name}
@@ -286,9 +292,15 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                       </div>
                       <div className="text-[10px] text-slate-400">Home</div>
                     </div>
-                    {homeTeam?.logo && (
-                      <Image src={homeTeam.logo} alt={homeTeam.display_name} width={40} height={40} className="object-contain shrink-0" />
-                    )}
+                    <Image
+                      src={homeTeam?.logo || getEspnLogoUrl(game.home_team_id)}
+                      alt={homeTeam?.display_name ?? game.home_name ?? ''}
+                      width={40}
+                      height={40}
+                      className="object-contain shrink-0"
+                      unoptimized
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
                   </div>
                 </div>
 
