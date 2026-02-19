@@ -27,9 +27,23 @@ export function formatGameDate(dateStr: string): string {
 
 // Mapping for ESPN team IDs where the API ID differs from the logo URL ID
 const ESPN_LOGO_ID_MAP: Record<string, string> = {
+  '76': '58',    // South Florida Bulls
+  '155': '2005', // Air Force Falcons
+  '187': '2492', // Pepperdine Waves
+  '296': '2454', // North Florida Ospreys
+  '303': '2210', // Elon Phoenix
+  '307': '338',  // Kennesaw State Owls
+  '312': '2752', // Xavier Musketeers
+  '313': '2083', // Bucknell Bison
   '354': '2230', // Fordham Rams
+  '377': '2329', // Lehigh Mountain Hawks
   '378': '288',  // Lipscomb Bisons
   '438': '2617', // Stephen F. Austin Lumberjacks
+  '443': '357',  // Texas A&M-Corpus Christi Islanders
+  '445': '2649', // Toledo Rockets
+  '447': '5',    // UAB Blazers
+  '453': '2908', // South Carolina Upstate Spartans
+  '463': '2711', // Western Michigan Broncos
 };
 
 export function getEspnLogoUrl(teamId: string): string {
