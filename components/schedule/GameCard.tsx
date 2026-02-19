@@ -32,6 +32,9 @@ function TeamLogo({ team, teamId, size = 40 }: { team: CbbTeam | undefined; team
   );
 }
 
+const normalizeName = (s: string) =>
+  s.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+
 function PitcherRow({
   row,
   teamId,
@@ -155,7 +158,7 @@ function TeamColumn({
                 row={row}
                 teamId={teamId}
                 teams={teams}
-                headshotSrc={headshotsMap?.[row.pitcher_id] ?? null}
+                headshotSrc={headshotsMap?.[normalizeName(row.pitcher_name)] ?? null}
               />
             ))}
             {rows.length > 4 && (

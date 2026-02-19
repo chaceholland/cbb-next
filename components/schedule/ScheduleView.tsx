@@ -51,13 +51,13 @@ export function ScheduleView() {
         setTeams(teamsMap);
         setTrackedTeamIds(teamIds);
 
-        // Load pitcher headshots (lightweight: just pitcher_id + headshot)
-        const allPitchers: { pitcher_id: string; headshot: string | null }[] = [];
+        // Load pitcher headshots (map by normalized name for participation lookup)
+        const allPitchers: { name: string; headshot: string | null }[] = [];
         let pitcherPage = 0;
         while (true) {
           const { data: pd } = await supabase
             .from('cbb_pitchers')
-            .select('pitcher_id, headshot')
+            .select('name, headshot')
             .range(pitcherPage * 1000, (pitcherPage + 1) * 1000 - 1);
           if (!pd || pd.length === 0) break;
           allPitchers.push(...pd);
@@ -66,7 +66,11 @@ export function ScheduleView() {
         }
         const hMap: Record<string, string | null> = {};
         allPitchers.forEach(p => {
-          if (p.headshot?.startsWith('http')) hMap[p.pitcher_id] = p.headshot;
+          if (p.headshot?.startsWith('http')) {
+            // Normalize name for matching against participation data
+            const normalizedName = p.name.toLowerCase().replace(/[^a-z0-9\s]/g, '').replace(/\s+/g, ' ').trim();
+            hMap[normalizedName] = p.headshot;
+          }
         });
         setHeadshotsMap(hMap);
 
