@@ -12,9 +12,8 @@ interface Props {
 }
 
 function TeamLogo({ team, teamId, size = 64 }: { team: CbbTeam | undefined; teamId: string; size?: number }) {
-  // Only use ESPN CDN for tracked teams (team is defined). For untracked teams,
-  // just show a blank circle to avoid 404 errors from unknown ESPN IDs.
-  const logoSrc = team?.logo || (team ? getEspnLogoUrl(teamId) : null);
+  // Use team logo if available, otherwise fall back to ESPN CDN logo
+  const logoSrc = team?.logo || getEspnLogoUrl(teamId);
   return (
     <div className="relative rounded-full overflow-hidden bg-slate-50 shadow-md shrink-0" style={{ width: size, height: size }}>
       {logoSrc && (
