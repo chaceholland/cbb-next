@@ -650,6 +650,8 @@ function GameIssueButton({
     'Missing participation data',
     'Incorrect date/time',
     'Wrong teams',
+    'Missing team logo',
+    'Team missing some players in roster scrape',
     'Misc.',
   ];
 
