@@ -11,19 +11,19 @@ interface Props {
   onClick?: () => void;
 }
 
-function TeamLogo({ team, teamId, size = 40 }: { team: CbbTeam | undefined; teamId: string; size?: number }) {
+function TeamLogo({ team, teamId, size = 64 }: { team: CbbTeam | undefined; teamId: string; size?: number }) {
   // Only use ESPN CDN for tracked teams (team is defined). For untracked teams,
   // just show a blank circle to avoid 404 errors from unknown ESPN IDs.
   const logoSrc = team?.logo || (team ? getEspnLogoUrl(teamId) : null);
   return (
-    <div className="relative rounded-full overflow-hidden bg-slate-100 shadow-sm shrink-0" style={{ width: size, height: size }}>
+    <div className="relative rounded-full overflow-hidden bg-slate-50 shadow-md shrink-0" style={{ width: size, height: size }}>
       {logoSrc && (
         <Image
           src={logoSrc}
           alt={team?.display_name ?? teamId}
           width={size}
           height={size}
-          className="object-contain p-0.5"
+          className="object-contain p-1"
           unoptimized
           onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
         />
@@ -56,15 +56,15 @@ function PitcherRow({
   const er = row.stats?.ER;
 
   return (
-    <div className="flex items-center gap-2 py-1.5 border-b border-slate-100 last:border-0">
+    <div className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100 mb-2 last:mb-0 shadow-sm">
       {/* Headshot */}
-      <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 shrink-0 border-2 border-white shadow-sm">
+      <div className="w-16 h-16 rounded-full overflow-hidden bg-white shrink-0 border-2 border-yellow-200 shadow-md">
         {imgSrc && (
           <Image
             src={imgSrc}
             alt={row.pitcher_name}
-            width={48}
-            height={48}
+            width={64}
+            height={64}
             className="object-cover w-full h-full"
             unoptimized
             onError={(e) => {
@@ -81,19 +81,19 @@ function PitcherRow({
 
       {/* Name + stats */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap mb-1">
+          <span className="text-sm font-bold text-slate-800 truncate">{row.pitcher_name}</span>
           <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" title="Pitched in this game" />
-          <span className="text-xs font-semibold text-slate-800 truncate">{row.pitcher_name}</span>
         </div>
-        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           {ip && (
-            <span className="text-[11px] font-bold text-slate-700">{ip} IP</span>
+            <span className="text-xs font-bold text-slate-700">{ip} IP</span>
           )}
           {k && (
-            <span className="text-[10px] text-slate-500">{k}K</span>
+            <span className="text-xs text-slate-600">{k}K</span>
           )}
           {er !== undefined && er !== null && er !== '' && (
-            <span className="text-[10px] text-slate-500">{er}ER</span>
+            <span className="text-xs text-slate-600">{er}ER</span>
           )}
         </div>
       </div>
@@ -129,16 +129,16 @@ function TeamColumn({
   return (
     <div className="flex-1 min-w-0">
       {/* Team header */}
-      <div className="flex flex-col items-center gap-1 mb-3">
-        <TeamLogo team={team} teamId={teamId} size={44} />
+      <div className="flex flex-col items-center gap-2 mb-4">
+        <TeamLogo team={team} teamId={teamId} size={72} />
         <div className="text-center">
-          <p className={cn('text-xs font-bold leading-tight line-clamp-2', isWinner ? 'text-slate-900' : 'text-slate-600')}>
+          <p className={cn('text-sm font-bold leading-tight line-clamp-2', isWinner ? 'text-slate-900' : 'text-slate-600')}>
             {displayName}
           </p>
-          <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">{label}</span>
+          <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full mt-1">{label}</span>
         </div>
         {score !== null && (
-          <span className={cn('text-lg font-black tabular-nums', isWinner ? 'text-slate-900' : 'text-slate-400')}>
+          <span className={cn('text-xl font-black tabular-nums', isWinner ? 'text-slate-900' : 'text-slate-400')}>
             {score}
           </span>
         )}
@@ -237,7 +237,7 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
 
       {/* Pitching columns */}
       {hasPitching ? (
-        <div className="p-3 flex gap-3">
+        <div className="p-4 flex gap-4">
           <TeamColumn
             team={awayTeam}
             teamId={game.away_team_id}
@@ -266,22 +266,22 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
         </div>
       ) : (
         /* No pitching data — compact card */
-        <div className="p-3">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex flex-col items-center gap-1 flex-1">
-              <TeamLogo team={awayTeam} teamId={game.away_team_id} size={36} />
-              <span className="text-xs font-medium text-slate-700 text-center leading-tight line-clamp-2">
+        <div className="p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <TeamLogo team={awayTeam} teamId={game.away_team_id} size={56} />
+              <span className="text-sm font-medium text-slate-700 text-center leading-tight line-clamp-2">
                 {awayTeam?.display_name ?? game.away_name ?? 'Unknown'}
               </span>
-              <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">Away</span>
+              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Away</span>
             </div>
-            <div className="text-sm font-bold text-slate-400 shrink-0">VS</div>
-            <div className="flex flex-col items-center gap-1 flex-1">
-              <TeamLogo team={homeTeam} teamId={game.home_team_id} size={36} />
-              <span className="text-xs font-medium text-slate-700 text-center leading-tight line-clamp-2">
+            <div className="text-base font-bold text-slate-400 shrink-0">VS</div>
+            <div className="flex flex-col items-center gap-2 flex-1">
+              <TeamLogo team={homeTeam} teamId={game.home_team_id} size={56} />
+              <span className="text-sm font-medium text-slate-700 text-center leading-tight line-clamp-2">
                 {homeTeam?.display_name ?? game.home_name ?? 'Unknown'}
               </span>
-              <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-full">Home</span>
+              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Home</span>
             </div>
           </div>
         </div>
