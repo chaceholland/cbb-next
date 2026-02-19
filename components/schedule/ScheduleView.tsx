@@ -10,6 +10,15 @@ import { ScheduleFilterPills } from '@/components/FilterPills';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { cn } from '@/lib/utils';
 
+export type PitcherDataQualityIssue = {
+  pitcherKey: string; // game_id:pitcher_id or game_id:pitcher_name
+  pitcherName: string;
+  teamName: string;
+  gameDate: string;
+  issues: string[];
+  customNote?: string;
+};
+
 export function ScheduleView() {
   const [games, setGames] = useState<CbbGame[]>([]);
   const [teams, setTeams] = useState<Record<string, CbbTeam>>({});
@@ -24,6 +33,10 @@ export function ScheduleView() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(new Set());
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
+
+  // Data quality issues
+  const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<PitcherDataQualityIssue[]>('cbb-pitcher-data-quality-issues', []);
+  const [showIssuesOnly, setShowIssuesOnly] = useState(false);
 
   // Participation data: keyed by game_id
   const [participationByGame, setParticipationByGame] = useState<Record<string, ParticipationRow[]>>({});
@@ -173,6 +186,74 @@ export function ScheduleView() {
     return (homeTeam?.conference || awayTeam?.conference || '');
   }, [teams]);
 
+  // Data quality issue handlers
+  const handlePitcherIssueToggle = useCallback((
+    gameId: string,
+    pitcherId: string,
+    pitcherName: string,
+    teamId: string,
+    gameDate: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => {
+    setPitcherDataQualityIssues(prev => {
+      const pitcherKey = `${gameId}:${pitcherId || pitcherName}`;
+      const existing = prev.find(issue => issue.pitcherKey === pitcherKey);
+      const teamName = teams[teamId]?.display_name || 'Unknown Team';
+
+      if (selectedIssues.length === 0 && !customNote) {
+        // Remove if no issues selected
+        return prev.filter(issue => issue.pitcherKey !== pitcherKey);
+      }
+
+      if (existing) {
+        // Update existing
+        return prev.map(issue =>
+          issue.pitcherKey === pitcherKey
+            ? { ...issue, issues: selectedIssues, customNote }
+            : issue
+        );
+      } else {
+        // Add new
+        return [...prev, {
+          pitcherKey,
+          pitcherName,
+          teamName,
+          gameDate,
+          issues: selectedIssues,
+          customNote,
+        }];
+      }
+    });
+  }, [teams]);
+
+  // Copy issues to clipboard
+  const handleCopyIssues = useCallback(async () => {
+    const issueReport = pitcherDataQualityIssues
+      .map(issue => {
+        const issueText = issue.issues.join(', ');
+        const customText = issue.customNote ? ` - ${issue.customNote}` : '';
+        return `${issue.pitcherName} (${issue.teamName}) - ${issue.gameDate}: ${issueText}${customText}`;
+      })
+      .join('\n');
+
+    try {
+      await navigator.clipboard.writeText(issueReport);
+      alert('Issues copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  }, [pitcherDataQualityIssues]);
+
+  // Map for quick issue lookups
+  const pitcherIssuesMap = useMemo(() => {
+    const map = new Map<string, PitcherDataQualityIssue>();
+    pitcherDataQualityIssues.forEach(issue => {
+      map.set(issue.pitcherKey, issue);
+    });
+    return map;
+  }, [pitcherDataQualityIssues]);
+
   // Conference counts
   const conferenceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -234,8 +315,19 @@ export function ScheduleView() {
       );
     }
 
+    // Issues filter - only show games with data quality issues
+    if (showIssuesOnly) {
+      result = result.filter(g => {
+        const gameParticipation = participationByGame[g.game_id] || [];
+        return gameParticipation.some(row => {
+          const pitcherKey = `${g.game_id}:${row.pitcher_id || row.pitcher_name}`;
+          return pitcherIssuesMap.has(pitcherKey);
+        });
+      });
+    }
+
     return result;
-  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference]);
+  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap]);
 
   // Compute week from date (season starts ~Feb 14 each year)
   const getWeekFromDate = useCallback((dateStr: string): number => {
@@ -348,6 +440,54 @@ export function ScheduleView() {
             </span>
           )}
         </button>
+
+        {/* Data Quality Buttons */}
+        {pitcherDataQualityIssues.length > 0 && (
+          <>
+            <button
+              onClick={() => setShowIssuesOnly(!showIssuesOnly)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                showIssuesOnly
+                  ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {showIssuesOnly ? 'Show All' : `Show Issues (${pitcherDataQualityIssues.length})`}
+            </button>
+            <button
+              onClick={handleCopyIssues}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copy Issues
+            </button>
+            <button
+              onClick={() => {
+                if (confirm(`Clear all ${pitcherDataQualityIssues.length} data quality issues?`)) {
+                  setPitcherDataQualityIssues([]);
+                }
+              }}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Clear All
+            </button>
+          </>
+        )}
       </div>
 
       <p className="text-sm text-slate-500 mb-6">
@@ -402,6 +542,8 @@ export function ScheduleView() {
                       trackedTeamIds={trackedTeamIds}
                       participation={participationByGame[game.game_id] || []}
                       headshotsMap={headshotsMap}
+                      pitcherIssuesMap={pitcherIssuesMap}
+                      onPitcherIssueToggle={handlePitcherIssueToggle}
                       onClick={() => setSelectedGame(game)}
                     />
                   </motion.div>

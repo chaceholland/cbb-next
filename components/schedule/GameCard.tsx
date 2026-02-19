@@ -1,6 +1,9 @@
 import { CbbGame, CbbTeam, ParticipationRow } from '@/lib/supabase/types';
 import { formatGameDate, cn, getEspnLogoUrl } from '@/lib/utils';
 import Image from 'next/image';
+import { PitcherDataQualityIssue } from './ScheduleView';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
   game: CbbGame;
@@ -8,6 +11,16 @@ interface Props {
   trackedTeamIds: Set<string>;
   participation: ParticipationRow[];
   headshotsMap?: Record<string, string | null>;
+  pitcherIssuesMap?: Map<string, PitcherDataQualityIssue>;
+  onPitcherIssueToggle?: (
+    gameId: string,
+    pitcherId: string,
+    pitcherName: string,
+    teamId: string,
+    gameDate: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => void;
   onClick?: () => void;
 }
 
@@ -39,11 +52,27 @@ function PitcherRow({
   teamId,
   teams,
   headshotSrc,
+  gameId,
+  gameDate,
+  pitcherIssuesMap,
+  onPitcherIssueToggle,
 }: {
   row: ParticipationRow;
   teamId: string;
   teams: Record<string, CbbTeam>;
   headshotSrc?: string | null;
+  gameId: string;
+  gameDate: string;
+  pitcherIssuesMap?: Map<string, PitcherDataQualityIssue>;
+  onPitcherIssueToggle?: (
+    gameId: string,
+    pitcherId: string,
+    pitcherName: string,
+    teamId: string,
+    gameDate: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => void;
 }) {
   const team = teams[teamId];
   const fallbackSrc = team?.logo || getEspnLogoUrl(teamId);
@@ -53,6 +82,10 @@ function PitcherRow({
   const ip = row.stats?.IP;
   const k = row.stats?.K;
   const er = row.stats?.ER;
+
+  const pitcherKey = `${gameId}:${row.pitcher_id || row.pitcher_name}`;
+  const hasIssue = pitcherIssuesMap?.has(pitcherKey) ?? false;
+  const issueData = pitcherIssuesMap?.get(pitcherKey);
 
   return (
     <div className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100 mb-2 last:mb-0 shadow-sm">
@@ -96,6 +129,22 @@ function PitcherRow({
           )}
         </div>
       </div>
+
+      {/* Issue Button */}
+      {onPitcherIssueToggle && (
+        <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+          <IssueButton
+            gameId={gameId}
+            pitcherId={row.pitcher_id}
+            pitcherName={row.pitcher_name}
+            teamId={teamId}
+            gameDate={gameDate}
+            hasIssue={hasIssue}
+            issueData={issueData}
+            onIssueToggle={onPitcherIssueToggle}
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -111,6 +160,10 @@ function TeamColumn({
   rows,
   teams,
   headshotsMap,
+  gameId,
+  gameDate,
+  pitcherIssuesMap,
+  onPitcherIssueToggle,
 }: {
   team: CbbTeam | undefined;
   teamId: string;
@@ -122,6 +175,18 @@ function TeamColumn({
   rows: ParticipationRow[];
   teams: Record<string, CbbTeam>;
   headshotsMap?: Record<string, string | null>;
+  gameId: string;
+  gameDate: string;
+  pitcherIssuesMap?: Map<string, PitcherDataQualityIssue>;
+  onPitcherIssueToggle?: (
+    gameId: string,
+    pitcherId: string,
+    pitcherName: string,
+    teamId: string,
+    gameDate: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => void;
 }) {
   const displayName = team?.display_name ?? name ?? 'Unknown';
 
@@ -158,6 +223,10 @@ function TeamColumn({
                 teamId={teamId}
                 teams={teams}
                 headshotSrc={headshotsMap?.[normalizeName(row.pitcher_name)] ?? null}
+                gameId={gameId}
+                gameDate={gameDate}
+                pitcherIssuesMap={pitcherIssuesMap}
+                onPitcherIssueToggle={onPitcherIssueToggle}
               />
             ))}
             {rows.length > 4 && (
@@ -170,7 +239,7 @@ function TeamColumn({
   );
 }
 
-export function GameCard({ game, teams, trackedTeamIds, participation, headshotsMap, onClick }: Props) {
+export function GameCard({ game, teams, trackedTeamIds, participation, headshotsMap, pitcherIssuesMap, onPitcherIssueToggle, onClick }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
 
@@ -248,6 +317,10 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
             rows={awayRows}
             teams={teams}
             headshotsMap={headshotsMap}
+            gameId={game.game_id}
+            gameDate={game.date}
+            pitcherIssuesMap={pitcherIssuesMap}
+            onPitcherIssueToggle={onPitcherIssueToggle}
           />
           <div className="w-px bg-slate-100 shrink-0" />
           <TeamColumn
@@ -261,6 +334,10 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
             rows={homeRows}
             teams={teams}
             headshotsMap={headshotsMap}
+            gameId={game.game_id}
+            gameDate={game.date}
+            pitcherIssuesMap={pitcherIssuesMap}
+            onPitcherIssueToggle={onPitcherIssueToggle}
           />
         </div>
       ) : (
@@ -293,5 +370,203 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
         </div>
       )}
     </div>
+  );
+}
+
+// Issue Button Component
+function IssueButton({
+  gameId,
+  pitcherId,
+  pitcherName,
+  teamId,
+  gameDate,
+  hasIssue,
+  issueData,
+  onIssueToggle,
+}: {
+  gameId: string;
+  pitcherId: string;
+  pitcherName: string;
+  teamId: string;
+  gameDate: string;
+  hasIssue: boolean;
+  issueData?: PitcherDataQualityIssue;
+  onIssueToggle: (
+    gameId: string,
+    pitcherId: string,
+    pitcherName: string,
+    teamId: string,
+    gameDate: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => void;
+}) {
+  const [showMenu, setShowMenu] = useState(false);
+  const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
+  const [customNote, setCustomNote] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Track if component is mounted (for SSR compatibility)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Sync state with props when modal opens
+  useEffect(() => {
+    if (showMenu) {
+      setSelectedIssues(issueData?.issues || []);
+      setCustomNote(issueData?.customNote || '');
+      setShowCustomInput((issueData?.issues || []).includes('Misc.'));
+    }
+  }, [showMenu, issueData]);
+
+  const issueOptions = [
+    'Missing headshot',
+    'Wrong team',
+    'Missing position',
+    'Missing height/weight',
+    'Missing hometown',
+    'Missing bats/throws',
+    'Incorrect stats',
+    'Misc.',
+  ];
+
+  const handleIssueSelect = (issue: string) => {
+    if (issue === 'Misc.') {
+      setShowCustomInput(!showCustomInput);
+    }
+
+    setSelectedIssues(prev => {
+      if (prev.includes(issue)) {
+        return prev.filter(i => i !== issue);
+      } else {
+        return [...prev, issue];
+      }
+    });
+  };
+
+  const handleSave = () => {
+    onIssueToggle(gameId, pitcherId, pitcherName, teamId, gameDate, selectedIssues, customNote);
+    setShowMenu(false);
+  };
+
+  const handleClear = () => {
+    setSelectedIssues([]);
+    setCustomNote('');
+    setShowCustomInput(false);
+    onIssueToggle(gameId, pitcherId, pitcherName, teamId, gameDate, [], '');
+    setShowMenu(false);
+  };
+
+  return (
+    <>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowMenu(!showMenu);
+        }}
+        className={cn(
+          'p-1.5 rounded-lg transition-all',
+          hasIssue
+            ? 'bg-orange-500 text-white hover:bg-orange-600'
+            : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+        )}
+        aria-label="Report data quality issue"
+        type="button"
+      >
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </button>
+
+      {showMenu && mounted && createPortal(
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+          onClick={() => setShowMenu(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <div className="p-6 border-b border-slate-200 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900">Data Quality Issues</h3>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowMenu(false);
+                  }}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                  aria-label="Close modal"
+                  type="button"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-sm text-slate-600 mt-2">{pitcherName}</p>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="space-y-3">
+                {issueOptions.map(option => (
+                  <label
+                    key={option}
+                    className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedIssues.includes(option)}
+                      onChange={() => handleIssueSelect(option)}
+                      className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
+                    />
+                    <span className="text-base text-slate-700">{option}</span>
+                  </label>
+                ))}
+
+                {showCustomInput && (
+                  <textarea
+                    value={customNote}
+                    onChange={(e) => setCustomNote(e.target.value)}
+                    placeholder="Describe the issue..."
+                    className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={4}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-slate-200 flex gap-3">
+              <button
+                onClick={handleClear}
+                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+              >
+                Clear
+              </button>
+              <button
+                onClick={handleSave}
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
