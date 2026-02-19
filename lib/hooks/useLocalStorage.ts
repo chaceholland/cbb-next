@@ -1,8 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(initialValue);
+  const storedValueRef = useRef<T>(storedValue);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    storedValueRef.current = storedValue;
+  }, [storedValue]);
 
   useEffect(() => {
     try {
@@ -11,13 +17,14 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     } catch (e) { console.error(e); }
   }, [key]);
 
-  const setValue = (value: T | ((val: T) => T)) => {
+  const setValue = useCallback((value: T | ((val: T) => T)) => {
     try {
-      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      // Use ref to get the latest value instead of closure
+      const valueToStore = value instanceof Function ? value(storedValueRef.current) : value;
       setStoredValue(valueToStore);
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (e) { console.error(e); }
-  };
+  }, [key]);
 
   return [storedValue, setValue] as const;
 }
