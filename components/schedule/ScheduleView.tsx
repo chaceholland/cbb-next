@@ -527,7 +527,7 @@ export function ScheduleView() {
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               >
                 {gamesByWeek[week].map((game, i) => (
                   <motion.div
