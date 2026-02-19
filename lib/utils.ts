@@ -28,6 +28,8 @@ export function formatGameDate(dateStr: string): string {
 // Mapping for ESPN team IDs where the API ID differs from the logo URL ID
 const ESPN_LOGO_ID_MAP: Record<string, string> = {
   '354': '2230', // Fordham Rams
+  '378': '288',  // Lipscomb Bisons
+  '438': '2617', // Stephen F. Austin Lumberjacks
 };
 
 export function getEspnLogoUrl(teamId: string): string {
