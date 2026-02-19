@@ -47,7 +47,7 @@ function PitcherRow({
   headshotSrc?: string | null;
 }) {
   const team = teams[teamId];
-  const fallbackSrc = team?.logo || (team ? getEspnLogoUrl(teamId) : null);
+  const fallbackSrc = team?.logo || getEspnLogoUrl(teamId);
   // Use actual headshot if available, otherwise fall back to team logo
   const imgSrc = headshotSrc || fallbackSrc;
 
