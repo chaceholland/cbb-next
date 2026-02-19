@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.cbb.scraper</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/node</string>
+    <string>/Users/chace/Desktop/cbb-next/auto-scrape-participation.mjs</string>
+    <string>--days</string>
+    <string>14</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/chace/Desktop/cbb-next</string>
+
+  <!-- Run every 6 hours (21600 seconds) -->
+  <key>StartInterval</key>
+  <integer>21600</integer>
+
+  <!-- Also run at load -->
+  <key>RunAtLoad</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>/Users/chace/Desktop/cbb-next/scraper-logs/launchd.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>/Users/chace/Desktop/cbb-next/scraper-logs/launchd-error.log</string>
+
+  <key>KeepAlive</key>
+  <false/>
+
+  <key>Nice</key>
+  <integer>10</integer>
+</dict>
+</plist>
