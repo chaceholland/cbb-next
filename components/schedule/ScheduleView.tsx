@@ -381,6 +381,12 @@ export function ScheduleView() {
     // Issues filter - only show games with data quality issues
     if (showIssuesOnly) {
       result = result.filter(g => {
+        // Check for game-level issues
+        if (gameIssuesMap.has(g.game_id)) {
+          return true;
+        }
+
+        // Check for pitcher-level issues
         const gameParticipation = participationByGame[g.game_id] || [];
         return gameParticipation.some(row => {
           const pitcherKey = `${g.game_id}:${row.pitcher_id || row.pitcher_name}`;
@@ -390,7 +396,7 @@ export function ScheduleView() {
     }
 
     return result;
-  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap]);
+  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap, gameIssuesMap]);
 
   // Compute week from date (season starts ~Feb 14 each year)
   const getWeekFromDate = useCallback((dateStr: string): number => {
