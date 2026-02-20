@@ -111,6 +111,15 @@ const ESPN_LOGO_ID_MAP: Record<string, string> = {
   '129698': '2385', // Mercyhurst Lakers
   '129701': '2042', // Augustana College (Il) Vikings
   '129702': '2044', // Aurora Spartans
+  '71': '45',       // George Washington Revolutionaries
+  '142': '300',     // UC Irvine Anteaters
+  '161': '2132',    // Cincinnati Bearcats
+  '172': '2335',    // Liberty Flames
+  '182': '2439',    // UNLV Rebels
+  '183': '2440',    // Nevada Wolf Pack
+  '197': '2623',    // Missouri State Bears
+  '265': '2363',    // Manhattan Jaspers
+  '297': '2636',    // UTSA Roadrunners
 };
 
 export function getEspnLogoUrl(teamId: string): string {
