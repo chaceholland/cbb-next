@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
+import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabase/client';
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
@@ -9,6 +10,21 @@ import { PitcherCard } from './PitcherCard';
 import { PitcherModal } from './PitcherModal';
 import { RosterFilterPills } from '@/components/FilterPills';
 import { cn, getEspnLogoUrl } from '@/lib/utils';
+
+export type RosterPitcherDataQualityIssue = {
+  pitcherKey: string; // team_id:pitcher_id
+  pitcherName: string;
+  teamName: string;
+  issues: string[];
+  customNote?: string;
+};
+
+export type TeamDataQualityIssue = {
+  teamId: string;
+  teamName: string;
+  issues: string[];
+  customNote?: string;
+};
 
 function getConfLabel(conf: string): string {
   if (conf.includes('SEC')) return 'SEC';
@@ -38,6 +54,10 @@ export function RosterView() {
   const [showFavorites, setShowFavorites] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<string | null>(null);
+
+  // Data quality issues
+  const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<RosterPitcherDataQualityIssue[]>('cbb-roster-pitcher-data-quality-issues', []);
+  const [teamDataQualityIssues, setTeamDataQualityIssues] = useLocalStorage<TeamDataQualityIssue[]>('cbb-team-data-quality-issues', []);
 
   async function handleImportFavorites() {
     setImporting(true);
@@ -167,6 +187,59 @@ export function RosterView() {
     return result;
   }, [selectedTeamId, pitchersByTeam, showFavorites, favorites, hand, searchQuery]);
 
+  // Create maps for quick issue lookup
+  const pitcherIssuesMap = useMemo(() => {
+    const map = new Map<string, RosterPitcherDataQualityIssue>();
+    pitcherDataQualityIssues.forEach(issue => {
+      map.set(issue.pitcherKey, issue);
+    });
+    return map;
+  }, [pitcherDataQualityIssues]);
+
+  const teamIssuesMap = useMemo(() => {
+    const map = new Map<string, TeamDataQualityIssue>();
+    teamDataQualityIssues.forEach(issue => {
+      map.set(issue.teamId, issue);
+    });
+    return map;
+  }, [teamDataQualityIssues]);
+
+  // Handler for pitcher data quality issues
+  const handlePitcherIssueToggle = (
+    pitcherId: string,
+    pitcherName: string,
+    teamId: string,
+    teamName: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => {
+    const pitcherKey = `${teamId}:${pitcherId}`;
+
+    setPitcherDataQualityIssues(prev => {
+      const existing = prev.filter(issue => issue.pitcherKey !== pitcherKey);
+      if (selectedIssues.length === 0) {
+        return existing;
+      }
+      return [...existing, { pitcherKey, pitcherName, teamName, issues: selectedIssues, customNote }];
+    });
+  };
+
+  // Handler for team data quality issues
+  const handleTeamIssueToggle = (
+    teamId: string,
+    teamName: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => {
+    setTeamDataQualityIssues(prev => {
+      const existing = prev.filter(issue => issue.teamId !== teamId);
+      if (selectedIssues.length === 0) {
+        return existing;
+      }
+      return [...existing, { teamId, teamName, issues: selectedIssues, customNote }];
+    });
+  };
+
   const handleToggleFavorite = (id: string) => {
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
   };
@@ -231,6 +304,13 @@ export function RosterView() {
           <span className="ml-auto text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
             {(pitchersByTeam[selectedTeamId] || []).length} pitchers
           </span>
+          <TeamIssueButton
+            teamId={selectedTeamId}
+            teamName={selectedTeam?.display_name ?? 'Unknown'}
+            hasIssue={teamIssuesMap.has(selectedTeamId)}
+            issueData={teamIssuesMap.get(selectedTeamId)}
+            onIssueToggle={handleTeamIssueToggle}
+          />
         </div>
 
         {/* Search + hand filter */}
@@ -283,6 +363,9 @@ export function RosterView() {
           onClose={() => setSelectedPitcher(null)}
           isFavorite={selectedPitcher ? favorites.includes(selectedPitcher.pitcher_id) : false}
           onToggleFavorite={handleToggleFavorite}
+          hasIssue={selectedPitcher ? pitcherIssuesMap.has(`${selectedPitcher.team_id}:${selectedPitcher.pitcher_id}`) : false}
+          issueData={selectedPitcher ? pitcherIssuesMap.get(`${selectedPitcher.team_id}:${selectedPitcher.pitcher_id}`) : undefined}
+          onIssueToggle={handlePitcherIssueToggle}
         />
       </div>
     );
@@ -363,5 +446,193 @@ export function RosterView() {
         })}
       </div>
     </div>
+  );
+}
+
+// Team Issue Button Component
+function TeamIssueButton({
+  teamId,
+  teamName,
+  hasIssue,
+  issueData,
+  onIssueToggle,
+}: {
+  teamId: string;
+  teamName: string;
+  hasIssue: boolean;
+  issueData?: TeamDataQualityIssue;
+  onIssueToggle: (
+    teamId: string,
+    teamName: string,
+    selectedIssues: string[],
+    customNote?: string
+  ) => void;
+}) {
+  const [showMenu, setShowMenu] = useState(false);
+  const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
+  const [customNote, setCustomNote] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Track if component is mounted (for SSR compatibility)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Sync state with props when modal opens
+  useEffect(() => {
+    if (showMenu) {
+      setSelectedIssues(issueData?.issues || []);
+      setCustomNote(issueData?.customNote || '');
+      setShowCustomInput((issueData?.issues || []).includes('Misc.'));
+    }
+  }, [showMenu, issueData]);
+
+  const issueOptions = [
+    'Missing team logo',
+    'Incomplete roster',
+    'Wrong conference',
+    'Missing pitcher data',
+    'Incorrect team name',
+    'Team missing some players in roster scrape',
+    'Misc.',
+  ];
+
+  const handleIssueSelect = (issue: string) => {
+    if (issue === 'Misc.') {
+      setShowCustomInput(!showCustomInput);
+    }
+
+    setSelectedIssues(prev => {
+      if (prev.includes(issue)) {
+        return prev.filter(i => i !== issue);
+      } else {
+        return [...prev, issue];
+      }
+    });
+  };
+
+  const handleSave = () => {
+    onIssueToggle(teamId, teamName, selectedIssues, customNote);
+    setShowMenu(false);
+  };
+
+  const handleClear = () => {
+    setSelectedIssues([]);
+    setCustomNote('');
+    setShowCustomInput(false);
+    onIssueToggle(teamId, teamName, [], '');
+    setShowMenu(false);
+  };
+
+  return (
+    <>
+      <button
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShowMenu(!showMenu);
+        }}
+        className={cn(
+          'p-2 rounded-lg transition-all',
+          hasIssue
+            ? 'bg-orange-500 text-white hover:bg-orange-600'
+            : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+        )}
+        aria-label="Report team data quality issue"
+        type="button"
+      >
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </button>
+
+      {showMenu && mounted && createPortal(
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+          onClick={() => setShowMenu(false)}
+        >
+          <div
+            className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+          >
+            <div className="p-6 border-b border-slate-200 flex-shrink-0">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-slate-900">Team Data Quality Issues</h3>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowMenu(false);
+                  }}
+                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                  aria-label="Close modal"
+                  type="button"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-sm text-slate-600 mt-2">{teamName}</p>
+            </div>
+
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="space-y-3">
+                {issueOptions.map(option => (
+                  <label
+                    key={option}
+                    className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedIssues.includes(option)}
+                      onChange={() => handleIssueSelect(option)}
+                      className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
+                    />
+                    <span className="text-base text-slate-700">{option}</span>
+                  </label>
+                ))}
+
+                {showCustomInput && (
+                  <textarea
+                    value={customNote}
+                    onChange={(e) => setCustomNote(e.target.value)}
+                    placeholder="Describe the issue..."
+                    className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows={4}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-slate-200 flex gap-3">
+              <button
+                onClick={handleClear}
+                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+              >
+                Clear
+              </button>
+              <button
+                onClick={handleSave}
+                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }
