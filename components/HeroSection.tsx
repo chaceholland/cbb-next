@@ -130,7 +130,7 @@ export function HeroSection() {
           >
             <StatCard value={64} label="Division I Teams" />
             <StatCard value={1341} label="Pitchers Tracked" />
-            <StatCard value={5321} label="Games in Database" />
+            <StatCard value={2343} label="Games in Database" />
           </motion.div>
 
           {/* Last updated */}
