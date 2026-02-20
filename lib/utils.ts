@@ -22,7 +22,7 @@ export function getConferenceColor(conference: string | null): { primary: string
 
 export function formatGameDate(dateStr: string): string {
   const d = new Date(dateStr);
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
 
 // Mapping for ESPN team IDs where the API ID differs from the logo URL ID
@@ -130,7 +130,7 @@ export function getEspnLogoUrl(teamId: string): string {
 export function formatGameTime(dateStr: string): string {
   try {
     const d = new Date(dateStr);
-    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+    return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'UTC', timeZoneName: 'short' });
   } catch {
     return '';
   }
