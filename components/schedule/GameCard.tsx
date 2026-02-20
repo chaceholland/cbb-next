@@ -305,6 +305,9 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
           {isCompleted && hasPitching && (
             <span className="text-[10px] text-green-600 font-medium">● Live Data</span>
           )}
+          {isCompleted && !hasPitching && (
+            <span className="text-[10px] text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">No ESPN Data</span>
+          )}
           {isCompleted && resultBadge ? (
             <span className={cn('text-xs font-bold px-2.5 py-0.5 rounded-full border', resultBadge.className)}>
               {resultBadge.label}
