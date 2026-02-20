@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 
+export type WatchOrder = 'all' | 'unwatched' | 'watched' | 'finals' | 'upcoming' | 'favorites';
+export type PitcherFilter = 'favorites-or-played' | 'favorites-only' | 'played-only' | 'all';
+
 export type FilterPreset = {
   id: string;
   name: string;
@@ -9,6 +12,8 @@ export type FilterPreset = {
     teamSearch: string;
     showFavorites: boolean;
     showIssuesOnly: boolean;
+    watchOrder: WatchOrder;
+    pitcherFilter: PitcherFilter;
   };
 };
 

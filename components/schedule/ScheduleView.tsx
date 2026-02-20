@@ -44,6 +44,11 @@ export function ScheduleView() {
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(new Set());
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
   const [showFiltersModal, setShowFiltersModal] = useState(false);
+  const [watchOrder, setWatchOrder] = useState<'all' | 'unwatched' | 'watched' | 'finals' | 'upcoming' | 'favorites'>('all');
+  const [pitcherFilter, setPitcherFilter] = useState<'favorites-or-played' | 'favorites-only' | 'played-only' | 'all'>('favorites-or-played');
+  const [viewMode, setViewMode] = useState<'games' | 'series'>('games');
+  const [virtualScroll, setVirtualScroll] = useState(false);
+  const [expandAll, setExpandAll] = useState(false);
 
   // Data quality issues
   const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<PitcherDataQualityIssue[]>('cbb-pitcher-data-quality-issues', []);
@@ -397,8 +402,31 @@ export function ScheduleView() {
       });
     }
 
+    // Watch order filter
+    if (watchOrder === 'finals') {
+      result = result.filter(g => g.completed);
+    } else if (watchOrder === 'upcoming') {
+      result = result.filter(g => !g.completed);
+    }
+    // Note: watched/unwatched/favorites require additional implementation with localStorage
+
+    // Pitcher filter - requires participation data to be loaded
+    if (pitcherFilter !== 'favorites-or-played' && pitcherFilter !== 'all') {
+      result = result.filter(g => {
+        const gameParticipation = participationByGame[g.game_id] || [];
+        if (gameParticipation.length === 0) return false;
+
+        if (pitcherFilter === 'favorites-only') {
+          return gameParticipation.some(row => favoritePitcherIds.has(row.pitcher_id || ''));
+        } else if (pitcherFilter === 'played-only') {
+          return gameParticipation.length > 0;
+        }
+        return true;
+      });
+    }
+
     return result;
-  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap, gameIssuesMap]);
+  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap, gameIssuesMap, watchOrder, pitcherFilter, favoritePitcherIds]);
 
   // Compute week from date (season starts ~Feb 14 each year)
   const getWeekFromDate = useCallback((dateStr: string): number => {
@@ -434,6 +462,76 @@ export function ScheduleView() {
       return next;
     });
   };
+
+  const handleExportCSV = useCallback(() => {
+    const csvRows: string[] = [];
+    // Header
+    csvRows.push(['Date', 'Week', 'Home Team', 'Away Team', 'Home Score', 'Away Score', 'Status', 'Venue'].join(','));
+
+    // Data rows
+    filteredGames.forEach(game => {
+      const homeTeam = teams[game.home_team_id]?.display_name || game.home_name || '';
+      const awayTeam = teams[game.away_team_id]?.display_name || game.away_name || '';
+      const row = [
+        game.date,
+        game.week?.toString() || '',
+        `"${homeTeam}"`,
+        `"${awayTeam}"`,
+        game.home_score || '',
+        game.away_score || '',
+        game.completed ? 'Final' : 'Scheduled',
+        `"${game.venue || ''}"`,
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csv = csvRows.join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cbb-schedule-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [filteredGames, teams]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+
+      switch (e.key) {
+        case '/':
+          e.preventDefault();
+          document.querySelector<HTMLInputElement>('input[placeholder="Search teams..."]')?.focus();
+          break;
+        case 'f':
+        case 'F':
+          if (!e.metaKey && !e.ctrlKey) {
+            e.preventDefault();
+            setShowFiltersModal(true);
+          }
+          break;
+        case 'e':
+        case 'E':
+          if (!e.metaKey && !e.ctrlKey) {
+            e.preventDefault();
+            handleExportCSV();
+          }
+          break;
+        case 'Escape':
+          setShowFiltersModal(false);
+          setSelectedGame(null);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleExportCSV]);
 
   // Fetch participation for initially expanded weeks once games load
   useEffect(() => {
@@ -524,6 +622,55 @@ export function ScheduleView() {
           )}
         </button>
 
+        {/* View Mode Toggle */}
+        <div className="flex items-center bg-slate-100 rounded-full p-1 border border-slate-300">
+          <button
+            onClick={() => setViewMode('games')}
+            className={cn(
+              'px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+              viewMode === 'games'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            )}
+          >
+            Games
+          </button>
+          <button
+            onClick={() => setViewMode('series')}
+            className={cn(
+              'px-4 py-1.5 rounded-full text-sm font-medium transition-all',
+              viewMode === 'series'
+                ? 'bg-white text-slate-900 shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
+            )}
+          >
+            Series
+          </button>
+        </div>
+
+        {/* Control Buttons */}
+        <button
+          onClick={() => setExpandAll(!expandAll)}
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={expandAll ? "M5 15l7-7 7 7" : "M19 9l-7 7-7-7"} />
+          </svg>
+          {expandAll ? 'Collapse All' : 'Expand All'}
+        </button>
+
+        <button
+          onClick={() => setVirtualScroll(!virtualScroll)}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors',
+            virtualScroll
+              ? 'bg-slate-600 text-white hover:bg-slate-700'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+          )}
+        >
+          Virtual Scroll: {virtualScroll ? 'ON' : 'OFF'}
+        </button>
+
         {/* Data Quality Buttons */}
         {(pitcherDataQualityIssues.length > 0 || gameDataQualityIssues.length > 0) && (
           <>
@@ -552,6 +699,18 @@ export function ScheduleView() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
               Copy Issues
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                'bg-green-600 text-white hover:bg-green-700 shadow-sm'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Export CSV
             </button>
             <button
               onClick={() => {
@@ -661,10 +820,14 @@ export function ScheduleView() {
         teamSearch={teamSearch}
         showFavorites={showFavorites}
         showIssuesOnly={showIssuesOnly}
+        watchOrder={watchOrder}
+        pitcherFilter={pitcherFilter}
         onConferenceChange={setConference}
         onTeamSearchChange={setTeamSearch}
         onShowFavoritesChange={setShowFavorites}
         onShowIssuesOnlyChange={setShowIssuesOnly}
+        onWatchOrderChange={setWatchOrder}
+        onPitcherFilterChange={setPitcherFilter}
       />
     </div>
   );

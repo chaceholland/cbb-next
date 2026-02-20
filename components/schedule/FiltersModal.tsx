@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useFilterPresets, FilterPreset } from '@/lib/hooks/useFilterPresets';
+import { useFilterPresets, FilterPreset, WatchOrder, PitcherFilter } from '@/lib/hooks/useFilterPresets';
 import { cn } from '@/lib/utils';
 import { CONFERENCES } from '@/components/FilterPills';
 
@@ -15,11 +15,15 @@ interface Props {
   teamSearch: string;
   showFavorites: boolean;
   showIssuesOnly: boolean;
+  watchOrder: WatchOrder;
+  pitcherFilter: PitcherFilter;
   // Callbacks to update filters
   onConferenceChange: (conf: string) => void;
   onTeamSearchChange: (search: string) => void;
   onShowFavoritesChange: (show: boolean) => void;
   onShowIssuesOnlyChange: (show: boolean) => void;
+  onWatchOrderChange: (order: WatchOrder) => void;
+  onPitcherFilterChange: (filter: PitcherFilter) => void;
 }
 
 export function FiltersModal({
@@ -29,10 +33,14 @@ export function FiltersModal({
   teamSearch,
   showFavorites,
   showIssuesOnly,
+  watchOrder,
+  pitcherFilter,
   onConferenceChange,
   onTeamSearchChange,
   onShowFavoritesChange,
   onShowIssuesOnlyChange,
+  onWatchOrderChange,
+  onPitcherFilterChange,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [presetName, setPresetName] = useState('');
@@ -65,6 +73,8 @@ export function FiltersModal({
       teamSearch,
       showFavorites,
       showIssuesOnly,
+      watchOrder,
+      pitcherFilter,
     });
     setPresetName('');
     setShowSaveInput(false);
@@ -77,6 +87,8 @@ export function FiltersModal({
       onTeamSearchChange(preset.filters.teamSearch);
       onShowFavoritesChange(preset.filters.showFavorites);
       onShowIssuesOnlyChange(preset.filters.showIssuesOnly);
+      onWatchOrderChange(preset.filters.watchOrder);
+      onPitcherFilterChange(preset.filters.pitcherFilter);
     }
   };
 
@@ -85,6 +97,8 @@ export function FiltersModal({
     onTeamSearchChange('');
     onShowFavoritesChange(false);
     onShowIssuesOnlyChange(false);
+    onWatchOrderChange('all');
+    onPitcherFilterChange('favorites-or-played');
   };
 
   if (!isOpen || !mounted) return null;
@@ -199,6 +213,38 @@ export function FiltersModal({
                       No saved presets yet. Save your favorite filter combinations for quick access.
                     </p>
                   )}
+                </div>
+
+                {/* Watch Order */}
+                <div className="mb-6">
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Watch Order</h3>
+                  <select
+                    value={watchOrder}
+                    onChange={e => onWatchOrderChange(e.target.value as WatchOrder)}
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                  >
+                    <option value="all">All games</option>
+                    <option value="unwatched">Unwatched</option>
+                    <option value="watched">Watched only</option>
+                    <option value="finals">Finals Only</option>
+                    <option value="upcoming">Upcoming Only</option>
+                    <option value="favorites">Favorites Only</option>
+                  </select>
+                </div>
+
+                {/* Pitcher Filter */}
+                <div className="mb-6">
+                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Pitchers</h3>
+                  <select
+                    value={pitcherFilter}
+                    onChange={e => onPitcherFilterChange(e.target.value as PitcherFilter)}
+                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                  >
+                    <option value="favorites-or-played">Favorites or Played (Default)</option>
+                    <option value="favorites-only">Favorites only</option>
+                    <option value="played-only">Played only</option>
+                    <option value="all">All pitchers</option>
+                  </select>
                 </div>
 
                 {/* Quick Filters */}
