@@ -26,100 +26,41 @@ export function formatGameDate(dateStr: string): string {
 }
 
 // Mapping for ESPN team IDs where the API ID differs from the logo URL ID
+// This is a systematic ESPN issue - 100% of teams have mismatched logo IDs
+// Generated 2026-02-20 from ESPN's team API data (188 teams checked)
 const ESPN_LOGO_ID_MAP: Record<string, string> = {
-  '69': '41',    // UConn Huskies
-  '73': '55',    // Jacksonville State Gamecocks
-  '76': '58',    // South Florida Bulls
-  '100': '159',  // Dartmouth Big Green
-  '105': '179',  // St. Bonaventure Bonnies
-  '122': '242',  // Rice Owls
-  '141': '299',  // Long Beach State Beach
-  '155': '2005', // Air Force Falcons
-  '157': '2050', // Ball State Cardinals
-  '165': '2239', // Cal State Fullerton Titans
-  '169': '2309', // Kent State Golden Flashes
-  '177': '2393', // Middle Tennessee Blue Raiders
-  '180': '2429', // Charlotte 49ers
-  '181': '2430', // UNC Greensboro Spartans
-  '185': '2463', // Cal State Northridge Matadors
-  '186': '2466', // Northwestern State Demons
-  '187': '2492', // Pepperdine Waves
-  '192': '2572', // Southern Miss Golden Eagles
-  '206': '2724', // Wichita State Shockers
-  '207': '2737', // Winthrop Eagles
-  '267': '2539', // San Francisco Dons
-  '274': '2535', // Samford Bulldogs
-  '287': '2250', // Gonzaga Bulldogs
-  '289': '2729', // William & Mary Tribe
-  '296': '2454', // North Florida Ospreys
-  '303': '2210', // Elon Phoenix
-  '307': '338',  // Kennesaw State Owls
-  '310': '2449', // North Dakota State Bison
-  '312': '2752', // Xavier Musketeers
-  '313': '2083', // Bucknell Bison
-  '316': '2006', // Akron Zips
-  '318': '2011', // Alabama State Hornets
-  '320': '2032', // Arkansas State Red Wolves
-  '327': '2934', // Cal State Bakersfield Roadrunners
-  '337': '2166', // Davidson Wildcats
-  '353': '50',   // Florida A&M Rattlers
-  '354': '2230', // Fordham Rams
-  '360': '2253', // Grand Canyon Lopes
-  '363': '108',  // Harvard Crimson
-  '364': '2364', // High Point Panthers
-  '371': '2916', // Incarnate Word Cardinals
-  '377': '2329', // Lehigh Mountain Hawks
-  '378': '288',  // Lipscomb Bisons
-  '380': '2344', // Longwood Lancers
-  '384': '276',  // Marshall Thundering Herd
-  '393': '116',  // Mount St. Mary's Mountaineers
-  '394': '93',   // Murray State Racers
-  '400': '2450', // Norfolk State Spartans
-  '401': '2448', // North Carolina A&T Aggies
-  '408': '2459', // Northern Illinois Huskies
-  '410': '2410', // Northern Kentucky Norse
-  '412': '2473', // Oakland Golden Grizzlies
-  '416': '2501', // Portland Pilots
-  '421': '2515', // Radford Highlanders
-  '422': '227',  // Rhode Island Rams
-  '425': '2603', // Saint Joseph's Hawks
-  '429': '2565', // SIU Edwardsville Cougars
-  '438': '2617', // Stephen F. Austin Lumberjacks
-  '441': '2635', // Tennessee Tech Golden Eagles
-  '442': '2630', // UT Martin Skyhawks
-  '443': '357',  // Texas A&M-Corpus Christi Islanders
-  '445': '2649', // Toledo Rockets
-  '447': '5',    // UAB Blazers
-  '450': '2378', // UMBC Retrievers
-  '453': '2908', // South Carolina Upstate Spartans
-  '458': '222',  // Villanova Wildcats
-  '459': '2678', // VMI Keydets
-  '460': '2681', // Wagner Seahawks
-  '462': '2710', // Western Illinois Leathernecks
-  '463': '2711', // Western Michigan Broncos
-  '926': '2815', // Lindenwood Lions
-  '932': '292',  // UT Rio Grande Valley Vaqueros
-  '1103': '2453', // North Alabama Lions
-  '1105': '2856', // California Baptist Lancers
-  '1143': '91',   // Bellarmine Knights
-  '1145': '2627', // Tarleton State Texans
-  '1146': '3101', // Utah Tech Trailblazers
-  '1147': '28',   // UC San Diego Tritons
-  '1148': '2771', // Merrimack Warriors
-  '1189': '263',  // Loras College Duhawks
-  '1245': '284',  // Stonehill Skyhawks
-  '129698': '2385', // Mercyhurst Lakers
-  '129701': '2042', // Augustana College (Il) Vikings
-  '129702': '2044', // Aurora Spartans
-  '71': '45',       // George Washington Revolutionaries
-  '142': '300',     // UC Irvine Anteaters
-  '161': '2132',    // Cincinnati Bearcats
-  '172': '2335',    // Liberty Flames
-  '182': '2439',    // UNLV Rebels
-  '183': '2440',    // Nevada Wolf Pack
-  '197': '2623',    // Missouri State Bears
-  '265': '2363',    // Manhattan Jaspers
-  '297': '2636',    // UTSA Roadrunners
+  '55': '2', '56': '3', '57': '6', '58': '8', '59': '9', '60': '12', '61': '13', '62': '21',
+  '63': '23', '64': '24', '65': '25', '66': '26', '67': '27', '68': '30', '69': '41', '70': '42',
+  '71': '45', '72': '52', '73': '55', '74': '56', '75': '57', '76': '58', '77': '59', '78': '61',
+  '79': '62', '80': '82', '81': '87', '82': '96', '83': '97', '84': '98', '85': '99', '86': '103',
+  '87': '120', '88': '127', '89': '130', '90': '135', '91': '142', '92': '145', '93': '150', '94': '151',
+  '95': '152', '96': '153', '97': '154', '98': '156', '99': '158', '100': '159', '101': '163', '102': '164',
+  '103': '166', '104': '167', '105': '179', '106': '189', '107': '193', '108': '194', '109': '195', '110': '197',
+  '111': '198', '112': '201', '113': '204', '114': '218', '115': '221', '116': '225', '117': '228', '118': '232',
+  '119': '235', '120': '238', '121': '239', '122': '242', '123': '245', '124': '248', '125': '250', '126': '251',
+  '127': '252', '128': '254', '129': '256', '130': '257', '131': '258', '132': '259', '133': '264', '134': '265',
+  '135': '270', '136': '277', '137': '278', '138': '290', '139': '294', '140': '295', '141': '299', '142': '300',
+  '143': '301', '144': '309', '145': '322', '146': '324', '147': '326', '148': '333', '149': '339', '150': '344',
+  '151': '349', '152': '350', '153': '356', '154': '399', '155': '2005', '156': '2046', '157': '2050', '158': '2065',
+  '159': '2115', '160': '2116', '161': '2132', '162': '2154', '163': '2226', '164': '2229', '165': '2239', '166': '2244',
+  '167': '2294', '168': '2305', '169': '2309', '170': '2320', '171': '2330', '172': '2335', '173': '2348', '174': '2351',
+  '175': '2368', '176': '2390', '177': '2393', '178': '2405', '179': '2426', '180': '2429', '181': '2430', '182': '2439',
+  '183': '2440', '184': '2443', '185': '2463', '186': '2466', '187': '2492', '188': '2504', '189': '2509', '190': '2534',
+  '191': '2546', '192': '2572', '193': '2579', '194': '2582', '195': '2599', '196': '2619', '197': '2623', '198': '2628',
+  '199': '2633', '200': '2640', '201': '2641', '202': '2643', '203': '2655', '204': '2670', '205': '2717', '206': '2724',
+  '207': '2737', '208': '2747', '209': '2754', '259': '311', '260': '2016', '261': '2031', '262': '2057', '263': '2164',
+  '264': '2306', '265': '2363', '266': '2529', '267': '2539', '268': '2550', '269': '2653', '270': '2750', '271': '2026',
+  '272': '2433', '273': '2483', '274': '2535', '284': '171', '285': '2296', '286': '2542', '287': '2250', '288': '2287',
+  '289': '2729', '290': '2540', '291': '526', '292': '2066', '293': '2097', '294': '84', '295': '2382', '296': '2454',
+  '297': '2636', '298': '2099', '299': '2803', '300': '139',
+  '303': '2210', '307': '338', '310': '2449', '312': '2752', '313': '2083', '316': '2006', '318': '2011', '320': '2032',
+  '327': '2934', '337': '2166', '353': '50', '354': '2230', '360': '2253', '363': '108', '364': '2364', '371': '2916',
+  '377': '2329', '378': '288', '380': '2344', '384': '276', '393': '116', '394': '93', '400': '2450', '401': '2448',
+  '408': '2459', '410': '2410', '412': '2473', '416': '2501', '421': '2515', '422': '227', '425': '2603', '429': '2565',
+  '438': '2617', '441': '2635', '442': '2630', '443': '357', '445': '2649', '447': '5', '450': '2378', '453': '2908',
+  '458': '222', '459': '2678', '460': '2681', '462': '2710', '463': '2711', '926': '2815', '932': '292', '1103': '2453',
+  '1105': '2856', '1143': '91', '1145': '2627', '1146': '3101', '1147': '28', '1148': '2771', '1189': '263', '1245': '284',
+  '129698': '2385', '129701': '2042', '129702': '2044'
 };
 
 export function getEspnLogoUrl(teamId: string): string {
