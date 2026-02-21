@@ -58,6 +58,7 @@ export function RosterView() {
   // Data quality issues
   const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<RosterPitcherDataQualityIssue[]>('cbb-roster-pitcher-data-quality-issues', []);
   const [teamDataQualityIssues, setTeamDataQualityIssues] = useLocalStorage<TeamDataQualityIssue[]>('cbb-team-data-quality-issues', []);
+  const [showIssuesOnly, setShowIssuesOnly] = useState(false);
 
   async function handleImportFavorites() {
     setImporting(true);
@@ -153,13 +154,51 @@ export function RosterView() {
     return counts;
   }, [pitchers]);
 
+  // Create maps for quick issue lookup
+  const pitcherIssuesMap = useMemo(() => {
+    const map = new Map<string, RosterPitcherDataQualityIssue>();
+    pitcherDataQualityIssues.forEach(issue => {
+      map.set(issue.pitcherKey, issue);
+    });
+    return map;
+  }, [pitcherDataQualityIssues]);
+
+  const teamIssuesMap = useMemo(() => {
+    const map = new Map<string, TeamDataQualityIssue>();
+    teamDataQualityIssues.forEach(issue => {
+      map.set(issue.teamId, issue);
+    });
+    return map;
+  }, [teamDataQualityIssues]);
+
   // Teams visible in the tile grid
   const filteredTeams = useMemo(() => {
-    return teams.filter(t => {
-      if (conference === 'All') return true;
-      return getConfLabel(t.conference || '') === conference;
-    });
-  }, [teams, conference]);
+    let result = teams;
+
+    // Conference filter
+    if (conference !== 'All') {
+      result = result.filter(t => getConfLabel(t.conference || '') === conference);
+    }
+
+    // Issues filter - only show teams with data quality issues
+    if (showIssuesOnly) {
+      result = result.filter(t => {
+        // Check for team-level issues
+        if (teamIssuesMap.has(t.team_id)) {
+          return true;
+        }
+
+        // Check for pitcher-level issues in this team
+        const teamPitcherList = pitchersByTeam[t.team_id] || [];
+        return teamPitcherList.some(p => {
+          const pitcherKey = `${t.team_id}:${p.pitcher_id}`;
+          return pitcherIssuesMap.has(pitcherKey);
+        });
+      });
+    }
+
+    return result;
+  }, [teams, conference, showIssuesOnly, teamIssuesMap, pitchersByTeam, pitcherIssuesMap]);
 
   // Pitchers shown in the drill-down view
   const teamPitchers = useMemo(() => {
@@ -184,25 +223,15 @@ export function RosterView() {
         (p.display_name || '').toLowerCase().includes(q)
       );
     }
+    // Issues filter - only show pitchers with data quality issues
+    if (showIssuesOnly) {
+      result = result.filter(p => {
+        const pitcherKey = `${selectedTeamId}:${p.pitcher_id}`;
+        return pitcherIssuesMap.has(pitcherKey);
+      });
+    }
     return result;
-  }, [selectedTeamId, pitchersByTeam, showFavorites, favorites, hand, searchQuery]);
-
-  // Create maps for quick issue lookup
-  const pitcherIssuesMap = useMemo(() => {
-    const map = new Map<string, RosterPitcherDataQualityIssue>();
-    pitcherDataQualityIssues.forEach(issue => {
-      map.set(issue.pitcherKey, issue);
-    });
-    return map;
-  }, [pitcherDataQualityIssues]);
-
-  const teamIssuesMap = useMemo(() => {
-    const map = new Map<string, TeamDataQualityIssue>();
-    teamDataQualityIssues.forEach(issue => {
-      map.set(issue.teamId, issue);
-    });
-    return map;
-  }, [teamDataQualityIssues]);
+  }, [selectedTeamId, pitchersByTeam, showFavorites, favorites, hand, searchQuery, showIssuesOnly, pitcherIssuesMap]);
 
   // Handler for pitcher data quality issues
   const handlePitcherIssueToggle = (
@@ -242,6 +271,34 @@ export function RosterView() {
 
   const handleToggleFavorite = (id: string) => {
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
+
+  // Copy issues to clipboard
+  const handleCopyIssues = async () => {
+    const teamIssueReport = teamDataQualityIssues
+      .map(issue => {
+        const issueText = issue.issues.join(', ');
+        const customText = issue.customNote ? ` - ${issue.customNote}` : '';
+        return `TEAM: ${issue.teamName}: ${issueText}${customText}`;
+      })
+      .join('\n');
+
+    const pitcherIssueReport = pitcherDataQualityIssues
+      .map(issue => {
+        const issueText = issue.issues.join(', ');
+        const customText = issue.customNote ? ` - ${issue.customNote}` : '';
+        return `PITCHER: ${issue.pitcherName} (${issue.teamName}): ${issueText}${customText}`;
+      })
+      .join('\n');
+
+    const combinedReport = [teamIssueReport, pitcherIssueReport].filter(Boolean).join('\n\n');
+
+    try {
+      await navigator.clipboard.writeText(combinedReport);
+      alert('Issues copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   if (loading) {
@@ -339,6 +396,56 @@ export function RosterView() {
             onFavoritesToggle={() => setShowFavorites(prev => !prev)}
             hideConference
           />
+
+          {/* Data Quality Buttons */}
+          {(pitcherDataQualityIssues.length > 0 || teamDataQualityIssues.length > 0) && (
+            <>
+              <button
+                onClick={() => setShowIssuesOnly(!showIssuesOnly)}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  showIssuesOnly
+                    ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                )}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                {showIssuesOnly ? 'Show All' : `Show Issues (${pitcherDataQualityIssues.length + teamDataQualityIssues.length})`}
+              </button>
+              <button
+                onClick={handleCopyIssues}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                )}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy Issues
+              </button>
+              <button
+                onClick={() => {
+                  const total = pitcherDataQualityIssues.length + teamDataQualityIssues.length;
+                  if (confirm(`Clear all ${total} data quality issues?`)) {
+                    setPitcherDataQualityIssues([]);
+                    setTeamDataQualityIssues([]);
+                  }
+                }}
+                className={cn(
+                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+                )}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Clear All
+              </button>
+            </>
+          )}
         </div>
 
         {teamPitchers.length === 0 ? (
@@ -374,19 +481,71 @@ export function RosterView() {
   // ── Team tiles grid ──
   return (
     <div>
-      <RosterFilterPills
-        conference={conference}
-        hand={hand}
-        showFavorites={showFavorites}
-        conferenceCounts={conferenceCounts}
-        handCounts={handCounts}
-        totalCount={pitchers.length}
-        favoritesCount={favorites.length}
-        onConferenceChange={setConference}
-        onHandChange={setHand}
-        onFavoritesToggle={() => setShowFavorites(prev => !prev)}
-        hideHand
-      />
+      <div className="flex items-center gap-3 mb-4 flex-wrap">
+        <RosterFilterPills
+          conference={conference}
+          hand={hand}
+          showFavorites={showFavorites}
+          conferenceCounts={conferenceCounts}
+          handCounts={handCounts}
+          totalCount={pitchers.length}
+          favoritesCount={favorites.length}
+          onConferenceChange={setConference}
+          onHandChange={setHand}
+          onFavoritesToggle={() => setShowFavorites(prev => !prev)}
+          hideHand
+        />
+
+        {/* Data Quality Buttons */}
+        {(pitcherDataQualityIssues.length > 0 || teamDataQualityIssues.length > 0) && (
+          <>
+            <button
+              onClick={() => setShowIssuesOnly(!showIssuesOnly)}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                showIssuesOnly
+                  ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30'
+                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              {showIssuesOnly ? 'Show All' : `Show Issues (${pitcherDataQualityIssues.length + teamDataQualityIssues.length})`}
+            </button>
+            <button
+              onClick={handleCopyIssues}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copy Issues
+            </button>
+            <button
+              onClick={() => {
+                const total = pitcherDataQualityIssues.length + teamDataQualityIssues.length;
+                if (confirm(`Clear all ${total} data quality issues?`)) {
+                  setPitcherDataQualityIssues([]);
+                  setTeamDataQualityIssues([]);
+                }
+              }}
+              className={cn(
+                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+              )}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+              Clear All
+            </button>
+          </>
+        )}
+      </div>
 
       <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
         <p className="text-sm text-slate-500">
@@ -495,6 +654,8 @@ function TeamIssueButton({
     'Missing pitcher data',
     'Incorrect team name',
     'Team missing some players in roster scrape',
+    'Try Rescraping for All Data',
+    'Try Rescraping for Headshot Data',
     'Misc.',
   ];
 

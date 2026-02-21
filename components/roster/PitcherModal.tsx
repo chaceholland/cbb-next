@@ -296,6 +296,8 @@ function PitcherIssueButton({
     'Missing hometown',
     'Missing bats/throws',
     'Incorrect stats',
+    'Try Rescraping for All Data',
+    'Try Rescraping for Headshot Data',
     'Misc.',
   ];
 
