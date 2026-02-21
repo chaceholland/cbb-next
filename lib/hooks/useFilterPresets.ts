@@ -14,6 +14,7 @@ export type FilterPreset = {
     showIssuesOnly: boolean;
     watchOrder: WatchOrder;
     pitcherFilter: PitcherFilter;
+    selectedWeeks?: number[]; // Optional for backward compatibility
   };
 };
 

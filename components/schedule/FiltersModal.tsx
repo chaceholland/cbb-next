@@ -17,6 +17,8 @@ interface Props {
   showIssuesOnly: boolean;
   watchOrder: WatchOrder;
   pitcherFilter: PitcherFilter;
+  selectedWeeks: Set<number>;
+  availableWeeks: number[];
   // Callbacks to update filters
   onConferenceChange: (conf: string) => void;
   onTeamSearchChange: (search: string) => void;
@@ -24,6 +26,7 @@ interface Props {
   onShowIssuesOnlyChange: (show: boolean) => void;
   onWatchOrderChange: (order: WatchOrder) => void;
   onPitcherFilterChange: (filter: PitcherFilter) => void;
+  onSelectedWeeksChange: (weeks: Set<number>) => void;
 }
 
 export function FiltersModal({
@@ -35,12 +38,15 @@ export function FiltersModal({
   showIssuesOnly,
   watchOrder,
   pitcherFilter,
+  selectedWeeks,
+  availableWeeks,
   onConferenceChange,
   onTeamSearchChange,
   onShowFavoritesChange,
   onShowIssuesOnlyChange,
   onWatchOrderChange,
   onPitcherFilterChange,
+  onSelectedWeeksChange,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [presetName, setPresetName] = useState('');
@@ -75,6 +81,7 @@ export function FiltersModal({
       showIssuesOnly,
       watchOrder,
       pitcherFilter,
+      selectedWeeks: Array.from(selectedWeeks),
     });
     setPresetName('');
     setShowSaveInput(false);
@@ -89,6 +96,9 @@ export function FiltersModal({
       onShowIssuesOnlyChange(preset.filters.showIssuesOnly);
       onWatchOrderChange(preset.filters.watchOrder);
       onPitcherFilterChange(preset.filters.pitcherFilter);
+      if (preset.filters.selectedWeeks) {
+        onSelectedWeeksChange(new Set(preset.filters.selectedWeeks));
+      }
     }
   };
 
@@ -99,6 +109,7 @@ export function FiltersModal({
     onShowIssuesOnlyChange(false);
     onWatchOrderChange('all');
     onPitcherFilterChange('favorites-or-played');
+    onSelectedWeeksChange(new Set());
   };
 
   if (!isOpen || !mounted) return null;
@@ -245,6 +256,43 @@ export function FiltersModal({
                     <option value="played-only">Played only</option>
                     <option value="all">All pitchers</option>
                   </select>
+                </div>
+
+                {/* Week Filter */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Weeks</h3>
+                    <button
+                      onClick={() => onSelectedWeeksChange(new Set())}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2">
+                    {availableWeeks.map(week => (
+                      <button
+                        key={week}
+                        onClick={() => {
+                          const newWeeks = new Set(selectedWeeks);
+                          if (newWeeks.has(week)) {
+                            newWeeks.delete(week);
+                          } else {
+                            newWeeks.add(week);
+                          }
+                          onSelectedWeeksChange(newWeeks);
+                        }}
+                        className={cn(
+                          'px-3 py-2 rounded-lg text-sm font-medium transition-all',
+                          selectedWeeks.has(week)
+                            ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                        )}
+                      >
+                        Week {week}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Quick Filters */}

@@ -49,6 +49,7 @@ export function ScheduleView() {
   const [viewMode, setViewMode] = useState<'games' | 'series'>('games');
   const [virtualScroll, setVirtualScroll] = useState(false);
   const [expandAll, setExpandAll] = useState(false);
+  const [selectedWeeks, setSelectedWeeks] = useState<Set<number>>(new Set());
 
   // Data quality issues
   const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<PitcherDataQualityIssue[]>('cbb-pitcher-data-quality-issues', []);
@@ -650,7 +651,17 @@ export function ScheduleView() {
 
         {/* Control Buttons */}
         <button
-          onClick={() => setExpandAll(!expandAll)}
+          onClick={() => {
+            if (expandAll) {
+              // Collapse all
+              setExpandedWeeks(new Set());
+              setExpandAll(false);
+            } else {
+              // Expand all
+              setExpandedWeeks(new Set(weeks));
+              setExpandAll(true);
+            }
+          }}
           className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -741,7 +752,7 @@ export function ScheduleView() {
       </p>
 
       <div className="space-y-6">
-        {weeks.map(week => (
+        {weeks.filter(week => selectedWeeks.size === 0 || selectedWeeks.has(week)).map(week => (
           <div key={week} className="space-y-3">
             <button
               onClick={() => toggleWeek(week)}
@@ -822,12 +833,15 @@ export function ScheduleView() {
         showIssuesOnly={showIssuesOnly}
         watchOrder={watchOrder}
         pitcherFilter={pitcherFilter}
+        selectedWeeks={selectedWeeks}
+        availableWeeks={weeks}
         onConferenceChange={setConference}
         onTeamSearchChange={setTeamSearch}
         onShowFavoritesChange={setShowFavorites}
         onShowIssuesOnlyChange={setShowIssuesOnly}
         onWatchOrderChange={setWatchOrder}
         onPitcherFilterChange={setPitcherFilter}
+        onSelectedWeeksChange={setSelectedWeeks}
       />
     </div>
   );
