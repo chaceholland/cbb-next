@@ -11,7 +11,7 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   // Current filter state
-  conference: string;
+  conferences: Set<string>;
   teamSearch: string;
   showFavorites: boolean;
   showIssuesOnly: boolean;
@@ -19,8 +19,9 @@ interface Props {
   pitcherFilter: PitcherFilter;
   selectedWeeks: Set<number>;
   availableWeeks: number[];
+  conferenceCounts: Record<string, number>;
   // Callbacks to update filters
-  onConferenceChange: (conf: string) => void;
+  onConferencesChange: (confs: Set<string>) => void;
   onTeamSearchChange: (search: string) => void;
   onShowFavoritesChange: (show: boolean) => void;
   onShowIssuesOnlyChange: (show: boolean) => void;
@@ -32,7 +33,7 @@ interface Props {
 export function FiltersModal({
   isOpen,
   onClose,
-  conference,
+  conferences,
   teamSearch,
   showFavorites,
   showIssuesOnly,
@@ -40,7 +41,8 @@ export function FiltersModal({
   pitcherFilter,
   selectedWeeks,
   availableWeeks,
-  onConferenceChange,
+  conferenceCounts,
+  onConferencesChange,
   onTeamSearchChange,
   onShowFavoritesChange,
   onShowIssuesOnlyChange,
@@ -75,7 +77,7 @@ export function FiltersModal({
       return;
     }
     savePreset(presetName.trim(), {
-      conference,
+      conference: Array.from(conferences).join(','), // Store as comma-separated string for backward compat
       teamSearch,
       showFavorites,
       showIssuesOnly,
@@ -90,7 +92,10 @@ export function FiltersModal({
   const handleLoadPreset = (id: string) => {
     const preset = loadPreset(id);
     if (preset) {
-      onConferenceChange(preset.filters.conference);
+      // Parse conference string back to Set
+      const confStr = preset.filters.conference || '';
+      const confArray = confStr ? confStr.split(',').filter(Boolean) : [];
+      onConferencesChange(new Set(confArray));
       onTeamSearchChange(preset.filters.teamSearch);
       onShowFavoritesChange(preset.filters.showFavorites);
       onShowIssuesOnlyChange(preset.filters.showIssuesOnly);
@@ -103,7 +108,7 @@ export function FiltersModal({
   };
 
   const handleClearAllFilters = () => {
-    onConferenceChange('All');
+    onConferencesChange(new Set());
     onTeamSearchChange('');
     onShowFavoritesChange(false);
     onShowIssuesOnlyChange(false);
@@ -332,24 +337,22 @@ export function FiltersModal({
                   />
                 </div>
 
-                {/* Conference Filter */}
+                {/* Conference Filter - Multi-Select */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Conference</h3>
+                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Conferences</h3>
                     <div className="flex gap-2">
                       <button
-                        onClick={() => onConferenceChange('All')}
+                        onClick={() => onConferencesChange(new Set())}
                         className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                       >
-                        Select All
+                        Clear All
                       </button>
                       <button
                         onClick={() => {
                           // Power 5: SEC, ACC, Big 12, Big Ten, Pac-12
-                          const power5 = ['SEC', 'ACC', 'Big 12', 'Big Ten', 'Pac-12'];
-                          if (power5.includes(conference)) {
-                            onConferenceChange('All');
-                          }
+                          const power5 = new Set(['SEC', 'ACC', 'Big 12', 'Big Ten', 'Pac-12']);
+                          onConferencesChange(power5);
                         }}
                         className="text-xs text-blue-600 hover:text-blue-700 font-medium"
                       >
@@ -358,20 +361,43 @@ export function FiltersModal({
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    {['All', ...CONFERENCES].map(conf => (
-                      <button
-                        key={conf}
-                        onClick={() => onConferenceChange(conf)}
-                        className={cn(
-                          'px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                          conference === conf
-                            ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
-                        )}
-                      >
-                        {conf}
-                      </button>
-                    ))}
+                    {CONFERENCES.map(conf => {
+                      const count = conferenceCounts[conf] || 0;
+                      return (
+                        <button
+                          key={conf}
+                          onClick={() => {
+                            const newConfs = new Set(conferences);
+                            if (newConfs.has(conf)) {
+                              newConfs.delete(conf);
+                            } else {
+                              newConfs.add(conf);
+                            }
+                            onConferencesChange(newConfs);
+                          }}
+                          className={cn(
+                            'px-3 py-2 rounded-lg text-sm font-medium transition-all text-left',
+                            conferences.has(conf)
+                              ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
+                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                          )}
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="truncate">{conf}</span>
+                            {count > 0 && (
+                              <span className={cn(
+                                'text-xs px-1.5 py-0.5 rounded-full shrink-0',
+                                conferences.has(conf)
+                                  ? 'bg-white/20 text-white'
+                                  : 'bg-slate-200 text-slate-600'
+                              )}>
+                                {count}
+                              </span>
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

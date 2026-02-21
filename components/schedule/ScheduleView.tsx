@@ -7,7 +7,6 @@ import { CbbGame, CbbTeam, ParticipationRow } from '@/lib/supabase/types';
 import { GameCard } from './GameCard';
 import { GameDetailModal } from './GameDetailModal';
 import { FiltersModal } from './FiltersModal';
-import { ScheduleFilterPills } from '@/components/FilterPills';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { cn } from '@/lib/utils';
 
@@ -38,10 +37,12 @@ export function ScheduleView() {
   const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
   const [favorites] = useLocalStorage<string[]>('cbb-favorites', []);
   const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
-  const [conference, setConference] = useState('All');
+  const [conferences, setConferences] = useState<Set<string>>(new Set());
   const [teamSearch, setTeamSearch] = useState('');
   const [showFavorites, setShowFavorites] = useState(false);
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(new Set());
+  const [favoriteGameIds, setFavoriteGameIds] = useLocalStorage<string[]>('cbb-favorite-games', []);
+  const [watchedGameIds, setWatchedGameIds] = useLocalStorage<string[]>('cbb-watched-games', []);
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
   const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [watchOrder, setWatchOrder] = useState<'all' | 'unwatched' | 'watched' | 'finals' | 'upcoming' | 'favorites'>('all');
@@ -351,21 +352,26 @@ export function ScheduleView() {
   const filteredGames = useMemo(() => {
     let result = games;
 
-    // Conference filter (checks either tracked team)
-    if (conference !== 'All') {
+    // Conference filter (checks either tracked team) - multi-select
+    if (conferences.size > 0) {
       result = result.filter(g => {
         const conf = getGameConference(g);
-        if (conference === 'SEC') return conf.includes('SEC');
-        if (conference === 'ACC') return conf.includes('ACC');
-        if (conference === 'Big 12') return conf.includes('Big 12');
-        if (conference === 'Big Ten') return conf.includes('Big Ten');
-        if (conference === 'Pac-12') return conf.includes('Pac-12') || conf.includes('Pac 12');
-        if (conference === 'American') return conf.includes('American');
-        if (conference === 'Sun Belt') return conf.includes('Sun Belt');
-        if (conference === 'C-USA') return conf.includes('C-USA') || conf.includes('Conference USA');
-        if (conference === 'Mountain West') return conf.includes('Mountain West');
-        if (conference === 'MAC') return conf.includes('MAC');
-        return !['SEC','ACC','Big 12','Big Ten','Pac-12','American','Sun Belt','C-USA','Mountain West','MAC'].some(c => conf.includes(c));
+        return Array.from(conferences).some(selectedConf => {
+          if (selectedConf === 'SEC') return conf.includes('SEC');
+          if (selectedConf === 'ACC') return conf.includes('ACC');
+          if (selectedConf === 'Big 12') return conf.includes('Big 12');
+          if (selectedConf === 'Big Ten') return conf.includes('Big Ten');
+          if (selectedConf === 'Pac-12') return conf.includes('Pac-12') || conf.includes('Pac 12');
+          if (selectedConf === 'American') return conf.includes('American');
+          if (selectedConf === 'Sun Belt') return conf.includes('Sun Belt');
+          if (selectedConf === 'C-USA') return conf.includes('C-USA') || conf.includes('Conference USA');
+          if (selectedConf === 'Mountain West') return conf.includes('Mountain West');
+          if (selectedConf === 'MAC') return conf.includes('MAC');
+          if (selectedConf === 'Other') {
+            return !['SEC','ACC','Big 12','Big Ten','Pac-12','American','Sun Belt','C-USA','Mountain West','MAC'].some(c => conf.includes(c));
+          }
+          return false;
+        });
       });
     }
 
@@ -408,8 +414,13 @@ export function ScheduleView() {
       result = result.filter(g => g.completed);
     } else if (watchOrder === 'upcoming') {
       result = result.filter(g => !g.completed);
+    } else if (watchOrder === 'watched') {
+      result = result.filter(g => watchedGameIds.includes(g.game_id));
+    } else if (watchOrder === 'unwatched') {
+      result = result.filter(g => !watchedGameIds.includes(g.game_id));
+    } else if (watchOrder === 'favorites') {
+      result = result.filter(g => favoriteGameIds.includes(g.game_id));
     }
-    // Note: watched/unwatched/favorites require additional implementation with localStorage
 
     // Pitcher filter - requires participation data to be loaded
     if (pitcherFilter !== 'favorites-or-played' && pitcherFilter !== 'all') {
@@ -427,7 +438,7 @@ export function ScheduleView() {
     }
 
     return result;
-  }, [games, conference, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap, gameIssuesMap, watchOrder, pitcherFilter, favoritePitcherIds]);
+  }, [games, conferences, teams, teamSearch, showFavorites, favoriteTeamIds, getGameConference, showIssuesOnly, participationByGame, pitcherIssuesMap, gameIssuesMap, watchOrder, pitcherFilter, favoritePitcherIds, watchedGameIds, favoriteGameIds]);
 
   // Compute week from date (season starts ~Feb 14 each year)
   const getWeekFromDate = useCallback((dateStr: string): number => {
@@ -449,6 +460,58 @@ export function ScheduleView() {
     return groups;
   }, [filteredGames, getWeekFromDate]);
 
+  // Group games into series (same teams, within 3 days)
+  const seriesByWeek = useMemo(() => {
+    const seriesGroups: Record<number, CbbGame[][]> = {};
+
+    Object.entries(gamesByWeek).forEach(([weekStr, weekGames]) => {
+      const week = parseInt(weekStr);
+      const series: CbbGame[][] = [];
+      const processed = new Set<string>();
+
+      // Sort games by date
+      const sortedGames = [...weekGames].sort((a, b) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+
+      sortedGames.forEach(game => {
+        if (processed.has(game.game_id)) return;
+
+        // Find all games in this series (same teams, within 3 days)
+        const seriesGames = [game];
+        processed.add(game.game_id);
+
+        const gameDate = new Date(game.date);
+        const threeDays = 3 * 24 * 60 * 60 * 1000;
+
+        sortedGames.forEach(otherGame => {
+          if (processed.has(otherGame.game_id)) return;
+
+          // Check if same teams (either direction)
+          const sameTeams =
+            (game.home_team_id === otherGame.home_team_id && game.away_team_id === otherGame.away_team_id) ||
+            (game.home_team_id === otherGame.away_team_id && game.away_team_id === otherGame.home_team_id);
+
+          if (sameTeams) {
+            const otherDate = new Date(otherGame.date);
+            const daysDiff = Math.abs(otherDate.getTime() - gameDate.getTime());
+
+            if (daysDiff <= threeDays) {
+              seriesGames.push(otherGame);
+              processed.add(otherGame.game_id);
+            }
+          }
+        });
+
+        series.push(seriesGames);
+      });
+
+      seriesGroups[week] = series;
+    });
+
+    return seriesGroups;
+  }, [gamesByWeek]);
+
   const weeks = useMemo(() => Object.keys(gamesByWeek).map(Number).sort((a, b) => a - b), [gamesByWeek]);
 
   const toggleWeek = (week: number) => {
@@ -463,6 +526,26 @@ export function ScheduleView() {
       return next;
     });
   };
+
+  const toggleFavoriteGame = useCallback((gameId: string) => {
+    setFavoriteGameIds(prev => {
+      if (prev.includes(gameId)) {
+        return prev.filter(id => id !== gameId);
+      } else {
+        return [...prev, gameId];
+      }
+    });
+  }, [setFavoriteGameIds]);
+
+  const toggleWatchedGame = useCallback((gameId: string) => {
+    setWatchedGameIds(prev => {
+      if (prev.includes(gameId)) {
+        return prev.filter(id => id !== gameId);
+      } else {
+        return [...prev, gameId];
+      }
+    });
+  }, [setWatchedGameIds]);
 
   const handleExportCSV = useCallback(() => {
     const csvRows: string[] = [];
@@ -568,13 +651,6 @@ export function ScheduleView() {
 
   return (
     <div>
-      <ScheduleFilterPills
-        conference={conference}
-        conferenceCounts={conferenceCounts}
-        totalCount={games.length}
-        onConferenceChange={setConference}
-      />
-
       {/* Search + Favorites row */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <button
@@ -748,7 +824,7 @@ export function ScheduleView() {
       <p className="text-sm text-slate-500 mb-6">
         Showing <span className="font-semibold text-slate-700">{filteredGames.length.toLocaleString()}</span> of{' '}
         <span className="font-semibold text-slate-700">{games.length.toLocaleString()}</span> tracked games
-        {conference !== 'All' && ` in ${conference}`}
+        {conferences.size > 0 && ` in ${Array.from(conferences).join(', ')}`}
       </p>
 
       <div className="space-y-6">
@@ -784,27 +860,78 @@ export function ScheduleView() {
                 transition={{ duration: 0.3 }}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-4"
               >
-                {gamesByWeek[week].map((game, i) => (
-                  <motion.div
-                    key={game.game_id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.02, duration: 0.3 }}
-                  >
-                    <GameCard
-                      game={game}
-                      teams={teams}
-                      trackedTeamIds={trackedTeamIds}
-                      participation={participationByGame[game.game_id] || []}
-                      headshotsMap={headshotsMap}
-                      pitcherIssuesMap={pitcherIssuesMap}
-                      gameIssuesMap={gameIssuesMap}
-                      onPitcherIssueToggle={handlePitcherIssueToggle}
-                      onGameIssueToggle={handleGameIssueToggle}
-                      onClick={() => setSelectedGame(game)}
-                    />
-                  </motion.div>
-                ))}
+                {viewMode === 'games' ? (
+                  // Individual games view
+                  gamesByWeek[week].map((game, i) => (
+                    <motion.div
+                      key={game.game_id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.02, duration: 0.3 }}
+                    >
+                      <GameCard
+                        game={game}
+                        teams={teams}
+                        trackedTeamIds={trackedTeamIds}
+                        participation={participationByGame[game.game_id] || []}
+                        headshotsMap={headshotsMap}
+                        pitcherIssuesMap={pitcherIssuesMap}
+                        gameIssuesMap={gameIssuesMap}
+                        onPitcherIssueToggle={handlePitcherIssueToggle}
+                        onGameIssueToggle={handleGameIssueToggle}
+                        onClick={() => setSelectedGame(game)}
+                        isFavorite={favoriteGameIds.includes(game.game_id)}
+                        isWatched={watchedGameIds.includes(game.game_id)}
+                        onToggleFavorite={() => toggleFavoriteGame(game.game_id)}
+                        onToggleWatched={() => toggleWatchedGame(game.game_id)}
+                      />
+                    </motion.div>
+                  ))
+                ) : (
+                  // Series view
+                  seriesByWeek[week]?.map((seriesGames, i) => (
+                    <motion.div
+                      key={seriesGames[0].game_id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.02, duration: 0.3 }}
+                      className="space-y-2"
+                    >
+                      {/* Series header */}
+                      {seriesGames.length > 1 && (
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                          <span className="text-xs font-bold text-blue-700">
+                            {seriesGames.length}-Game Series
+                          </span>
+                          <span className="text-xs text-slate-500">
+                            {teams[seriesGames[0].away_team_id]?.display_name || seriesGames[0].away_name} vs{' '}
+                            {teams[seriesGames[0].home_team_id]?.display_name || seriesGames[0].home_name}
+                          </span>
+                        </div>
+                      )}
+                      {/* Games in series */}
+                      {seriesGames.map(game => (
+                        <GameCard
+                          key={game.game_id}
+                          game={game}
+                          teams={teams}
+                          trackedTeamIds={trackedTeamIds}
+                          participation={participationByGame[game.game_id] || []}
+                          headshotsMap={headshotsMap}
+                          pitcherIssuesMap={pitcherIssuesMap}
+                          gameIssuesMap={gameIssuesMap}
+                          onPitcherIssueToggle={handlePitcherIssueToggle}
+                          onGameIssueToggle={handleGameIssueToggle}
+                          onClick={() => setSelectedGame(game)}
+                          isFavorite={favoriteGameIds.includes(game.game_id)}
+                          isWatched={watchedGameIds.includes(game.game_id)}
+                          onToggleFavorite={() => toggleFavoriteGame(game.game_id)}
+                          onToggleWatched={() => toggleWatchedGame(game.game_id)}
+                        />
+                      ))}
+                    </motion.div>
+                  ))
+                )}
               </motion.div>
             )}
           </div>
@@ -827,7 +954,7 @@ export function ScheduleView() {
       <FiltersModal
         isOpen={showFiltersModal}
         onClose={() => setShowFiltersModal(false)}
-        conference={conference}
+        conferences={conferences}
         teamSearch={teamSearch}
         showFavorites={showFavorites}
         showIssuesOnly={showIssuesOnly}
@@ -835,7 +962,8 @@ export function ScheduleView() {
         pitcherFilter={pitcherFilter}
         selectedWeeks={selectedWeeks}
         availableWeeks={weeks}
-        onConferenceChange={setConference}
+        conferenceCounts={conferenceCounts}
+        onConferencesChange={setConferences}
         onTeamSearchChange={setTeamSearch}
         onShowFavoritesChange={setShowFavorites}
         onShowIssuesOnlyChange={setShowIssuesOnly}
