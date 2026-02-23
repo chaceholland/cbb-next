@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Import CBB Data Quality Issues</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #1a73e8;
+      margin-top: 0;
+    }
+    .status {
+      padding: 16px;
+      border-radius: 8px;
+      margin: 20px 0;
+      font-weight: 500;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    .summary {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .summary h3 {
+      margin-top: 0;
+      color: #333;
+    }
+    .summary ul {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    .summary li {
+      margin: 5px 0;
+      color: #555;
+    }
+    button {
+      background: #1a73e8;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #1557b0;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏀 Import CBB Data Quality Issues</h1>
+
+    <div class="summary">
+      <h3>📋 Issues to Import:</h3>
+      <p><strong>Team Issues (6):</strong></p>
+      <ul>
+        <li>LSU - Incomplete roster</li>
+        <li>Rutgers - Try rescraping for player headshots</li>
+        <li>UCLA - Try rescraping for pitcher headshots</li>
+        <li>Texas - Try Rescraping for All Data</li>
+        <li>Alabama - Missing pitcher data, Try Rescraping for pitcher numbers</li>
+        <li>Arizona State - Try Rescraping for All Data</li>
+      </ul>
+
+      <p><strong>Pitcher Issues (6 LSU Pitchers):</strong></p>
+      <ul>
+        <li>Casan Evans - Missing headshot</li>
+        <li>Cooper Moore - Missing headshot</li>
+        <li>Danny Lachenmayer - Missing headshot</li>
+        <li>Gavin Guidry - Missing headshot</li>
+        <li>Mavrick Rizy - Missing headshot</li>
+        <li>William Schmidt - Missing headshot</li>
+      </ul>
+    </div>
+
+    <div id="status" class="status info">
+      Click the button below to import all issues to localStorage.
+    </div>
+
+    <button onclick="importIssues()">Import All Issues</button>
+    <button onclick="goToRosters()" id="goToRosters" style="display:none; margin-left: 10px;">Go to Rosters Page →</button>
+  </div>
+
+  <script>
+    function importIssues() {
+      const teamIssues = [
+        {
+          "teamId": "85",
+          "teamName": "LSU",
+          "issues": ["Incomplete roster"]
+        },
+        {
+          "teamId": "102",
+          "teamName": "Rutgers",
+          "issues": ["Misc."],
+          "customNote": "Try rescraping for player headshots"
+        },
+        {
+          "teamId": "66",
+          "teamName": "UCLA",
+          "issues": ["Misc."],
+          "customNote": "Try rescraping for pitcher headshots."
+        },
+        {
+          "teamId": "126",
+          "teamName": "Texas",
+          "issues": ["Try Rescraping for All Data"]
+        },
+        {
+          "teamId": "148",
+          "teamName": "Alabama",
+          "issues": ["Missing pitcher data", "Misc."],
+          "customNote": "Try Rescraping for pitcher numbers"
+        },
+        {
+          "teamId": "59",
+          "teamName": "Arizona State",
+          "issues": ["Try Rescraping for All Data"]
+        }
+      ];
+
+      const pitcherIssues = [
+        {
+          "pitcherKey": "85:99-P4",
+          "pitcherName": "Casan Evans",
+          "teamName": "LSU",
+          "issues": ["Missing headshot"]
+        },
+        {
+          "pitcherKey": "85:99-P1",
+          "pitcherName": "Gavin Guidry",
+          "teamName": "LSU",
+          "issues": ["Missing headshot"]
+        },
+        {
+          "pitcherKey": "85:99-P2",
+          "pitcherName": "William Schmidt",
+          "teamName": "LSU",
+          "issues": ["Missing headshot"]
+        },
+        {
+          "pitcherKey": "85:99-P3",
+          "pitcherName": "Mavrick Rizy",
+          "teamName": "LSU",
+          "issues": ["Missing headshot"]
+        },
+        {
+          "pitcherKey": "85:99-P5",
+          "pitcherName": "Cooper Moore",
+          "teamName": "LSU",
+          "issues": ["Missing headshot"]
+        },
+        {
+          "pitcherKey": "85:99-P8",
+          "pitcherName": "Danny Lachenmayer",
+          "teamName": "LSU",
+          "issues": ["Missing headshot"]
+        }
+      ];
+
+      try {
+        localStorage.setItem('cbb-team-data-quality-issues', JSON.stringify(teamIssues));
+        localStorage.setItem('cbb-roster-pitcher-data-quality-issues', JSON.stringify(pitcherIssues));
+
+        document.getElementById('status').className = 'status success';
+        document.getElementById('status').innerHTML = '✅ Successfully imported 6 team issues and 6 pitcher issues!<br>Click "Go to Rosters Page" to view them.';
+        document.getElementById('goToRosters').style.display = 'inline-block';
+
+        console.log('✅ Issues imported successfully!');
+      } catch (error) {
+        document.getElementById('status').className = 'status error';
+        document.getElementById('status').textContent = '❌ Error importing issues: ' + error.message;
+        console.error('Import error:', error);
+      }
+    }
+
+    function goToRosters() {
+      window.location.href = 'https://cbb-next.vercel.app/#rosters';
+    }
+  </script>
+</body>
+</html>

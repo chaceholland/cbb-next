@@ -1,0 +1,640 @@
+
+============================================================
+RUTGERS
+============================================================
+
+Database: 21 pitchers
+Scraped: 21 pitchers
+Matched: 21
+
+📝 DIFFERENCES (21):
+   Matthew Cruz:
+      number: "null" → "1"
+      year: "null" → "So."
+      height: "null" → "6' 0''"
+      weight: "null" → "175"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Bellmore, N.Y. / Saint Dominic"
+   Jordan Saviñon:
+      number: "null" → "2"
+      year: "null" → "Sr."
+      height: "null" → "6' 1''"
+      weight: "null" → "225"
+      bats_throws: "null" → "L/L"
+      hometown: "null" → "Staten Island, N.Y. / Moore Catholic"
+   Pablo Santos:
+      number: "null" → "6"
+      year: "null" → "Sr."
+      height: "null" → "6' 0''"
+      weight: "null" → "210"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Jersey City, N.J. / Don Bosco Prep"
+   Henry Radbill:
+      number: "null" → "8"
+      year: "null" → "Fr."
+      height: "null" → "6' 0''"
+      weight: "null" → "195"
+      bats_throws: "null" → "L/L"
+      hometown: "null" → "Marlton, N.J. / Cherokee"
+   Nolan Peel:
+      number: "null" → "11"
+      year: "null" → "So."
+      height: "null" → "6' 1''"
+      weight: "null" → "190"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Landenberg, Pa. / The Tome School [Md.]"
+   Luke Fithian:
+      number: "null" → "15"
+      year: "null" → "So."
+      height: "null" → "6' 6''"
+      weight: "null" → "240"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Stow Creek, N.J. / Cumberland County Tech"
+   Tyler Kane:
+      number: "null" → "16"
+      year: "null" → "R-Jr."
+      height: "null" → "5' 9''"
+      weight: "null" → "175"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Manalapan, N.J. / Manalapan"
+   Dallin Harrison:
+      number: "null" → "17"
+      year: "null" → "Jr."
+      height: "null" → "6' 1''"
+      weight: "null" → "195"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Gilbert, Ariz. / Basha"
+   Zack Konstantinovsky:
+      number: "null" → "19"
+      year: "null" → "R-So."
+      height: "null" → "6' 2''"
+      weight: "null" → "210"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "North Brunswick, N.J. / North Brunswick Township"
+   Vincent Borghese:
+      number: "null" → "20"
+      year: "null" → "Sr."
+      height: "null" → "6' 2''"
+      weight: "null" → "210"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Southington, Conn. / Southington"
+   Andrew Rondini:
+      number: "null" → "22"
+      year: "null" → "So."
+      height: "null" → "6' 1''"
+      weight: "null" → "200"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "New Milford, Conn. / Canterbury"
+   Jason Masick:
+      number: "null" → "23"
+      year: "null" → "Sr."
+      height: "null" → "6' 3''"
+      weight: "null" → "240"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Houston, Texas / Memorial"
+   Luke Foulds:
+      number: "null" → "29"
+      year: "null" → "Fr."
+      height: "null" → "6' 5''"
+      weight: "null" → "235"
+      bats_throws: "null" → "L/R"
+      hometown: "null" → "Thunder Bay, Ontario / Oakridge Secondary School"
+   Charles Batista:
+      number: "null" → "33"
+      year: "null" → "So."
+      height: "null" → "6' 5''"
+      weight: "null" → "215"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Weehawken, N.J. / The Hun School"
+   Joe Mazza:
+      number: "null" → "37"
+      year: "null" → "Gr."
+      height: "null" → "6' 3''"
+      weight: "null" → "215"
+      bats_throws: "null" → "R/L"
+      hometown: "null" → "Manalapan, N.J. / Manalapan"
+   Jacob Pedersen:
+      number: "null" → "38"
+      year: "null" → "R-Sr."
+      height: "null" → "5' 11''"
+      weight: "null" → "200"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Port Jefferson Station, N.Y. / Comsewogue"
+   Zach Gleason:
+      number: "null" → "39"
+      year: "null" → "Gr."
+      height: "null" → "6' 3''"
+      weight: "null" → "220"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Gadsden, Ala. / Timberlane Regional [N.H.]"
+   Justin MacCormack:
+      number: "null" → "41"
+      year: "null" → "Fr."
+      height: "null" → "6' 2''"
+      weight: "null" → "190"
+      bats_throws: "null" → "L/L"
+      hometown: "null" → "Watertown, Mass. / Middlesex"
+   Finn Haines:
+      number: "null" → "43"
+      year: "null" → "Fr."
+      height: "null" → "6' 0''"
+      weight: "null" → "170"
+      bats_throws: "null" → "R/L"
+      hometown: "null" → "Northfield, N.J. / Mainland"
+   Chris Sand:
+      number: "null" → "44"
+      year: "null" → "Fr."
+      height: "null" → "6' 2''"
+      weight: "null" → "185"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Lebanon, N.J. / North Hunterdon"
+   Jack Kirchner:
+      number: "null" → "45"
+      year: "null" → "R-So."
+      height: "null" → "6' 4''"
+      weight: "null" → "235"
+      bats_throws: "null" → "R/R"
+      hometown: "null" → "Moorestown, N.J. / Bishop Eustace"
+
+============================================================
+UCLA
+============================================================
+
+Database: 21 pitchers
+Scraped: 21 pitchers
+Matched: 21
+
+📝 DIFFERENCES (21):
+   Ian May:
+      number: "null" → "10"
+      year: "null" → "R/L"
+      height: "6' 2"" → "6' 2''"
+      weight: "185 lbs" → "190"
+      bats_throws: "R/L" → "R-Sr."
+      hometown: "Laguna Niguel, CA" → "Laguna Niguel, Calif. / California"
+   Zach Strickland:
+      number: "null" → "12"
+      year: "null" → "S/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "200"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Arcadia, Calif. / Maranatha HS"
+   Landon Stump:
+      number: "null" → "14"
+      year: "null" → "R/R"
+      height: "6' 3"" → "6' 3''"
+      weight: "195 lbs" → "212"
+      bats_throws: "R/R" → "Jr."
+      hometown: "Morgan Hill, CA" → "Morgan Hill, Calif. / Live Oak HS"
+   Jake Swenson:
+      number: "null" → "16"
+      year: "null" → "R/R"
+      height: "null" → "6' 4''"
+      weight: "null" → "188"
+      bats_throws: "null" → "Jr."
+      hometown: "null" → "Camas, Wash. / Linfield University (Ore.)"
+   Wylan Moss:
+      number: "null" → "18"
+      year: "null" → "R/R"
+      height: "6' 3"" → "6' 3''"
+      weight: "185 lbs" → "200"
+      bats_throws: "R/R" → "So."
+      hometown: "Tustin, CA" → "Tustin, Calif. / Mater Dei HS"
+   Justin Lee:
+      number: "null" → "20"
+      year: "null" → "R/R"
+      height: "6' 3"" → "6' 3''"
+      weight: "210 lbs" → "210"
+      bats_throws: "R/R" → "Jr."
+      hometown: "Los Angeles, CA" → "Los Angeles, Calif. / Notre Dame HS"
+   Jack O'Connor:
+      number: "null" → "21"
+      year: "null" → "R/R"
+      height: "6' 3"" → "6' 3''"
+      weight: "215 lbs" → "210"
+      bats_throws: "R/R" → "Sr."
+      hometown: "Palos Verdes, CA" → "Palos Verdes, Calif. / Palos Verdes HS"
+   Logan Reddemann:
+      number: "null" → "24"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "200"
+      bats_throws: "null" → "Jr."
+      hometown: "null" → "Palmdale, Calif. / San Diego"
+   CJ Bott:
+      number: "null" → "25"
+      year: "null" → "R/R"
+      height: "6' 2"" → "6' 2''"
+      weight: "190 lbs" → "200"
+      bats_throws: "R/R" → "So."
+      hometown: "Scottsdale, AZ" → "Scottsdale, Ariz. / Notre Dame Prep HS"
+   Easton Hawk:
+      number: "null" → "27"
+      year: "null" → "R/R"
+      height: "6' 3"" → "6' 3''"
+      weight: "205 lbs" → "210"
+      bats_throws: "R/R" → "So."
+      hometown: "Granada Hills, CA" → "Granada Hills, Calif. / Granada Hills HS"
+   Finn McIlroy:
+      number: "null" → "29"
+      year: "null" → "R/R"
+      height: "null" → "6' 6''"
+      weight: "null" → "215"
+      bats_throws: "null" → "Sr."
+      hometown: "null" → "Carlsbad, Calif. / Carlsbad HS"
+   Chris Aldrich:
+      number: "null" → "31"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "195"
+      bats_throws: "null" → "Gr."
+      hometown: "null" → "Oak Park, Calif. / Notre Dame HS"
+   Mack Edwards:
+      number: "null" → "34"
+      year: "null" → "L/L"
+      height: "null" → "6' 5''"
+      weight: "null" → "230"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Reno, Nev. / Reno HS"
+   Hayden George:
+      number: "null" → "35"
+      year: "null" → "R/R"
+      height: "null" → "6' 4''"
+      weight: "null" → "225"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "San Clemente, Calif. / Santa Margarita Catholic HS"
+   Will Crain:
+      number: "null" → "41"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "182"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Mercer Island, Wash. / Eastside Catholic HS"
+   Ian Fisher:
+      number: "null" → "44"
+      year: "null" → "R/L"
+      height: "null" → "6' 1''"
+      weight: "null" → "182"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Carlsbad, Calif. / Carlsbad HS"
+   Chris Grothues:
+      number: "null" → "45"
+      year: "null" → "L/L"
+      height: "6' 3"" → "6' 3''"
+      weight: "210 lbs" → "210"
+      bats_throws: "L/L" → "R-Jr."
+      hometown: "Anaheim Hills, CA" → "Anaheim Hills, Calif. / Servite HS"
+   Elai Iwanaga:
+      number: "null" → "47"
+      year: "null" → "L/R"
+      height: "null" → "6' 0''"
+      weight: "null" → "170"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Mililani, Hawaii / Kamehameha HS"
+   Michael Barnett:
+      number: "null" → "55"
+      year: "null" → "R/R"
+      height: "6' 4"" → "6' 4''"
+      weight: "220 lbs" → "210"
+      bats_throws: "R/R" → "Sr."
+      hometown: "Lafayette, CA" → "Lafayette, Calif. / College Park HS"
+   Cal Randall:
+      number: "null" → "85"
+      year: "null" → "R/R"
+      height: "6' 4"" → "6' 4''"
+      weight: "210 lbs" → "235"
+      bats_throws: "R/R" → "Jr."
+      hometown: "Discovery Bay, CA" → "Discovery Bay, Calif. / De La Salle HS"
+   Angel Cervantes:
+      number: "null" → "99"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "215"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Lynwood, Calif. / Warren HS"
+
+============================================================
+TEXAS
+============================================================
+
+Database: 23 pitchers
+Scraped: 23 pitchers
+Matched: 23
+
+📝 DIFFERENCES (23):
+   Jason Flores:
+      number: "null" → "4"
+      year: "null" → "R/R"
+      height: "6' 1"" → "6' 1''"
+      weight: "245 lbs" → "240"
+      bats_throws: "R/R" → "So."
+      hometown: "Wylie, TX" → "Wylie, Texas"
+   Kade Bing:
+      number: "null" → "11"
+      year: "null" → "L/L"
+      height: "null" → "6' 1''"
+      weight: "null" → "195"
+      bats_throws: "null" → "Jr."
+      hometown: "null" → "West, Texas"
+   Haiden Leffew:
+      number: "null" → "12"
+      year: "null" → "R/L"
+      height: "null" → "6' 1''"
+      weight: "null" → "235"
+      bats_throws: "null" → "Jr."
+      hometown: "null" → "Kannapolis, N.C."
+   Ruger Riojas:
+      number: "null" → "13"
+      year: "null" → "R/R"
+      height: "6' 0"" → "6' 0''"
+      weight: "192 lbs" → "195"
+      bats_throws: "R/R" → "Sr."
+      hometown: "Wimberley, TX" → "Wimberley, Texas"
+   Jack McKernan:
+      number: "null" → "19"
+      year: "null" → "L/L"
+      height: "null" → "5' 11''"
+      weight: "null" → "205"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Missouri City, Texas"
+   Cal Higgins:
+      number: "null" → "27"
+      year: "null" → "L/L"
+      height: "null" → "6' 4''"
+      weight: "null" → "240"
+      bats_throws: "null" → "Gr."
+      hometown: "null" → "Kearney, Neb."
+   Grady Westphal:
+      number: "null" → "28"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "200"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Leawood, Kan."
+   Kaleb Rogers:
+      number: "null" → "30"
+      year: "null" → "R/R"
+      height: "null" → "5' 11''"
+      weight: "null" → "200"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "San Antonio, Texas"
+   Connor McCreery:
+      number: "null" → "33"
+      year: "null" → "R/R"
+      height: "null" → "6' 6''"
+      weight: "null" → "235"
+      bats_throws: "null" → "Sr."
+      hometown: "null" → "Williston Park, N.Y."
+   Michael Winter:
+      number: "null" → "34"
+      year: "null" → "R/R"
+      height: "null" → "6' 5''"
+      weight: "null" → "240"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Prairie Village, Kan."
+   Sam Cozart:
+      number: "null" → "35"
+      year: "null" → "R/R"
+      height: "null" → "6' 6''"
+      weight: "null" → "260"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "High Point, N.C."
+   Max Grubbs:
+      number: "null" → "38"
+      year: "null" → "R/R"
+      height: "6' 1"" → "6' 1''"
+      weight: "218 lbs" → "220"
+      bats_throws: "R/R" → "Sr."
+      hometown: "Arlington, TX" → "Arlington, Texas"
+   Cody Howard:
+      number: "null" → "41"
+      year: "null" → "R/R"
+      height: "6' 1"" → "6' 1''"
+      weight: "215 lbs" → "210"
+      bats_throws: "R/R" → "R-Sr."
+      hometown: "The Woodlands, TX" → "The Woodlands, Texas"
+   Thomas Burns:
+      number: "null" → "45"
+      year: "null" → "R/R"
+      height: "6' 3"" → "6' 3''"
+      weight: "230 lbs" → "240"
+      bats_throws: "R/R" → "Jr."
+      hometown: "Hortonville, WI" → "Hortonville, Wis."
+   Ethan Walker:
+      number: "null" → "46"
+      year: "null" → "L/L"
+      height: "6' 0"" → "6' 0''"
+      weight: "207 lbs" → "200"
+      bats_throws: "L/L" → "R-Jr."
+      hometown: "Ashburn, VA" → "Ashburn, Va."
+   Hudson Hamilton:
+      number: "null" → "48"
+      year: "null" → "R/R"
+      height: "6' 1"" → "6' 1''"
+      weight: "225 lbs" → "225"
+      bats_throws: "R/R" → "Jr."
+      hometown: "Spring, TX" → "Spring, Texas"
+   Luke Harrison:
+      number: "null" → "53"
+      year: "null" → "L/L"
+      height: "6' 2"" → "6' 2''"
+      weight: "215 lbs" → "220"
+      bats_throws: "L/L" → "Gr."
+      hometown: "Friendswood, TX" → "Friendswood, Texas"
+   Jack Paris:
+      number: "null" → "55"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "230"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Houston, Texas"
+   Brody Walls:
+      number: "null" → "67"
+      year: "null" → "R/R"
+      height: "null" → "6' 0''"
+      weight: "null" → "200"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "McKinney, Texas"
+   Cooper Rummel:
+      number: "null" → "80"
+      year: "null" → "R/R"
+      height: "null" → "6' 2''"
+      weight: "null" → "235"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Austin, Texas"
+   Brett Crossland:
+      number: "null" → "88"
+      year: "null" → "R/R"
+      height: "null" → "6' 5''"
+      weight: "null" → "255"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "Phoenix, Ariz."
+   Jadyn Furgason:
+      number: "null" → "95"
+      year: "null" → "R/R"
+      height: "null" → "6' 1''"
+      weight: "null" → "195"
+      bats_throws: "null" → "Fr."
+      hometown: "null" → "St. Louis, Mo."
+   Dylan Volantis:
+      number: "null" → "99"
+      year: "null" → "L/L"
+      height: "6' 6"" → "6' 6''"
+      weight: "212 lbs" → "220"
+      bats_throws: "L/L" → "So."
+      hometown: "Thousand Oaks, CA" → "Thousand Oaks, Calif."
+
+============================================================
+ALABAMA
+============================================================
+
+Database: 31 pitchers
+Scraped: 23 pitchers
+Matched: 13
+
+🆕 NEW PLAYERS (10):
+   #6 Evan Taylor - INF/OF/RHP 6' 0''
+   #11 Myles Upchurch - RHP 6' 4''
+   #19 Caleb Barnett - INF/RHP 6' 6''
+   #27 Luke Smyers - LHP 6' 3''
+   #35 Owen Sarna - RHP 6' 1''
+   #37 Kaden Humphrey - RHP 6' 1''
+   #39 Ross Lindsey - LHP 6' 1''
+   #44 Evan Steckmesser - LHP 6' 1''
+   #45 Joe Chiarodo - OF/RHP 5' 11''
+   #48 Ashton Crowther - LHP 6' 3''
+
+📝 DIFFERENCES (13):
+   Matthew Heiberger:
+      number: "null" → "7"
+      year: "null" → "6' 3''"
+      height: "6' 3"" → "215"
+      weight: "210 lbs" → "Jr."
+      bats_throws: "L/L" → "Birmingham, Ala. / Oak Mountain"
+   Tyler Fay:
+      number: "null" → "8"
+      year: "null" → "6' 5''"
+      height: "6' 5"" → "215"
+      weight: "215 lbs" → "R-Jr."
+      bats_throws: "R/R" → "Doniphan, Neb. / Grand Island Senior"
+   JT Blackwood:
+      number: "null" → "12"
+      year: "null" → "6' 2''"
+      height: "6' 2"" → "205"
+      weight: "210 lbs" → "Sr."
+      bats_throws: "R/R" → "Cullman, Ala. / Hartselle"
+      hometown: "Cullman, AL" → "Wallace State C.C."
+   Bobby Alcock:
+      number: "null" → "16"
+      year: "null" → "6' 5''"
+      height: "null" → "230"
+      weight: "null" → "R-Sr."
+      bats_throws: "null" → "Lynn, Mass. / The Winchendon School"
+      hometown: "null" → "Gardner-Webb"
+   Zane Adams:
+      number: "null" → "20"
+      year: "null" → "6' 4''"
+      height: "null" → "205"
+      weight: "null" → "Jr."
+      bats_throws: "null" → "Porter, Texas / Porter"
+   Tate Robertson:
+      number: "null" → "24"
+      year: "null" → "6' 0''"
+      height: "6' 0"" → "175"
+      weight: "170 lbs" → "R-Sr."
+      bats_throws: "L/L" → "Tuscaloosa, Ala. / Northridge"
+      hometown: "Tuscaloosa, AL" → "Shelton State C.C."
+   Sam Mitchell:
+      number: "null" → "28"
+      year: "null" → "6' 7''"
+      height: "null" → "220"
+      weight: "null" → "R-So."
+      bats_throws: "null" → "Madison, Ala. / Bob Jones"
+   Anthony Pesci:
+      number: "null" → "30"
+      year: "null" → "6' 4''"
+      height: "null" → "210"
+      weight: "null" → "So."
+      bats_throws: "null" → "Commerce Township, Mich. / Orchard Lake Saint Mary's Prep"
+   Hagan Banks:
+      number: "null" → "36"
+      year: "null" → "6' 4''"
+      height: "6' 4"" → "210"
+      weight: "215 lbs" → "R-Sr."
+      bats_throws: "R/R" → "Plainville, Ga. / Calhoun"
+   Zach Kittrell:
+      number: "null" → "38"
+      year: "null" → "6' 0''"
+      height: "null" → "195"
+      weight: "null" → "Sr."
+      bats_throws: "null" → "Mobile, Ala. / Bayside Academy"
+      hometown: "null" → "Pensacola State College"
+   Jack Ketchum:
+      number: "null" → "43"
+      year: "null" → "6' 3''"
+      height: "null" → "210"
+      weight: "null" → "So."
+      bats_throws: "null" → "West Point, Miss. / Heritage Academy"
+   Connor Lehman:
+      number: "null" → "50"
+      year: "null" → "6' 2''"
+      height: "6' 2"" → "215"
+      weight: "210 lbs" → "So."
+      bats_throws: "L/L" → "Indian Mound, Tenn. / Stewart County"
+   Austin Morris:
+      number: "null" → "99"
+      year: "null" → "6' 4''"
+      height: "null" → "215"
+      weight: "null" → "R-Jr."
+      bats_throws: "null" → "Warrior, Ala. / Mortimer Jordan"
+
+⚠️  MISSING FROM WEBSITE (18):
+   Danny Heintz
+   Connor Ball
+   Beau Bryans
+   Packy Bradley-Cooney
+   Jackson Hunter
+   Carson Kuehne
+   Riley Quick
+   Coulson Buchanan
+   Carson Ozmer
+   Jonathan Stevens
+   Aeden Finateri
+   Braylon Myers
+   Aidan Moza
+   Nash Wagner
+   Ashton Alston
+   Egan Lowery
+   Ariston Veasey
+   Andre Modugno
+
+============================================================
+ARIZONA STATE
+============================================================
+
+Database: 21 pitchers
+Scraped: 0 pitchers
+Matched: 0
+
+⚠️  MISSING FROM WEBSITE (21):
+   Brenden Lewis
+   Easton Barrett
+   Jaden Alba
+   Alex Overbay
+   Wyatt Halvorson
+   Finn Edwards
+   Austin Musso
+   Eli Buxton
+   Nick Anello
+   Kole Klecker
+   Colin Linder
+   Josh Butler
+   Brady Louck
+   Colby Guy
+   Sean Fitzpatrick
+   Ryan Caruso
+   Marcelo Rodriguez
+   Taylor Penn
+   Brandon Olivera
+   Cole Carlon
+   Derek Schaefer
