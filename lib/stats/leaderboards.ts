@@ -20,7 +20,7 @@ export function getLeaders(
   const qualified = pitchers.filter(p => p.innings_pitched >= minInnings);
 
   // Sort based on category
-  const sorted = qualified.sort((a, b) => {
+  const sorted = [...qualified].sort((a, b) => {
     switch (category) {
       case 'era':
       case 'whip':
