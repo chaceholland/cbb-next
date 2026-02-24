@@ -11,6 +11,7 @@ import { PitcherCard } from './PitcherCard';
 import { PitcherModal } from './PitcherModal';
 import { RosterSkeleton } from './RosterSkeleton';
 import { RosterFilterPills } from '@/components/FilterPills';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { cn, getEspnLogoUrl } from '@/lib/utils';
 
 export type RosterPitcherDataQualityIssue = {
@@ -477,7 +478,33 @@ export function RosterView() {
         </div>
 
         {teamPitchers.length === 0 ? (
-          <div className="text-center py-16 text-slate-400">No pitchers found.</div>
+          <EmptyState
+            icon={
+              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            }
+            title="No pitchers found"
+            description={
+              searchQuery.trim()
+                ? "No pitchers match your search. Try a different search term or check your filters."
+                : showFavorites
+                ? "No favorite pitchers on this team yet. Click the star icon on any pitcher to add them to your favorites."
+                : "No pitchers match your current filters. Try adjusting your filter selections."
+            }
+            action={{
+              label: searchQuery.trim() ? "Clear search" : showFavorites ? "Show all pitchers" : "Clear filters",
+              onClick: () => {
+                if (searchQuery.trim()) {
+                  setSearchQuery('');
+                } else if (showFavorites) {
+                  setShowFavorites(false);
+                } else {
+                  clearFilters();
+                }
+              },
+            }}
+          />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
             {teamPitchers.map((pitcher, i) => (
@@ -611,41 +638,57 @@ export function RosterView() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-        {filteredTeams.map(team => {
-          const count = (pitchersByTeam[team.team_id] || []).length;
-          const favCount = (pitchersByTeam[team.team_id] || []).filter(p => favorites.includes(p.pitcher_id)).length;
-          const logoSrc = team.logo || getEspnLogoUrl(team.team_id);
-          return (
-            <button
-              key={team.team_id}
-              onClick={() => setSelectedTeamId(team.team_id)}
-              className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
-            >
-              <div className="w-14 h-14 flex items-center justify-center">
-                <Image
-                  src={logoSrc}
-                  alt={team.display_name}
-                  width={56}
-                  height={56}
-                  className="object-contain"
-                  unoptimized
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                />
-              </div>
-              <div className="min-w-0 w-full">
-                <p className="text-xs font-semibold text-slate-700 leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
-                  {team.display_name}
-                </p>
-                <p className="text-[10px] text-slate-400 mt-0.5">{count} pitchers</p>
-                {favCount > 0 && (
-                  <p className="text-[10px] text-yellow-600 mt-0.5">★ {favCount} fav</p>
-                )}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+      {filteredTeams.length === 0 ? (
+        <EmptyState
+          icon={
+            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          }
+          title="No teams found"
+          description="No teams match your current filters. Try adjusting your conference selection."
+          action={{
+            label: "Clear filters",
+            onClick: clearFilters,
+          }}
+        />
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+          {filteredTeams.map(team => {
+            const count = (pitchersByTeam[team.team_id] || []).length;
+            const favCount = (pitchersByTeam[team.team_id] || []).filter(p => favorites.includes(p.pitcher_id)).length;
+            const logoSrc = team.logo || getEspnLogoUrl(team.team_id);
+            return (
+              <button
+                key={team.team_id}
+                onClick={() => setSelectedTeamId(team.team_id)}
+                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
+              >
+                <div className="w-14 h-14 flex items-center justify-center">
+                  <Image
+                    src={logoSrc}
+                    alt={team.display_name}
+                    width={56}
+                    height={56}
+                    className="object-contain"
+                    unoptimized
+                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                  />
+                </div>
+                <div className="min-w-0 w-full">
+                  <p className="text-xs font-semibold text-slate-700 leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    {team.display_name}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-0.5">{count} pitchers</p>
+                  {favCount > 0 && (
+                    <p className="text-[10px] text-yellow-600 mt-0.5">★ {favCount} fav</p>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

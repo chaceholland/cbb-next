@@ -8,6 +8,7 @@ import { GameCard } from './GameCard';
 import { GameDetailModal } from './GameDetailModal';
 import { FiltersModal } from './FiltersModal';
 import { ScheduleSkeleton } from './ScheduleSkeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { useFilterMemory } from '@/lib/hooks/useFilterMemory';
 import { cn } from '@/lib/utils';
@@ -990,9 +991,19 @@ export function ScheduleView() {
         ))}
 
         {weeks.length === 0 && (
-          <div className="text-center py-16 text-slate-400">
-            No games found for this filter.
-          </div>
+          <EmptyState
+            icon={
+              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            }
+            title="No games found"
+            description="No games match your current filters. Try adjusting your conference, week, or team selections."
+            action={{
+              label: "Clear all filters",
+              onClick: clearFilters,
+            }}
+          />
         )}
       </div>
 
