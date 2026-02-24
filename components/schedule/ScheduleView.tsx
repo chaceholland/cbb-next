@@ -880,27 +880,29 @@ export function ScheduleView() {
       <div className="space-y-6">
         {weeks.filter(week => selectedWeeks.size === 0 || selectedWeeks.has(week)).map(week => (
           <div key={week} className="space-y-3">
-            <button
-              onClick={() => toggleWeek(week)}
-              className="flex items-center gap-3 w-full text-left group"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-slate-600 bg-gradient-to-r from-[#1a73e8]/10 to-[#ea4335]/10 border border-blue-200 px-3 py-1 rounded-full">
-                  Week {week}
-                </span>
-                <span className="text-xs text-slate-400">{gamesByWeek[week].length} games</span>
-                {loadingWeeks.has(week) && (
-                  <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                )}
-              </div>
-              <div className="flex-1 h-px bg-slate-200" />
-              <svg
-                className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedWeeks.has(week) ? 'rotate-180' : ''}`}
-                fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            <div className="sticky top-32 z-30 bg-slate-50 dark:bg-slate-900 py-2 -mx-4 px-4">
+              <button
+                onClick={() => toggleWeek(week)}
+                className="flex items-center gap-3 w-full text-left group"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-slate-600 dark:text-slate-400 bg-gradient-to-r from-[#1a73e8]/10 to-[#ea4335]/10 border border-blue-200 dark:border-blue-800 px-3 py-1 rounded-full">
+                    Week {week}
+                  </span>
+                  <span className="text-xs text-slate-400 dark:text-slate-500">{gamesByWeek[week].length} games</span>
+                  {loadingWeeks.has(week) && (
+                    <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                  )}
+                </div>
+                <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                <svg
+                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedWeeks.has(week) ? 'rotate-180' : ''}`}
+                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
 
             {expandedWeeks.has(week) && (
               <motion.div

@@ -50,11 +50,9 @@ export default function Home() {
       <CommandPalette />
       <Navigation />
       <HeroSection />
+      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="flex justify-center mb-8">
-            <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
-          </div>
           {activeTab === 'schedule' && <ScheduleView />}
           {activeTab === 'rosters' && <RosterView />}
           {activeTab === 'analytics' && <AnalyticsView />}
