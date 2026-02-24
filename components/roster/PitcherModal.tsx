@@ -7,6 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { EnrichedPitcher } from '@/lib/supabase/types';
 import { RosterPitcherDataQualityIssue } from './RosterView';
 import { cn } from '@/lib/utils';
+import { PitcherStatsCard } from '@/components/stats/PitcherStatsCard';
+import { PerformanceChart } from '@/components/stats/PerformanceChart';
+import { getPitcherGameStats } from '@/lib/stats/queries';
+import { aggregateSeasonStats, getRecentForm } from '@/lib/stats/aggregations';
+import { PitcherGameStats, PitcherSeasonStats } from '@/lib/stats/types';
 
 interface Props {
   pitcher: EnrichedPitcher | null;
@@ -36,9 +41,64 @@ function DetailRow({ label, value }: { label: string; value: string | null | und
 
 export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFavorite, hasIssue = false, issueData, onIssueToggle }: Props) {
   const [imgError, setImgError] = useState(false);
+  const [activeTab, setActiveTab] = useState<'bio' | 'stats'>('bio');
+  const [games, setGames] = useState<PitcherGameStats[]>([]);
+  const [seasonStats, setSeasonStats] = useState<PitcherSeasonStats | null>(null);
+  const [recentStats, setRecentStats] = useState<PitcherSeasonStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
     setImgError(false);
+  }, [pitcher]);
+
+  async function loadStats() {
+    if (!pitcher) return;
+
+    setStatsLoading(true);
+    try {
+      const gameStats = await getPitcherGameStats(pitcher.pitcher_id);
+      setGames(gameStats);
+
+      if (gameStats.length > 0) {
+        const season = aggregateSeasonStats(
+          gameStats as any,
+          pitcher.pitcher_id,
+          pitcher.display_name || pitcher.name,
+          pitcher.team_id
+        );
+        setSeasonStats(season);
+
+        const recent = getRecentForm(gameStats, 5);
+        if (recent.length > 0) {
+          const recentAgg = aggregateSeasonStats(
+            recent as any,
+            pitcher.pitcher_id,
+            pitcher.display_name || pitcher.name,
+            pitcher.team_id
+          );
+          setRecentStats(recentAgg);
+        }
+      }
+    } finally {
+      setStatsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (pitcher && activeTab === 'stats' && games.length === 0) {
+      loadStats();
+    }
+  }, [pitcher, activeTab]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!pitcher) {
+      setActiveTab('bio');
+      setGames([]);
+      setSeasonStats(null);
+      setRecentStats(null);
+      setStatsLoading(false);
+    }
   }, [pitcher]);
 
   useEffect(() => {
@@ -206,8 +266,36 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                     )}
                   </div>
 
-                  {/* Details */}
-                  <div className="space-y-0">
+                  {/* Tab switcher */}
+                  <div className="flex gap-4 border-b border-slate-200 mb-4">
+                    <button
+                      onClick={() => setActiveTab('bio')}
+                      className={cn(
+                        'pb-2 px-2 text-sm font-medium transition-colors border-b-2',
+                        activeTab === 'bio'
+                          ? 'border-blue-600 text-blue-600'
+                          : 'border-transparent text-slate-500 hover:text-slate-700'
+                      )}
+                    >
+                      Bio
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('stats')}
+                      className={cn(
+                        'pb-2 px-2 text-sm font-medium transition-colors border-b-2',
+                        activeTab === 'stats'
+                          ? 'border-blue-600 text-blue-600'
+                          : 'border-transparent text-slate-500 hover:text-slate-700'
+                      )}
+                    >
+                      Stats
+                    </button>
+                  </div>
+
+                  {activeTab === 'bio' && (
+                    <>
+                      {/* Details */}
+                      <div className="space-y-0">
                     <DetailRow label="Jersey" value={pitcher.number ? `#${pitcher.number}` : null} />
                     <DetailRow label="Position" value={pitcher.position} />
                     <DetailRow label="Year" value={pitcher.year} />
@@ -217,20 +305,42 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                     <DetailRow label="Bats/Throws" value={pitcher.bats_throws} />
                   </div>
 
-                  {/* ESPN Link */}
-                  {pitcher.espn_link && (
-                    <div className="mt-6">
-                      <a
-                        href={pitcher.espn_link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white text-sm font-medium hover:opacity-90 transition-opacity"
-                      >
-                        View on ESPN
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                      </a>
+                      {/* ESPN Link */}
+                      {pitcher.espn_link && (
+                        <div className="mt-6">
+                          <a
+                            href={pitcher.espn_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+                          >
+                            View on ESPN
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {activeTab === 'stats' && (
+                    <div className="space-y-4">
+                      {statsLoading ? (
+                        <div className="py-12 text-center text-slate-500">Loading stats...</div>
+                      ) : games.length === 0 ? (
+                        <div className="py-12 text-center text-slate-500">No stats available</div>
+                      ) : (
+                        <>
+                          <div className="grid gap-4 grid-cols-1">
+                            <PitcherStatsCard stats={seasonStats} label="Season Stats" className="dark:bg-slate-900 dark:border-slate-700" />
+                            {recentStats && <PitcherStatsCard stats={recentStats} label="Last 5 Games" className="dark:bg-slate-900 dark:border-slate-700" />}
+                          </div>
+
+                          <PerformanceChart games={games} metric="era" />
+                          <PerformanceChart games={games} metric="k_per_9" />
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
