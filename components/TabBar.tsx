@@ -17,14 +17,14 @@ export function TabBar({ activeTab, onTabChange }: Props) {
   ];
 
   return (
-    <div className="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit">
+    <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl w-fit">
       {tabs.map(tab => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={cn(
             'relative px-6 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
-            activeTab === tab.id ? 'text-white' : 'text-slate-600 hover:text-slate-900'
+            activeTab === tab.id ? 'text-white' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
           )}
         >
           {activeTab === tab.id && (

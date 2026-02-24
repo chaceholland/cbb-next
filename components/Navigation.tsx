@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface NavigationProps {
   onSearch?: (query: string) => void;
@@ -34,8 +35,8 @@ export function Navigation({
     <nav
       className={cn(
         'sticky top-0 z-50 transition-all duration-300',
-        'backdrop-blur-xl bg-white/80',
-        isScrolled && 'shadow-lg shadow-slate-900/10'
+        'backdrop-blur-xl bg-white/80 dark:bg-slate-900/80',
+        isScrolled && 'shadow-lg shadow-slate-900/10 dark:shadow-slate-950/30'
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,6 +52,9 @@ export function Navigation({
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Search Input */}
             <div className="w-64 lg:w-80">
               <input
@@ -60,8 +64,8 @@ export function Navigation({
                 placeholder="Search pitchers..."
                 className={cn(
                   'w-full px-4 py-2 rounded-lg text-sm',
-                  'bg-slate-100 border border-slate-300',
-                  'text-slate-900 placeholder:text-slate-500',
+                  'bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600',
+                  'text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400',
                   'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500',
                   'transition-all duration-200'
                 )}
@@ -103,6 +107,9 @@ export function Navigation({
 
           {/* Mobile Actions */}
           <div className="flex md:hidden items-center gap-2">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             <button
               onClick={onFavoritesClick}
               className={cn(
@@ -143,8 +150,8 @@ export function Navigation({
             placeholder="Search pitchers..."
             className={cn(
               'w-full px-4 py-2 rounded-lg text-sm',
-              'bg-slate-100 border border-slate-300',
-              'text-slate-900 placeholder:text-slate-500',
+              'bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600',
+              'text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400',
               'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500'
             )}
           />
