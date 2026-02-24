@@ -7,6 +7,8 @@ import { ScheduleView } from '@/components/schedule/ScheduleView';
 import { RosterView } from '@/components/roster/RosterView';
 import { AnalyticsView } from '@/components/analytics/AnalyticsView';
 import { CommandPalette } from '@/components/command/CommandPalette';
+import { registerNavigationCommands } from '@/lib/commands/navigation';
+import { useKeyboard } from '@/lib/hooks/useKeyboard';
 
 type Tab = 'schedule' | 'rosters' | 'analytics';
 
@@ -30,6 +32,18 @@ export default function Home() {
     setActiveTab(tab);
     window.location.hash = tab;
   };
+
+  // Register navigation commands on mount
+  useEffect(() => {
+    registerNavigationCommands(handleTabChange);
+  }, []);
+
+  // Add keyboard shortcuts for direct tab switching
+  useKeyboard([
+    { key: '1', action: () => handleTabChange('schedule') },
+    { key: '2', action: () => handleTabChange('rosters') },
+    { key: '3', action: () => handleTabChange('analytics') },
+  ]);
 
   return (
     <>

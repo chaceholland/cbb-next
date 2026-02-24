@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Command } from 'cmdk';
+import {
+  CommandRoot,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from 'cmdk';
 import { useCommand } from './CommandProvider';
 import { commandRegistry } from '@/lib/commands/registry';
 import { useKeyboard } from '@/lib/hooks/useKeyboard';
@@ -51,22 +58,22 @@ export function CommandPalette() {
         className="fixed left-1/2 top-[20%] w-full max-w-2xl -translate-x-1/2 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
-        <Command.Root className="w-full" shouldFilter={false}>
-          <Command.Input
+        <CommandRoot className="w-full" shouldFilter={false}>
+          <CommandInput
             value={search}
             onValueChange={setSearch}
             placeholder="Type a command or search..."
             className="w-full border-b border-gray-200 bg-transparent px-4 py-3 text-sm outline-none dark:border-slate-700"
           />
-          <Command.List className="max-h-96 overflow-y-auto p-2">
-            <Command.Empty className="py-6 text-center text-sm text-gray-500 dark:text-slate-400">
+          <CommandList className="max-h-96 overflow-y-auto p-2">
+            <CommandEmpty className="py-6 text-center text-sm text-gray-500 dark:text-slate-400">
               No results found.
-            </Command.Empty>
+            </CommandEmpty>
 
             {commandRegistry.groupByCategory().map((group) => (
-              <Command.Group key={group.heading} heading={group.heading}>
+              <CommandGroup key={group.heading} heading={group.heading}>
                 {group.commands.map((cmd) => (
-                  <Command.Item
+                  <CommandItem
                     key={cmd.id}
                     onSelect={() => {
                       cmd.action();
@@ -96,12 +103,12 @@ export function CommandPalette() {
                         ))}
                       </div>
                     )}
-                  </Command.Item>
+                  </CommandItem>
                 ))}
-              </Command.Group>
+              </CommandGroup>
             ))}
-          </Command.List>
-        </Command.Root>
+          </CommandList>
+        </CommandRoot>
       </div>
     </div>
   );
