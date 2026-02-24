@@ -7,6 +7,7 @@ import { CbbGame, CbbTeam, ParticipationRow } from '@/lib/supabase/types';
 import { GameCard } from './GameCard';
 import { GameDetailModal } from './GameDetailModal';
 import { FiltersModal } from './FiltersModal';
+import { ScheduleSkeleton } from './ScheduleSkeleton';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { cn } from '@/lib/utils';
 
@@ -628,12 +629,7 @@ export function ScheduleView() {
   }, [games]);
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-500 text-sm">Loading schedule...</p>
-      </div>
-    );
+    return <ScheduleSkeleton />;
   }
 
   if (error) {

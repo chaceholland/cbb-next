@@ -8,6 +8,7 @@ import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { PitcherCard } from './PitcherCard';
 import { PitcherModal } from './PitcherModal';
+import { RosterSkeleton } from './RosterSkeleton';
 import { RosterFilterPills } from '@/components/FilterPills';
 import { cn, getEspnLogoUrl } from '@/lib/utils';
 
@@ -302,12 +303,7 @@ export function RosterView() {
   };
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-500 text-sm">Loading rosters...</p>
-      </div>
-    );
+    return <RosterSkeleton />;
   }
 
   if (error) {

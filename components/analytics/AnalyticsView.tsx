@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase/client';
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
+import { AnalyticsSkeleton } from './AnalyticsSkeleton';
 import { CONFERENCES } from '@/components/FilterPills';
 import { cn } from '@/lib/utils';
 
@@ -198,12 +199,7 @@ export function AnalyticsView() {
   const maxRosterSize = rosterByTeam.length > 0 ? rosterByTeam[0].count : 1;
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-24 gap-4">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-slate-500 text-sm">Loading analytics...</p>
-      </div>
-    );
+    return <AnalyticsSkeleton />;
   }
 
   return (
