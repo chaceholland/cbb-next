@@ -52,6 +52,7 @@ interface RosterFilterPillsProps {
   onConferenceChange: (conf: string) => void;
   onHandChange: (hand: string) => void;
   onFavoritesToggle: () => void;
+  onClearAll?: () => void;
   hideConference?: boolean;
   hideHand?: boolean;
 }
@@ -67,10 +68,14 @@ export function RosterFilterPills({
   onConferenceChange,
   onHandChange,
   onFavoritesToggle,
+  onClearAll,
   hideConference,
   hideHand,
 }: RosterFilterPillsProps) {
   const conferenceOptions = ['All', ...CONFERENCES];
+
+  // Check if any filters are active
+  const hasActiveFilters = conference !== 'All' || hand !== 'All' || showFavorites;
 
   return (
     <div className="space-y-4 py-4">
@@ -110,7 +115,7 @@ export function RosterFilterPills({
         </div>
       )}
 
-      {/* Favorites Toggle */}
+      {/* Favorites Toggle & Clear Filters */}
       <div className="flex items-center gap-3">
         <button
           onClick={onFavoritesToggle}
@@ -131,6 +136,19 @@ export function RosterFilterPills({
             </span>
           )}
         </button>
+
+        {/* Clear all filters button */}
+        {onClearAll && hasActiveFilters && (
+          <button
+            onClick={onClearAll}
+            className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-600"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Clear All
+          </button>
+        )}
       </div>
     </div>
   );

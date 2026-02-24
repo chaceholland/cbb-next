@@ -9,6 +9,7 @@ import { GameDetailModal } from './GameDetailModal';
 import { FiltersModal } from './FiltersModal';
 import { ScheduleSkeleton } from './ScheduleSkeleton';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+import { useFilterMemory } from '@/lib/hooks/useFilterMemory';
 import { cn } from '@/lib/utils';
 
 export type PitcherDataQualityIssue = {
@@ -38,20 +39,60 @@ export function ScheduleView() {
   const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
   const [favorites] = useLocalStorage<string[]>('cbb-favorites', []);
   const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
-  const [conferences, setConferences] = useState<Set<string>>(new Set());
-  const [teamSearch, setTeamSearch] = useState('');
-  const [showFavorites, setShowFavorites] = useState(false);
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(new Set());
   const [favoriteGameIds, setFavoriteGameIds] = useLocalStorage<string[]>('cbb-favorite-games', []);
   const [watchedGameIds, setWatchedGameIds] = useLocalStorage<string[]>('cbb-watched-games', []);
   const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
   const [showFiltersModal, setShowFiltersModal] = useState(false);
-  const [watchOrder, setWatchOrder] = useState<'all' | 'unwatched' | 'watched' | 'finals' | 'upcoming' | 'favorites'>('all');
-  const [pitcherFilter, setPitcherFilter] = useState<'favorites-or-played' | 'favorites-only' | 'played-only' | 'all'>('favorites-or-played');
   const [viewMode, setViewMode] = useState<'games' | 'series'>('games');
   const [virtualScroll, setVirtualScroll] = useState(false);
   const [expandAll, setExpandAll] = useState(false);
-  const [selectedWeeks, setSelectedWeeks] = useState<Set<number>>(new Set());
+
+  // Filter memory hook - persists filter state across sessions
+  const { filters, setFilters, clearFilters, isRestored, dismissRestored } = useFilterMemory({
+    key: 'schedule-filters',
+    defaultFilters: {
+      conferences: [],
+      teamSearch: '',
+      showFavorites: false,
+      watchOrder: 'all',
+      pitcherFilter: 'favorites-or-played',
+      selectedWeeks: [],
+    },
+  });
+
+  // Derived state from filter memory
+  const conferences = useMemo(() => new Set(filters.conferences as string[]), [filters.conferences]);
+  const teamSearch = filters.teamSearch as string;
+  const showFavorites = filters.showFavorites as boolean;
+  const watchOrder = filters.watchOrder as 'all' | 'unwatched' | 'watched' | 'finals' | 'upcoming' | 'favorites';
+  const pitcherFilter = filters.pitcherFilter as 'favorites-or-played' | 'favorites-only' | 'played-only' | 'all';
+  const selectedWeeks = useMemo(() => new Set(filters.selectedWeeks as number[]), [filters.selectedWeeks]);
+
+  // Setters that update filter memory
+  const setConferences = useCallback((confs: Set<string>) => {
+    setFilters(prev => ({ ...prev, conferences: Array.from(confs) }));
+  }, [setFilters]);
+
+  const setTeamSearch = useCallback((search: string) => {
+    setFilters(prev => ({ ...prev, teamSearch: search }));
+  }, [setFilters]);
+
+  const setShowFavorites = useCallback((show: boolean | ((prev: boolean) => boolean)) => {
+    setFilters(prev => ({ ...prev, showFavorites: typeof show === 'function' ? show(prev.showFavorites as boolean) : show }));
+  }, [setFilters]);
+
+  const setWatchOrder = useCallback((order: 'all' | 'unwatched' | 'watched' | 'finals' | 'upcoming' | 'favorites') => {
+    setFilters(prev => ({ ...prev, watchOrder: order }));
+  }, [setFilters]);
+
+  const setPitcherFilter = useCallback((filter: 'favorites-or-played' | 'favorites-only' | 'played-only' | 'all') => {
+    setFilters(prev => ({ ...prev, pitcherFilter: filter }));
+  }, [setFilters]);
+
+  const setSelectedWeeks = useCallback((weeks: Set<number>) => {
+    setFilters(prev => ({ ...prev, selectedWeeks: Array.from(weeks) }));
+  }, [setFilters]);
 
   // Data quality issues
   const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<PitcherDataQualityIssue[]>('cbb-pitcher-data-quality-issues', []);
@@ -647,6 +688,19 @@ export function ScheduleView() {
 
   return (
     <div>
+      {/* Filter restoration notification */}
+      {isRestored && (
+        <div className="mb-4 flex items-center justify-between rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+          <span>Filters restored from last visit</span>
+          <button
+            onClick={dismissRestored}
+            className="text-blue-500 hover:text-blue-700 dark:text-blue-400"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       {/* Search + Favorites row */}
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <button
@@ -966,6 +1020,7 @@ export function ScheduleView() {
         onWatchOrderChange={setWatchOrder}
         onPitcherFilterChange={setPitcherFilter}
         onSelectedWeeksChange={setSelectedWeeks}
+        onClearAllFilters={clearFilters}
       />
     </div>
   );

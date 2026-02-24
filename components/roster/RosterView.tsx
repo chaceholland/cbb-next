@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { createPortal } from 'react-dom';
 import { supabase } from '@/lib/supabase/client';
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+import { useFilterMemory } from '@/lib/hooks/useFilterMemory';
 import { PitcherCard } from './PitcherCard';
 import { PitcherModal } from './PitcherModal';
 import { RosterSkeleton } from './RosterSkeleton';
@@ -49,12 +50,42 @@ export function RosterView() {
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedPitcher, setSelectedPitcher] = useState<EnrichedPitcher | null>(null);
   const [favorites, setFavorites] = useLocalStorage<string[]>('cbb-favorites', []);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [conference, setConference] = useState('All');
-  const [hand, setHand] = useState('All');
-  const [showFavorites, setShowFavorites] = useState(false);
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<string | null>(null);
+
+  // Filter memory hook - persists filter state across sessions
+  const { filters, setFilters, clearFilters, isRestored, dismissRestored } = useFilterMemory({
+    key: 'roster-filters',
+    defaultFilters: {
+      searchQuery: '',
+      conference: 'All',
+      hand: 'All',
+      showFavorites: false,
+    },
+  });
+
+  // Derived state from filter memory
+  const searchQuery = filters.searchQuery as string;
+  const conference = filters.conference as string;
+  const hand = filters.hand as string;
+  const showFavorites = filters.showFavorites as boolean;
+
+  // Setters that update filter memory
+  const setSearchQuery = useCallback((query: string) => {
+    setFilters(prev => ({ ...prev, searchQuery: query }));
+  }, [setFilters]);
+
+  const setConference = useCallback((conf: string) => {
+    setFilters(prev => ({ ...prev, conference: conf }));
+  }, [setFilters]);
+
+  const setHand = useCallback((h: string) => {
+    setFilters(prev => ({ ...prev, hand: h }));
+  }, [setFilters]);
+
+  const setShowFavorites = useCallback((show: boolean | ((prev: boolean) => boolean)) => {
+    setFilters(prev => ({ ...prev, showFavorites: typeof show === 'function' ? show(prev.showFavorites as boolean) : show }));
+  }, [setFilters]);
 
   // Data quality issues
   const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<RosterPitcherDataQualityIssue[]>('cbb-roster-pitcher-data-quality-issues', []);
@@ -390,6 +421,7 @@ export function RosterView() {
             onConferenceChange={setConference}
             onHandChange={setHand}
             onFavoritesToggle={() => setShowFavorites(prev => !prev)}
+            onClearAll={clearFilters}
             hideConference
           />
 
@@ -477,6 +509,19 @@ export function RosterView() {
   // ── Team tiles grid ──
   return (
     <div>
+      {/* Filter restoration notification */}
+      {isRestored && (
+        <div className="mb-4 flex items-center justify-between rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+          <span>Filters restored from last visit</span>
+          <button
+            onClick={dismissRestored}
+            className="text-blue-500 hover:text-blue-700 dark:text-blue-400"
+          >
+            Dismiss
+          </button>
+        </div>
+      )}
+
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <RosterFilterPills
           conference={conference}
@@ -489,6 +534,7 @@ export function RosterView() {
           onConferenceChange={setConference}
           onHandChange={setHand}
           onFavoritesToggle={() => setShowFavorites(prev => !prev)}
+          onClearAll={clearFilters}
           hideHand
         />
 

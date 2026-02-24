@@ -28,6 +28,7 @@ interface Props {
   onWatchOrderChange: (order: WatchOrder) => void;
   onPitcherFilterChange: (filter: PitcherFilter) => void;
   onSelectedWeeksChange: (weeks: Set<number>) => void;
+  onClearAllFilters?: () => void;
 }
 
 export function FiltersModal({
@@ -49,6 +50,7 @@ export function FiltersModal({
   onWatchOrderChange,
   onPitcherFilterChange,
   onSelectedWeeksChange,
+  onClearAllFilters,
 }: Props) {
   const [mounted, setMounted] = useState(false);
   const [presetName, setPresetName] = useState('');
@@ -108,13 +110,21 @@ export function FiltersModal({
   };
 
   const handleClearAllFilters = () => {
-    onConferencesChange(new Set());
-    onTeamSearchChange('');
-    onShowFavoritesChange(false);
-    onShowIssuesOnlyChange(false);
-    onWatchOrderChange('all');
-    onPitcherFilterChange('favorites-or-played');
-    onSelectedWeeksChange(new Set());
+    if (onClearAllFilters) {
+      // Use the provided clearFilters callback (includes localStorage clearing)
+      onClearAllFilters();
+      // Reset local state that's not in filter memory
+      onShowIssuesOnlyChange(false);
+    } else {
+      // Fallback to manual clearing
+      onConferencesChange(new Set());
+      onTeamSearchChange('');
+      onShowFavoritesChange(false);
+      onShowIssuesOnlyChange(false);
+      onWatchOrderChange('all');
+      onPitcherFilterChange('favorites-or-played');
+      onSelectedWeeksChange(new Set());
+    }
   };
 
   if (!isOpen || !mounted) return null;
