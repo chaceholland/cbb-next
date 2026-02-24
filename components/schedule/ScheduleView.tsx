@@ -12,6 +12,8 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { useFilterMemory } from '@/lib/hooks/useFilterMemory';
 import { cn } from '@/lib/utils';
+import { getTeamRecord } from '@/lib/stats/team-records';
+import { TeamRecord } from '@/lib/stats/types';
 
 export type PitcherDataQualityIssue = {
   pitcherKey: string; // game_id:pitcher_id or game_id:pitcher_name
@@ -106,6 +108,8 @@ export function ScheduleView() {
   const [loadingWeeks, setLoadingWeeks] = useState<Set<number>>(new Set());
   // pitcher_id → headshot URL map for showing headshots on game cards
   const [headshotsMap, setHeadshotsMap] = useState<Record<string, string | null>>({});
+  // team_id → TeamRecord map for showing records on game cards
+  const [teamRecords, setTeamRecords] = useState<Record<string, TeamRecord>>({});
 
   useEffect(() => {
     async function fetchData() {
@@ -204,6 +208,46 @@ export function ScheduleView() {
         setFavoriteTeamIds(new Set((data || []).map((p: { team_id: string }) => p.team_id)));
       });
   }, [favorites]);
+
+  // Load team records for all teams in the schedule
+  useEffect(() => {
+    async function loadRecords() {
+      if (!games || games.length === 0) return;
+
+      // Get unique teams from games
+      const teamSet = new Set<string>();
+      const teamInfo: Record<string, { name: string; conference: string }> = {};
+
+      games.forEach(game => {
+        teamSet.add(game.home_team_id);
+        teamSet.add(game.away_team_id);
+        if (!teamInfo[game.home_team_id]) {
+          teamInfo[game.home_team_id] = {
+            name: game.home_name || 'Unknown Team',
+            conference: (game as any).home_conference || ''
+          };
+        }
+        if (!teamInfo[game.away_team_id]) {
+          teamInfo[game.away_team_id] = {
+            name: game.away_name || 'Unknown Team',
+            conference: (game as any).away_conference || ''
+          };
+        }
+      });
+
+      // Load records
+      const records: Record<string, TeamRecord> = {};
+      for (const teamId of Array.from(teamSet)) {
+        const info = teamInfo[teamId];
+        const record = await getTeamRecord(teamId, info.name, info.conference);
+        records[teamId] = record;
+      }
+
+      setTeamRecords(records);
+    }
+
+    loadRecords();
+  }, [games]);
 
   // Fetch participation for a week's completed games
   const fetchWeekParticipation = useCallback(async (week: number, weekGames: CbbGame[]) => {
