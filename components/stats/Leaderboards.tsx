@@ -11,8 +11,8 @@ interface LeaderboardsProps {
 }
 
 const CATEGORIES = [
-  { id: 'era', label: 'ERA', minIP: 20 },
-  { id: 'whip', label: 'WHIP', minIP: 20 },
+  { id: 'era', label: 'ERA', minIP: 10 },
+  { id: 'whip', label: 'WHIP', minIP: 10 },
   { id: 'k', label: 'Strikeouts', minIP: 0 },
   { id: 'ip', label: 'Innings Pitched', minIP: 0 },
   { id: 'k_per_9', label: 'K/9', minIP: 10 },
