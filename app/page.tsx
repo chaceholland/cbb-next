@@ -7,7 +7,9 @@ import { ScheduleView } from '@/components/schedule/ScheduleView';
 import { RosterView } from '@/components/roster/RosterView';
 import { AnalyticsView } from '@/components/analytics/AnalyticsView';
 import { CommandPalette } from '@/components/command/CommandPalette';
+import { KeyboardHints } from '@/components/KeyboardHints';
 import { registerNavigationCommands } from '@/lib/commands/navigation';
+import { registerHelpCommands } from '@/lib/commands/help';
 import { useKeyboard } from '@/lib/hooks/useKeyboard';
 
 type Tab = 'schedule' | 'rosters' | 'analytics';
@@ -33,9 +35,10 @@ export default function Home() {
     window.location.hash = tab;
   };
 
-  // Register navigation commands on mount
+  // Register navigation and help commands on mount
   useEffect(() => {
     registerNavigationCommands(handleTabChange);
+    registerHelpCommands();
   }, []);
 
   // Add keyboard shortcuts for direct tab switching
@@ -48,6 +51,7 @@ export default function Home() {
   return (
     <>
       <CommandPalette />
+      <KeyboardHints />
       <Navigation />
       <HeroSection />
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />

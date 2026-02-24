@@ -16,6 +16,7 @@ interface PreferencesState {
   addRecentSearch: (search: string) => void;
   clearRecentSearches: () => void;
   dismissKeyboardHints: () => void;
+  setShowKeyboardHints: (show: boolean) => void;
 }
 
 export const usePreferencesStore = create<PreferencesState>()(
@@ -38,6 +39,7 @@ export const usePreferencesStore = create<PreferencesState>()(
       },
       clearRecentSearches: () => set({ recentSearches: [] }),
       dismissKeyboardHints: () => set({ showKeyboardHints: false }),
+      setShowKeyboardHints: (show) => set({ showKeyboardHints: show }),
     }),
     { name: 'cbb-preferences' }
   )
