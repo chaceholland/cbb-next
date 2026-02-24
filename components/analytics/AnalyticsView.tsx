@@ -138,7 +138,7 @@ export function AnalyticsView() {
         // Fetch all participation records
         const { data: participations, error } = await supabase
           .from('cbb_pitcher_participation')
-          .select('pitcher_id, pitcher_name, team_id, stats, game:cbb_games(date)');
+          .select('pitcher_id, pitcher_name, team_id, stats, cbb_games(date)');
 
         if (error || !participations) {
           setStatsLoading(false);

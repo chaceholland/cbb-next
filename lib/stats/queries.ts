@@ -56,8 +56,7 @@ export async function getPitcherGameStats(pitcherId: string): Promise<PitcherGam
       )
     `)
     .eq('pitcher_id', pitcherId)
-    .eq('cbb_games.completed', true)
-    .order('cbb_games(date)', { ascending: false });
+    .eq('cbb_games.completed', true);
 
   if (error) {
     console.error('Error fetching pitcher stats:', error);
@@ -93,8 +92,7 @@ export async function getTeamPitcherStats(teamId: string): Promise<Record<string
       )
     `)
     .eq('team_id', teamId)
-    .eq('cbb_games.completed', true)
-    .order('cbb_games(date)', { ascending: false });
+    .eq('cbb_games.completed', true);
 
   if (error) {
     console.error('Error fetching team pitcher stats:', error);
