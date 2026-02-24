@@ -1,4 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CBB Pitcher Tracker
+
+A modern Next.js application for tracking college baseball pitchers across 64 D1 teams, featuring real-time game schedules, detailed rosters, and performance analytics.
+
+## Features (Sprint 1 - UX Improvements)
+
+### User Experience
+- **Dark Mode**: Toggle between light and dark themes with persistent preference
+- **Command Palette**: Universal search and navigation with Cmd+K / Ctrl+K
+- **Keyboard Shortcuts**: Navigate with 1, 2, 3 keys for tab switching
+- **Skeleton Loaders**: Content-aware loading states for better perceived performance
+- **Empty States**: Helpful messages and recovery actions when no results found
+- **Sticky Headers**: Navigation and tabs stay visible while scrolling
+- **Filter Memory**: Your last filter selections are remembered per view
+- **Keyboard Hints**: First-visit guide showing all available shortcuts
+
+### Keyboard Shortcuts
+- `Cmd+K` / `Ctrl+K` - Open command palette
+- `1`, `2`, `3` - Switch between Schedule, Rosters, Analytics tabs
+- `/` - Focus search input (coming soon)
+- `Esc` - Close modals and command palette
+
+### Command Palette
+Search and navigate from anywhere:
+- Navigate to any view (Schedule, Rosters, Analytics)
+- Toggle dark mode
+- Show keyboard shortcuts
+- Search teams, pitchers, games (coming soon)
+- Filter shortcuts (coming soon)
 
 ## Getting Started
 
