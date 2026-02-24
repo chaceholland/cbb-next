@@ -2,9 +2,11 @@
 
 A modern Next.js application for tracking college baseball pitchers across 64 D1 teams, featuring real-time game schedules, detailed rosters, and performance analytics.
 
-## Features (Sprint 1 - UX Improvements)
+## Features
 
-### User Experience
+### Sprint 1: UX Improvements
+
+#### User Experience
 - **Dark Mode**: Toggle between light and dark themes with persistent preference
 - **Command Palette**: Universal search and navigation with Cmd+K / Ctrl+K
 - **Keyboard Shortcuts**: Navigate with 1, 2, 3 keys for tab switching
@@ -13,6 +15,17 @@ A modern Next.js application for tracking college baseball pitchers across 64 D1
 - **Sticky Headers**: Navigation and tabs stay visible while scrolling
 - **Filter Memory**: Your last filter selections are remembered per view
 - **Keyboard Hints**: First-visit guide showing all available shortcuts
+
+### Sprint 2: Stats & Performance Analysis
+
+- **Pitcher Statistics**: Complete stats calculation engine with ERA, WHIP, K/9, BB/9, K/BB
+- **Leaderboards**: Top 10 pitchers across 6 statistical categories with minimum IP qualifications
+- **Team Records**: Win-loss records, home/away splits, win/loss streaks
+- **Conference Standings**: Real-time standings for all conferences sorted by win percentage
+- **Performance Charts**: Visual ERA and K/9 trends using Recharts
+- **Pitcher Modal Stats**: Dedicated Stats tab with season totals, recent form, and performance charts
+- **Schedule Integration**: Team records displayed alongside game matchups
+- **Analytics Dashboard**: Comprehensive leaderboards integrated into analytics view
 
 ### Keyboard Shortcuts
 - `Cmd+K` / `Ctrl+K` - Open command palette
