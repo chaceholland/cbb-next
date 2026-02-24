@@ -6,6 +6,7 @@ import { TabBar } from '@/components/TabBar';
 import { ScheduleView } from '@/components/schedule/ScheduleView';
 import { RosterView } from '@/components/roster/RosterView';
 import { AnalyticsView } from '@/components/analytics/AnalyticsView';
+import { CommandPalette } from '@/components/command/CommandPalette';
 
 type Tab = 'schedule' | 'rosters' | 'analytics';
 
@@ -32,6 +33,7 @@ export default function Home() {
 
   return (
     <>
+      <CommandPalette />
       <Navigation />
       <HeroSection />
       <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
