@@ -2,6 +2,7 @@ import { CbbGame, CbbTeam, ParticipationRow } from '@/lib/supabase/types';
 import { formatGameDate, cn, getEspnLogoUrl } from '@/lib/utils';
 import Image from 'next/image';
 import { PitcherDataQualityIssue, GameDataQualityIssue } from './ScheduleView';
+import { TeamRecord } from '@/lib/stats/types';
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -11,6 +12,7 @@ interface Props {
   trackedTeamIds: Set<string>;
   participation: ParticipationRow[];
   headshotsMap?: Record<string, string | null>;
+  teamRecords?: Record<string, TeamRecord>;
   pitcherIssuesMap?: Map<string, PitcherDataQualityIssue>;
   gameIssuesMap?: Map<string, GameDataQualityIssue>;
   onPitcherIssueToggle?: (
@@ -177,6 +179,7 @@ function TeamColumn({
   gameDate,
   pitcherIssuesMap,
   onPitcherIssueToggle,
+  teamRecord,
 }: {
   team: CbbTeam | undefined;
   teamId: string;
@@ -200,6 +203,7 @@ function TeamColumn({
     selectedIssues: string[],
     customNote?: string
   ) => void;
+  teamRecord?: TeamRecord;
 }) {
   const displayName = team?.display_name ?? name ?? 'Unknown';
 
@@ -212,6 +216,16 @@ function TeamColumn({
           <p className={cn('text-sm font-bold leading-tight line-clamp-2', isWinner ? 'text-slate-900' : 'text-slate-600')}>
             {displayName}
           </p>
+          {teamRecord && (
+            <div className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+              {teamRecord.wins}-{teamRecord.losses}
+              {teamRecord.streak && (
+                <span className={cn('ml-1', teamRecord.streak.startsWith('W') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
+                  {teamRecord.streak}
+                </span>
+              )}
+            </div>
+          )}
           <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full mt-1">{label}</span>
         </div>
         {score !== null && (
@@ -252,7 +266,7 @@ function TeamColumn({
   );
 }
 
-export function GameCard({ game, teams, trackedTeamIds, participation, headshotsMap, pitcherIssuesMap, gameIssuesMap, onPitcherIssueToggle, onGameIssueToggle, onClick, isFavorite = false, isWatched = false, onToggleFavorite, onToggleWatched }: Props) {
+export function GameCard({ game, teams, trackedTeamIds, participation, headshotsMap, teamRecords, pitcherIssuesMap, gameIssuesMap, onPitcherIssueToggle, onGameIssueToggle, onClick, isFavorite = false, isWatched = false, onToggleFavorite, onToggleWatched }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
 
@@ -395,6 +409,7 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
             gameDate={game.date}
             pitcherIssuesMap={pitcherIssuesMap}
             onPitcherIssueToggle={onPitcherIssueToggle}
+            teamRecord={teamRecords?.[game.away_team_id]}
           />
           <div className="w-px bg-slate-100 shrink-0" />
           <TeamColumn
@@ -412,6 +427,7 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
             gameDate={game.date}
             pitcherIssuesMap={pitcherIssuesMap}
             onPitcherIssueToggle={onPitcherIssueToggle}
+            teamRecord={teamRecords?.[game.home_team_id]}
           />
         </div>
       ) : (
@@ -423,6 +439,16 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
               <span className="text-sm font-medium text-slate-700 text-center leading-tight line-clamp-2">
                 {awayTeam?.display_name ?? game.away_name ?? 'Unknown'}
               </span>
+              {teamRecords?.[game.away_team_id] && (
+                <div className="text-xs text-slate-600 dark:text-slate-400">
+                  {teamRecords[game.away_team_id].wins}-{teamRecords[game.away_team_id].losses}
+                  {teamRecords[game.away_team_id].streak && (
+                    <span className={cn('ml-1', teamRecords[game.away_team_id].streak.startsWith('W') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
+                      {teamRecords[game.away_team_id].streak}
+                    </span>
+                  )}
+                </div>
+              )}
               <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Away</span>
             </div>
             <div className="text-base font-bold text-slate-400 shrink-0">VS</div>
@@ -431,6 +457,16 @@ export function GameCard({ game, teams, trackedTeamIds, participation, headshots
               <span className="text-sm font-medium text-slate-700 text-center leading-tight line-clamp-2">
                 {homeTeam?.display_name ?? game.home_name ?? 'Unknown'}
               </span>
+              {teamRecords?.[game.home_team_id] && (
+                <div className="text-xs text-slate-600 dark:text-slate-400">
+                  {teamRecords[game.home_team_id].wins}-{teamRecords[game.home_team_id].losses}
+                  {teamRecords[game.home_team_id].streak && (
+                    <span className={cn('ml-1', teamRecords[game.home_team_id].streak.startsWith('W') ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400')}>
+                      {teamRecords[game.home_team_id].streak}
+                    </span>
+                  )}
+                </div>
+              )}
               <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Home</span>
             </div>
           </div>

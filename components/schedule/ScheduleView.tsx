@@ -972,6 +972,7 @@ export function ScheduleView() {
                         trackedTeamIds={trackedTeamIds}
                         participation={participationByGame[game.game_id] || []}
                         headshotsMap={headshotsMap}
+                        teamRecords={teamRecords}
                         pitcherIssuesMap={pitcherIssuesMap}
                         gameIssuesMap={gameIssuesMap}
                         onPitcherIssueToggle={handlePitcherIssueToggle}
@@ -1015,6 +1016,7 @@ export function ScheduleView() {
                           trackedTeamIds={trackedTeamIds}
                           participation={participationByGame[game.game_id] || []}
                           headshotsMap={headshotsMap}
+                          teamRecords={teamRecords}
                           pitcherIssuesMap={pitcherIssuesMap}
                           gameIssuesMap={gameIssuesMap}
                           onPitcherIssueToggle={handlePitcherIssueToggle}
