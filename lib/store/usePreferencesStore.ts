@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const MAX_RECENT_SEARCHES = 5;
+
 export type Theme = 'light' | 'dark' | 'system';
 export type View = 'schedule' | 'rosters' | 'analytics';
 
@@ -25,13 +27,15 @@ export const usePreferencesStore = create<PreferencesState>()(
       showKeyboardHints: true,
       setTheme: (theme) => set({ theme }),
       setDefaultView: (view) => set({ defaultView: view }),
-      addRecentSearch: (search) =>
+      addRecentSearch: (search) => {
+        if (!search || !search.trim()) return;
         set((state) => ({
           recentSearches: [
             search,
             ...state.recentSearches.filter((s) => s !== search),
-          ].slice(0, 5),
-        })),
+          ].slice(0, MAX_RECENT_SEARCHES),
+        }));
+      },
       clearRecentSearches: () => set({ recentSearches: [] }),
       dismissKeyboardHints: () => set({ showKeyboardHints: false }),
     }),
