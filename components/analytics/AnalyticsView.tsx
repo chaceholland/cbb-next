@@ -7,6 +7,9 @@ import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
 import { AnalyticsSkeleton } from './AnalyticsSkeleton';
 import { CONFERENCES } from '@/components/FilterPills';
 import { cn } from '@/lib/utils';
+import { Leaderboards } from '@/components/stats/Leaderboards';
+import { aggregateSeasonStats } from '@/lib/stats/aggregations';
+import { PitcherSeasonStats } from '@/lib/stats/types';
 
 const CONF_COLORS: Record<string, string> = {
   SEC: 'bg-blue-500',
@@ -77,6 +80,8 @@ export function AnalyticsView() {
   const [pitchersTracked, setPitchersTracked] = useState(0);
   const [loading, setLoading] = useState(true);
   const [conference, setConference] = useState('All');
+  const [allPitcherStats, setAllPitcherStats] = useState<PitcherSeasonStats[]>([]);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
@@ -122,6 +127,75 @@ export function AnalyticsView() {
       }
     }
     fetchData();
+  }, []);
+
+  // Load pitcher stats for leaderboards
+  useEffect(() => {
+    async function loadPitcherStats() {
+      try {
+        setStatsLoading(true);
+
+        // Fetch all participation records
+        const { data: participations, error } = await supabase
+          .from('cbb_pitcher_participation')
+          .select('pitcher_id, pitcher_name, team_id, stats, game:cbb_games(date)');
+
+        if (error || !participations) {
+          setStatsLoading(false);
+          return;
+        }
+
+        // Group by pitcher_id
+        const pitcherMap = new Map<string, any[]>();
+        participations.forEach((p: any) => {
+          if (!pitcherMap.has(p.pitcher_id)) {
+            pitcherMap.set(p.pitcher_id, []);
+          }
+          pitcherMap.get(p.pitcher_id)!.push(p);
+        });
+
+        // Aggregate stats for each pitcher
+        const seasonStats: PitcherSeasonStats[] = [];
+        pitcherMap.forEach((pitcherParticipations, pitcherId) => {
+          const firstP = pitcherParticipations[0];
+
+          // Transform to game stats format
+          const gameStats = pitcherParticipations.map(p => {
+            const stats = p.stats || {};
+            const ip = parseFloat(stats.IP || '0');
+            const wholeInnings = Math.floor(ip);
+            const outs = Math.round((ip - wholeInnings) * 10);
+            const inningsPitched = wholeInnings + (outs / 3);
+
+            return {
+              innings_pitched: inningsPitched,
+              earned_runs: parseInt(stats.ER || '0', 10),
+              strikeouts: parseInt(stats.K || '0', 10),
+              walks: parseInt(stats.BB || '0', 10),
+              hits: parseInt(stats.H || '0', 10),
+              home_runs: parseInt(stats.HR || '0', 10),
+              runs: parseInt(stats.R || '0', 10),
+            };
+          });
+
+          // Aggregate
+          const aggregated = aggregateSeasonStats(
+            gameStats as any,
+            pitcherId,
+            firstP.pitcher_name,
+            firstP.team_id
+          );
+
+          seasonStats.push(aggregated);
+        });
+
+        setAllPitcherStats(seasonStats);
+      } finally {
+        setStatsLoading(false);
+      }
+    }
+
+    loadPitcherStats();
   }, []);
 
   // Filter by conference
@@ -351,6 +425,16 @@ export function AnalyticsView() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Pitcher Performance Leaderboards */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+        <h3 className="text-sm font-bold text-slate-700 mb-4">🏆 Pitcher Performance Leaders</h3>
+        {statsLoading ? (
+          <div className="text-center py-8 text-slate-400">Loading stats...</div>
+        ) : (
+          <Leaderboards pitchers={allPitcherStats} />
+        )}
       </div>
     </div>
   );
