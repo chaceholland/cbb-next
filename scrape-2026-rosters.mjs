@@ -340,7 +340,41 @@ async function main() {
   console.log(`Successful:      ${results.successfulTeams} (${((results.successfulTeams / results.totalTeams) * 100).toFixed(1)}%)`);
   console.log(`Failed:          ${results.failedTeams} (${((results.failedTeams / results.totalTeams) * 100).toFixed(1)}%)`);
   console.log(`Total Pitchers:  ${results.totalPitchers}`);
-  console.log(`\n💾 Results saved to: ${outputPath}`);
+  console.log(`\nResults saved to: 2026-rosters.json\n`);
+
+  // Show failed teams if any
+  const failedTeams = results.teams.filter(t => t.status === 'failed');
+  if (failedTeams.length > 0) {
+    console.log('⚠️  Failed teams:');
+    failedTeams.forEach(t => {
+      console.log(`  - ${t.team_name} (${t.error})`);
+    });
+    console.log();
+  }
+
+  // Show warnings
+  const warningTeams = results.teams.filter(t => t.status === 'warning');
+  if (warningTeams.length > 0) {
+    console.log('⚠️  Teams with warnings:');
+    warningTeams.forEach(t => {
+      console.log(`  - ${t.team_name} (${t.error})`);
+    });
+    console.log();
+  }
+
+  // Validation warnings
+  if (results.successfulTeams === 0) {
+    console.log('❌ CRITICAL: No teams scraped successfully!');
+    process.exit(1);
+  }
+
+  const successRate = (results.successfulTeams / results.totalTeams) * 100;
+  if (successRate < 80) {
+    console.log(`⚠️  WARNING: Success rate is ${successRate.toFixed(1)}% (below 80% threshold)`);
+    console.log('   Consider investigating parsing issues before proceeding to Phase 2\n');
+  }
+
+  console.log('✅ Ready for Phase 2: Run replace-with-2026-rosters.mjs\n');
 }
 
 main().catch(console.error);
