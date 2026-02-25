@@ -86,6 +86,36 @@ async function getCurrentStats() {
   return { pitcherCount, participationCount };
 }
 
+// Delete all existing pitcher data
+async function deleteOldData() {
+  console.log('🗑️  Deleting old data...');
+
+  // Step 1: Delete participation records (respects foreign key)
+  console.log('   Deleting participation records...');
+  const { error: participationError } = await supabase
+    .from('cbb_pitcher_game_participation')
+    .delete()
+    .neq('pitcher_id', '___MATCH_NOTHING___');
+
+  if (participationError) {
+    throw new Error(`Failed to delete participation records: ${participationError.message}`);
+  }
+  console.log('   ✅ Participation records deleted');
+
+  // Step 2: Delete pitchers
+  console.log('   Deleting pitchers...');
+  const { error: pitcherError } = await supabase
+    .from('cbb_pitchers')
+    .delete()
+    .neq('pitcher_id', '___MATCH_NOTHING___');
+
+  if (pitcherError) {
+    throw new Error(`Failed to delete pitchers: ${pitcherError.message}`);
+  }
+  console.log('   ✅ Pitchers deleted');
+  console.log();
+}
+
 async function main() {
   console.log('📋 2026 ROSTER REPLACEMENT');
   console.log('='.repeat(60));
@@ -115,7 +145,9 @@ async function main() {
   console.log('🚀 Starting replacement...');
   console.log();
 
-  // TODO: Delete old data
+  // Delete old data
+  await deleteOldData();
+
   // TODO: Insert new data
   // TODO: Show final stats
 
