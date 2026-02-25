@@ -1,0 +1,55 @@
+{
+  "totalUpdated": 26,
+  "totalFailed": 0,
+  "totalSkipped": 37,
+  "teamResults": [
+    {
+      "team_name": "Oregon State",
+      "updated": 6,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "team_name": "Clemson",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "South Carolina",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Arizona Wildcats",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "NC State",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "North Carolina",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "team_name": "Miami",
+      "updated": 20,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "USC",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 27
+    }
+  ]
+}

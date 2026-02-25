@@ -1,33 +1,9 @@
 [
   {
-    "team_id": "68",
-    "team_name": "USC",
-    "coverage_pct": "0.0",
-    "missing_count": 9
-  },
-  {
-    "team_id": "81",
-    "team_name": "Notre Dame",
-    "coverage_pct": "0.0",
-    "missing_count": 10
-  },
-  {
-    "team_id": "113",
-    "team_name": "Oregon State",
-    "coverage_pct": "0.0",
-    "missing_count": 6
-  },
-  {
     "team_id": "127",
     "team_name": "BYU",
     "coverage_pct": "0.0",
     "missing_count": 18
-  },
-  {
-    "team_id": "133",
-    "team_name": "Washington",
-    "coverage_pct": "0.0",
-    "missing_count": 3
   },
   {
     "team_id": "117",
@@ -90,16 +66,16 @@
     "missing_count": 9
   },
   {
-    "team_id": "85",
-    "team_name": "LSU",
-    "coverage_pct": "20.0",
-    "missing_count": 8
-  },
-  {
     "team_id": "91",
     "team_name": "Missouri",
     "coverage_pct": "20.0",
     "missing_count": 4
+  },
+  {
+    "team_id": "68",
+    "team_name": "USC",
+    "coverage_pct": "22.2",
+    "missing_count": 7
   },
   {
     "team_id": "199",
@@ -132,16 +108,16 @@
     "missing_count": 10
   },
   {
-    "team_id": "153",
-    "team_name": "Illinois",
-    "coverage_pct": "28.6",
-    "missing_count": 5
-  },
-  {
     "team_id": "66",
     "team_name": "UCLA",
     "coverage_pct": "33.3",
     "missing_count": 12
+  },
+  {
+    "team_id": "153",
+    "team_name": "Illinois",
+    "coverage_pct": "33.3",
+    "missing_count": 4
   },
   {
     "team_id": "123",
