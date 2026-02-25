@@ -1,0 +1,2440 @@
+{
+  "timestamp": "2026-02-25T07:59:19.658Z",
+  "overall": {
+    "headshot": {
+      "count": 735,
+      "total": 1000,
+      "percentage": "73.5"
+    },
+    "height": {
+      "count": 496,
+      "total": 1000,
+      "percentage": "49.6"
+    },
+    "weight": {
+      "count": 473,
+      "total": 1000,
+      "percentage": "47.3"
+    },
+    "year": {
+      "count": 517,
+      "total": 1000,
+      "percentage": "51.7"
+    },
+    "hometown": {
+      "count": 484,
+      "total": 1000,
+      "percentage": "48.4"
+    },
+    "bats_throws": {
+      "count": 416,
+      "total": 1000,
+      "percentage": "41.6"
+    },
+    "position": {
+      "count": 754,
+      "total": 1000,
+      "percentage": "75.4"
+    },
+    "number": {
+      "count": 373,
+      "total": 1000,
+      "percentage": "37.3"
+    },
+    "display_name": {
+      "count": 754,
+      "total": 1000,
+      "percentage": "75.4"
+    },
+    "espn_link": {
+      "count": 0,
+      "total": 1000,
+      "percentage": "0.0"
+    }
+  },
+  "summary": {
+    "total_teams": 37,
+    "total_pitchers": 1000,
+    "critical_teams": 16,
+    "needs_work_teams": 15,
+    "good_teams": 6
+  },
+  "teams": [
+    {
+      "team_id": "148",
+      "team_name": "Alabama",
+      "pitcher_count": 30,
+      "headshot": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "height": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "weight": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "year": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "hometown": {
+        "count": 17,
+        "total": 30,
+        "percentage": "56.7"
+      },
+      "bats_throws": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "position": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "number": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 30,
+        "percentage": "76.7"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 30,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "72.7",
+      "profile_completeness": "76.7"
+    },
+    {
+      "team_id": "55",
+      "team_name": "Auburn",
+      "pitcher_count": 47,
+      "headshot": {
+        "count": 23,
+        "total": 47,
+        "percentage": "48.9"
+      },
+      "height": {
+        "count": 9,
+        "total": 47,
+        "percentage": "19.1"
+      },
+      "weight": {
+        "count": 9,
+        "total": 47,
+        "percentage": "19.1"
+      },
+      "year": {
+        "count": 23,
+        "total": 47,
+        "percentage": "48.9"
+      },
+      "hometown": {
+        "count": 22,
+        "total": 47,
+        "percentage": "46.8"
+      },
+      "bats_throws": {
+        "count": 9,
+        "total": 47,
+        "percentage": "19.1"
+      },
+      "position": {
+        "count": 23,
+        "total": 47,
+        "percentage": "48.9"
+      },
+      "number": {
+        "count": 23,
+        "total": 47,
+        "percentage": "48.9"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 47,
+        "percentage": "48.9"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 47,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "30.6",
+      "profile_completeness": "48.9"
+    },
+    {
+      "team_id": "121",
+      "team_name": "Baylor",
+      "pitcher_count": 22,
+      "headshot": {
+        "count": 20,
+        "total": 22,
+        "percentage": "90.9"
+      },
+      "height": {
+        "count": 3,
+        "total": 22,
+        "percentage": "13.6"
+      },
+      "weight": {
+        "count": 3,
+        "total": 22,
+        "percentage": "13.6"
+      },
+      "year": {
+        "count": 3,
+        "total": 22,
+        "percentage": "13.6"
+      },
+      "hometown": {
+        "count": 3,
+        "total": 22,
+        "percentage": "13.6"
+      },
+      "bats_throws": {
+        "count": 2,
+        "total": 22,
+        "percentage": "9.1"
+      },
+      "position": {
+        "count": 20,
+        "total": 22,
+        "percentage": "90.9"
+      },
+      "number": {
+        "count": 0,
+        "total": 22,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 22,
+        "percentage": "90.9"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 22,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "12.7",
+      "profile_completeness": "60.6"
+    },
+    {
+      "team_id": "127",
+      "team_name": "BYU",
+      "pitcher_count": 22,
+      "headshot": {
+        "count": 0,
+        "total": 22,
+        "percentage": "0.0"
+      },
+      "height": {
+        "count": 19,
+        "total": 22,
+        "percentage": "86.4"
+      },
+      "weight": {
+        "count": 1,
+        "total": 22,
+        "percentage": "4.5"
+      },
+      "year": {
+        "count": 19,
+        "total": 22,
+        "percentage": "86.4"
+      },
+      "hometown": {
+        "count": 19,
+        "total": 22,
+        "percentage": "86.4"
+      },
+      "bats_throws": {
+        "count": 1,
+        "total": 22,
+        "percentage": "4.5"
+      },
+      "position": {
+        "count": 19,
+        "total": 22,
+        "percentage": "86.4"
+      },
+      "number": {
+        "count": 19,
+        "total": 22,
+        "percentage": "86.4"
+      },
+      "display_name": {
+        "count": 19,
+        "total": 22,
+        "percentage": "86.4"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 22,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "53.6",
+      "profile_completeness": "57.6"
+    },
+    {
+      "team_id": "161",
+      "team_name": "Cincinnati Bearcats",
+      "pitcher_count": 30,
+      "headshot": {
+        "count": 22,
+        "total": 30,
+        "percentage": "73.3"
+      },
+      "height": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "weight": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "year": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "hometown": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "bats_throws": {
+        "count": 4,
+        "total": 30,
+        "percentage": "13.3"
+      },
+      "position": {
+        "count": 22,
+        "total": 30,
+        "percentage": "73.3"
+      },
+      "number": {
+        "count": 22,
+        "total": 30,
+        "percentage": "73.3"
+      },
+      "display_name": {
+        "count": 22,
+        "total": 30,
+        "percentage": "73.3"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 30,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "56.0",
+      "profile_completeness": "73.3"
+    },
+    {
+      "team_id": "117",
+      "team_name": "Clemson",
+      "pitcher_count": 27,
+      "headshot": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "height": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "weight": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "year": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "hometown": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "bats_throws": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "position": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "number": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "display_name": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "88.9",
+      "profile_completeness": "88.9"
+    },
+    {
+      "team_id": "124",
+      "team_name": "Houston",
+      "pitcher_count": 27,
+      "headshot": {
+        "count": 21,
+        "total": 27,
+        "percentage": "77.8"
+      },
+      "height": {
+        "count": 18,
+        "total": 27,
+        "percentage": "66.7"
+      },
+      "weight": {
+        "count": 18,
+        "total": 27,
+        "percentage": "66.7"
+      },
+      "year": {
+        "count": 18,
+        "total": 27,
+        "percentage": "66.7"
+      },
+      "hometown": {
+        "count": 18,
+        "total": 27,
+        "percentage": "66.7"
+      },
+      "bats_throws": {
+        "count": 18,
+        "total": 27,
+        "percentage": "66.7"
+      },
+      "position": {
+        "count": 21,
+        "total": 27,
+        "percentage": "77.8"
+      },
+      "number": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 21,
+        "total": 27,
+        "percentage": "77.8"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "66.7",
+      "profile_completeness": "51.9"
+    },
+    {
+      "team_id": "153",
+      "team_name": "Illinois",
+      "pitcher_count": 22,
+      "headshot": {
+        "count": 21,
+        "total": 22,
+        "percentage": "95.5"
+      },
+      "height": {
+        "count": 2,
+        "total": 22,
+        "percentage": "9.1"
+      },
+      "weight": {
+        "count": 2,
+        "total": 22,
+        "percentage": "9.1"
+      },
+      "year": {
+        "count": 0,
+        "total": 22,
+        "percentage": "0.0"
+      },
+      "hometown": {
+        "count": 2,
+        "total": 22,
+        "percentage": "9.1"
+      },
+      "bats_throws": {
+        "count": 2,
+        "total": 22,
+        "percentage": "9.1"
+      },
+      "position": {
+        "count": 21,
+        "total": 22,
+        "percentage": "95.5"
+      },
+      "number": {
+        "count": 21,
+        "total": 22,
+        "percentage": "95.5"
+      },
+      "display_name": {
+        "count": 21,
+        "total": 22,
+        "percentage": "95.5"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 22,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "7.3",
+      "profile_completeness": "95.5"
+    },
+    {
+      "team_id": "294",
+      "team_name": "Indiana",
+      "pitcher_count": 12,
+      "headshot": {
+        "count": 10,
+        "total": 12,
+        "percentage": "83.3"
+      },
+      "height": {
+        "count": 2,
+        "total": 12,
+        "percentage": "16.7"
+      },
+      "weight": {
+        "count": 2,
+        "total": 12,
+        "percentage": "16.7"
+      },
+      "year": {
+        "count": 1,
+        "total": 12,
+        "percentage": "8.3"
+      },
+      "hometown": {
+        "count": 2,
+        "total": 12,
+        "percentage": "16.7"
+      },
+      "bats_throws": {
+        "count": 2,
+        "total": 12,
+        "percentage": "16.7"
+      },
+      "position": {
+        "count": 10,
+        "total": 12,
+        "percentage": "83.3"
+      },
+      "number": {
+        "count": 0,
+        "total": 12,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 10,
+        "total": 12,
+        "percentage": "83.3"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 12,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "15.0",
+      "profile_completeness": "55.5"
+    },
+    {
+      "team_id": "167",
+      "team_name": "Iowa",
+      "pitcher_count": 25,
+      "headshot": {
+        "count": 20,
+        "total": 25,
+        "percentage": "80.0"
+      },
+      "height": {
+        "count": 13,
+        "total": 25,
+        "percentage": "52.0"
+      },
+      "weight": {
+        "count": 13,
+        "total": 25,
+        "percentage": "52.0"
+      },
+      "year": {
+        "count": 8,
+        "total": 25,
+        "percentage": "32.0"
+      },
+      "hometown": {
+        "count": 12,
+        "total": 25,
+        "percentage": "48.0"
+      },
+      "bats_throws": {
+        "count": 13,
+        "total": 25,
+        "percentage": "52.0"
+      },
+      "position": {
+        "count": 20,
+        "total": 25,
+        "percentage": "80.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 25,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 25,
+        "percentage": "80.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 25,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "47.2",
+      "profile_completeness": "53.3"
+    },
+    {
+      "team_id": "168",
+      "team_name": "Kansas",
+      "pitcher_count": 32,
+      "headshot": {
+        "count": 24,
+        "total": 32,
+        "percentage": "75.0"
+      },
+      "height": {
+        "count": 9,
+        "total": 32,
+        "percentage": "28.1"
+      },
+      "weight": {
+        "count": 9,
+        "total": 32,
+        "percentage": "28.1"
+      },
+      "year": {
+        "count": 7,
+        "total": 32,
+        "percentage": "21.9"
+      },
+      "hometown": {
+        "count": 9,
+        "total": 32,
+        "percentage": "28.1"
+      },
+      "bats_throws": {
+        "count": 9,
+        "total": 32,
+        "percentage": "28.1"
+      },
+      "position": {
+        "count": 24,
+        "total": 32,
+        "percentage": "75.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 32,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 24,
+        "total": 32,
+        "percentage": "75.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 32,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "26.9",
+      "profile_completeness": "50.0"
+    },
+    {
+      "team_id": "264",
+      "team_name": "Kansas State",
+      "pitcher_count": 41,
+      "headshot": {
+        "count": 21,
+        "total": 41,
+        "percentage": "51.2"
+      },
+      "height": {
+        "count": 28,
+        "total": 41,
+        "percentage": "68.3"
+      },
+      "weight": {
+        "count": 28,
+        "total": 41,
+        "percentage": "68.3"
+      },
+      "year": {
+        "count": 28,
+        "total": 41,
+        "percentage": "68.3"
+      },
+      "hometown": {
+        "count": 28,
+        "total": 41,
+        "percentage": "68.3"
+      },
+      "bats_throws": {
+        "count": 28,
+        "total": 41,
+        "percentage": "68.3"
+      },
+      "position": {
+        "count": 21,
+        "total": 41,
+        "percentage": "51.2"
+      },
+      "number": {
+        "count": 0,
+        "total": 41,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 21,
+        "total": 41,
+        "percentage": "51.2"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 41,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "68.3",
+      "profile_completeness": "34.1"
+    },
+    {
+      "team_id": "176",
+      "team_name": "Miami",
+      "pitcher_count": 27,
+      "headshot": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "height": {
+        "count": 8,
+        "total": 27,
+        "percentage": "29.6"
+      },
+      "weight": {
+        "count": 5,
+        "total": 27,
+        "percentage": "18.5"
+      },
+      "year": {
+        "count": 5,
+        "total": 27,
+        "percentage": "18.5"
+      },
+      "hometown": {
+        "count": 8,
+        "total": 27,
+        "percentage": "29.6"
+      },
+      "bats_throws": {
+        "count": 5,
+        "total": 27,
+        "percentage": "18.5"
+      },
+      "position": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "number": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "display_name": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "22.9",
+      "profile_completeness": "70.4"
+    },
+    {
+      "team_id": "150",
+      "team_name": "Mississippi State",
+      "pitcher_count": 35,
+      "headshot": {
+        "count": 22,
+        "total": 35,
+        "percentage": "62.9"
+      },
+      "height": {
+        "count": 13,
+        "total": 35,
+        "percentage": "37.1"
+      },
+      "weight": {
+        "count": 13,
+        "total": 35,
+        "percentage": "37.1"
+      },
+      "year": {
+        "count": 10,
+        "total": 35,
+        "percentage": "28.6"
+      },
+      "hometown": {
+        "count": 13,
+        "total": 35,
+        "percentage": "37.1"
+      },
+      "bats_throws": {
+        "count": 13,
+        "total": 35,
+        "percentage": "37.1"
+      },
+      "position": {
+        "count": 22,
+        "total": 35,
+        "percentage": "62.9"
+      },
+      "number": {
+        "count": 0,
+        "total": 35,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 22,
+        "total": 35,
+        "percentage": "62.9"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 35,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "35.4",
+      "profile_completeness": "41.9"
+    },
+    {
+      "team_id": "411",
+      "team_name": "Northwestern",
+      "pitcher_count": 17,
+      "headshot": {
+        "count": 17,
+        "total": 17,
+        "percentage": "100.0"
+      },
+      "height": {
+        "count": 2,
+        "total": 17,
+        "percentage": "11.8"
+      },
+      "weight": {
+        "count": 0,
+        "total": 17,
+        "percentage": "0.0"
+      },
+      "year": {
+        "count": 1,
+        "total": 17,
+        "percentage": "5.9"
+      },
+      "hometown": {
+        "count": 2,
+        "total": 17,
+        "percentage": "11.8"
+      },
+      "bats_throws": {
+        "count": 0,
+        "total": 17,
+        "percentage": "0.0"
+      },
+      "position": {
+        "count": 17,
+        "total": 17,
+        "percentage": "100.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 17,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 17,
+        "total": 17,
+        "percentage": "100.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 17,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "5.9",
+      "profile_completeness": "66.7"
+    },
+    {
+      "team_id": "108",
+      "team_name": "Ohio State",
+      "pitcher_count": 16,
+      "headshot": {
+        "count": 16,
+        "total": 16,
+        "percentage": "100.0"
+      },
+      "height": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "weight": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "year": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "hometown": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "bats_throws": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "position": {
+        "count": 16,
+        "total": 16,
+        "percentage": "100.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 16,
+        "total": 16,
+        "percentage": "100.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 16,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "0.0",
+      "profile_completeness": "66.7"
+    },
+    {
+      "team_id": "112",
+      "team_name": "Oklahoma",
+      "pitcher_count": 28,
+      "headshot": {
+        "count": 20,
+        "total": 28,
+        "percentage": "71.4"
+      },
+      "height": {
+        "count": 6,
+        "total": 28,
+        "percentage": "21.4"
+      },
+      "weight": {
+        "count": 6,
+        "total": 28,
+        "percentage": "21.4"
+      },
+      "year": {
+        "count": 1,
+        "total": 28,
+        "percentage": "3.6"
+      },
+      "hometown": {
+        "count": 6,
+        "total": 28,
+        "percentage": "21.4"
+      },
+      "bats_throws": {
+        "count": 6,
+        "total": 28,
+        "percentage": "21.4"
+      },
+      "position": {
+        "count": 20,
+        "total": 28,
+        "percentage": "71.4"
+      },
+      "number": {
+        "count": 0,
+        "total": 28,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 28,
+        "percentage": "71.4"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 28,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "17.8",
+      "profile_completeness": "47.6"
+    },
+    {
+      "team_id": "110",
+      "team_name": "Oklahoma State",
+      "pitcher_count": 29,
+      "headshot": {
+        "count": 23,
+        "total": 29,
+        "percentage": "79.3"
+      },
+      "height": {
+        "count": 20,
+        "total": 29,
+        "percentage": "69.0"
+      },
+      "weight": {
+        "count": 20,
+        "total": 29,
+        "percentage": "69.0"
+      },
+      "year": {
+        "count": 19,
+        "total": 29,
+        "percentage": "65.5"
+      },
+      "hometown": {
+        "count": 19,
+        "total": 29,
+        "percentage": "65.5"
+      },
+      "bats_throws": {
+        "count": 8,
+        "total": 29,
+        "percentage": "27.6"
+      },
+      "position": {
+        "count": 23,
+        "total": 29,
+        "percentage": "79.3"
+      },
+      "number": {
+        "count": 0,
+        "total": 29,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 29,
+        "percentage": "79.3"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 29,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "59.3",
+      "profile_completeness": "52.9"
+    },
+    {
+      "team_id": "273",
+      "team_name": "Oregon",
+      "pitcher_count": 46,
+      "headshot": {
+        "count": 23,
+        "total": 46,
+        "percentage": "50.0"
+      },
+      "height": {
+        "count": 20,
+        "total": 46,
+        "percentage": "43.5"
+      },
+      "weight": {
+        "count": 20,
+        "total": 46,
+        "percentage": "43.5"
+      },
+      "year": {
+        "count": 23,
+        "total": 46,
+        "percentage": "50.0"
+      },
+      "hometown": {
+        "count": 6,
+        "total": 46,
+        "percentage": "13.0"
+      },
+      "bats_throws": {
+        "count": 6,
+        "total": 46,
+        "percentage": "13.0"
+      },
+      "position": {
+        "count": 23,
+        "total": 46,
+        "percentage": "50.0"
+      },
+      "number": {
+        "count": 23,
+        "total": 46,
+        "percentage": "50.0"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 46,
+        "percentage": "50.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 46,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "32.6",
+      "profile_completeness": "50.0"
+    },
+    {
+      "team_id": "113",
+      "team_name": "Oregon State",
+      "pitcher_count": 25,
+      "headshot": {
+        "count": 20,
+        "total": 25,
+        "percentage": "80.0"
+      },
+      "height": {
+        "count": 6,
+        "total": 25,
+        "percentage": "24.0"
+      },
+      "weight": {
+        "count": 6,
+        "total": 25,
+        "percentage": "24.0"
+      },
+      "year": {
+        "count": 0,
+        "total": 25,
+        "percentage": "0.0"
+      },
+      "hometown": {
+        "count": 6,
+        "total": 25,
+        "percentage": "24.0"
+      },
+      "bats_throws": {
+        "count": 6,
+        "total": 25,
+        "percentage": "24.0"
+      },
+      "position": {
+        "count": 20,
+        "total": 25,
+        "percentage": "80.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 25,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 25,
+        "percentage": "80.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 25,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "19.2",
+      "profile_completeness": "53.3"
+    },
+    {
+      "team_id": "414",
+      "team_name": "Penn State Nittany Lions",
+      "pitcher_count": 27,
+      "headshot": {
+        "count": 23,
+        "total": 27,
+        "percentage": "85.2"
+      },
+      "height": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "weight": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "year": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "hometown": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "bats_throws": {
+        "count": 24,
+        "total": 27,
+        "percentage": "88.9"
+      },
+      "position": {
+        "count": 23,
+        "total": 27,
+        "percentage": "85.2"
+      },
+      "number": {
+        "count": 23,
+        "total": 27,
+        "percentage": "85.2"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 27,
+        "percentage": "85.2"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "88.9",
+      "profile_completeness": "85.2"
+    },
+    {
+      "team_id": "115",
+      "team_name": "Pittsburgh",
+      "pitcher_count": 20,
+      "headshot": {
+        "count": 20,
+        "total": 20,
+        "percentage": "100.0"
+      },
+      "height": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "weight": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "year": {
+        "count": 6,
+        "total": 20,
+        "percentage": "30.0"
+      },
+      "hometown": {
+        "count": 6,
+        "total": 20,
+        "percentage": "30.0"
+      },
+      "bats_throws": {
+        "count": 6,
+        "total": 20,
+        "percentage": "30.0"
+      },
+      "position": {
+        "count": 20,
+        "total": 20,
+        "percentage": "100.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 20,
+        "percentage": "100.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "18.0",
+      "profile_completeness": "66.7"
+    },
+    {
+      "team_id": "189",
+      "team_name": "Purdue Boilermakers",
+      "pitcher_count": 18,
+      "headshot": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "height": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "weight": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "year": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "hometown": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "bats_throws": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "position": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "number": {
+        "count": 0,
+        "total": 18,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 18,
+        "total": 18,
+        "percentage": "100.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 18,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "100.0",
+      "profile_completeness": "66.7"
+    },
+    {
+      "team_id": "102",
+      "team_name": "Rutgers",
+      "pitcher_count": 24,
+      "headshot": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "height": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "weight": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "year": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "hometown": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "bats_throws": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "position": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "number": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "display_name": {
+        "count": 21,
+        "total": 24,
+        "percentage": "87.5"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 24,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "87.5",
+      "profile_completeness": "87.5"
+    },
+    {
+      "team_id": "193",
+      "team_name": "South Carolina",
+      "pitcher_count": 30,
+      "headshot": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "height": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "weight": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "year": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "hometown": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "bats_throws": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "position": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "number": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 30,
+        "percentage": "66.7"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 30,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "66.7",
+      "profile_completeness": "66.7"
+    },
+    {
+      "team_id": "198",
+      "team_name": "TCU",
+      "pitcher_count": 37,
+      "headshot": {
+        "count": 18,
+        "total": 37,
+        "percentage": "48.6"
+      },
+      "height": {
+        "count": 21,
+        "total": 37,
+        "percentage": "56.8"
+      },
+      "weight": {
+        "count": 21,
+        "total": 37,
+        "percentage": "56.8"
+      },
+      "year": {
+        "count": 19,
+        "total": 37,
+        "percentage": "51.4"
+      },
+      "hometown": {
+        "count": 21,
+        "total": 37,
+        "percentage": "56.8"
+      },
+      "bats_throws": {
+        "count": 12,
+        "total": 37,
+        "percentage": "32.4"
+      },
+      "position": {
+        "count": 18,
+        "total": 37,
+        "percentage": "48.6"
+      },
+      "number": {
+        "count": 0,
+        "total": 37,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 18,
+        "total": 37,
+        "percentage": "48.6"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 37,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "50.8",
+      "profile_completeness": "32.4"
+    },
+    {
+      "team_id": "199",
+      "team_name": "Tennessee",
+      "pitcher_count": 38,
+      "headshot": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "height": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "weight": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "year": {
+        "count": 15,
+        "total": 38,
+        "percentage": "39.5"
+      },
+      "hometown": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "bats_throws": {
+        "count": 8,
+        "total": 38,
+        "percentage": "21.1"
+      },
+      "position": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "number": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "display_name": {
+        "count": 10,
+        "total": 38,
+        "percentage": "26.3"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 38,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "27.9",
+      "profile_completeness": "26.3"
+    },
+    {
+      "team_id": "126",
+      "team_name": "Texas",
+      "pitcher_count": 25,
+      "headshot": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "height": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "weight": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "year": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "hometown": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "bats_throws": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "position": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "number": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 25,
+        "percentage": "92.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 25,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "92.0",
+      "profile_completeness": "92.0"
+    },
+    {
+      "team_id": "123",
+      "team_name": "Texas A&M",
+      "pitcher_count": 27,
+      "headshot": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "height": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "weight": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "year": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "hometown": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "bats_throws": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "position": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "number": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 19,
+        "total": 27,
+        "percentage": "70.4"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 27,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "70.4",
+      "profile_completeness": "46.9"
+    },
+    {
+      "team_id": "201",
+      "team_name": "Texas Tech",
+      "pitcher_count": 31,
+      "headshot": {
+        "count": 28,
+        "total": 31,
+        "percentage": "90.3"
+      },
+      "height": {
+        "count": 20,
+        "total": 31,
+        "percentage": "64.5"
+      },
+      "weight": {
+        "count": 20,
+        "total": 31,
+        "percentage": "64.5"
+      },
+      "year": {
+        "count": 20,
+        "total": 31,
+        "percentage": "64.5"
+      },
+      "hometown": {
+        "count": 20,
+        "total": 31,
+        "percentage": "64.5"
+      },
+      "bats_throws": {
+        "count": 20,
+        "total": 31,
+        "percentage": "64.5"
+      },
+      "position": {
+        "count": 28,
+        "total": 31,
+        "percentage": "90.3"
+      },
+      "number": {
+        "count": 0,
+        "total": 31,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 28,
+        "total": 31,
+        "percentage": "90.3"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 31,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "64.5",
+      "profile_completeness": "60.2"
+    },
+    {
+      "team_id": "128",
+      "team_name": "Utah",
+      "pitcher_count": 24,
+      "headshot": {
+        "count": 19,
+        "total": 24,
+        "percentage": "79.2"
+      },
+      "height": {
+        "count": 15,
+        "total": 24,
+        "percentage": "62.5"
+      },
+      "weight": {
+        "count": 15,
+        "total": 24,
+        "percentage": "62.5"
+      },
+      "year": {
+        "count": 19,
+        "total": 24,
+        "percentage": "79.2"
+      },
+      "hometown": {
+        "count": 6,
+        "total": 24,
+        "percentage": "25.0"
+      },
+      "bats_throws": {
+        "count": 6,
+        "total": 24,
+        "percentage": "25.0"
+      },
+      "position": {
+        "count": 19,
+        "total": 24,
+        "percentage": "79.2"
+      },
+      "number": {
+        "count": 19,
+        "total": 24,
+        "percentage": "79.2"
+      },
+      "display_name": {
+        "count": 19,
+        "total": 24,
+        "percentage": "79.2"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 24,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "50.8",
+      "profile_completeness": "79.2"
+    },
+    {
+      "team_id": "120",
+      "team_name": "Vanderbilt",
+      "pitcher_count": 24,
+      "headshot": {
+        "count": 22,
+        "total": 24,
+        "percentage": "91.7"
+      },
+      "height": {
+        "count": 17,
+        "total": 24,
+        "percentage": "70.8"
+      },
+      "weight": {
+        "count": 17,
+        "total": 24,
+        "percentage": "70.8"
+      },
+      "year": {
+        "count": 13,
+        "total": 24,
+        "percentage": "54.2"
+      },
+      "hometown": {
+        "count": 17,
+        "total": 24,
+        "percentage": "70.8"
+      },
+      "bats_throws": {
+        "count": 17,
+        "total": 24,
+        "percentage": "70.8"
+      },
+      "position": {
+        "count": 22,
+        "total": 24,
+        "percentage": "91.7"
+      },
+      "number": {
+        "count": 22,
+        "total": 24,
+        "percentage": "91.7"
+      },
+      "display_name": {
+        "count": 22,
+        "total": 24,
+        "percentage": "91.7"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 24,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "67.5",
+      "profile_completeness": "91.7"
+    },
+    {
+      "team_id": "131",
+      "team_name": "Virginia",
+      "pitcher_count": 23,
+      "headshot": {
+        "count": 23,
+        "total": 23,
+        "percentage": "100.0"
+      },
+      "height": {
+        "count": 0,
+        "total": 23,
+        "percentage": "0.0"
+      },
+      "weight": {
+        "count": 0,
+        "total": 23,
+        "percentage": "0.0"
+      },
+      "year": {
+        "count": 23,
+        "total": 23,
+        "percentage": "100.0"
+      },
+      "hometown": {
+        "count": 0,
+        "total": 23,
+        "percentage": "0.0"
+      },
+      "bats_throws": {
+        "count": 0,
+        "total": 23,
+        "percentage": "0.0"
+      },
+      "position": {
+        "count": 23,
+        "total": 23,
+        "percentage": "100.0"
+      },
+      "number": {
+        "count": 23,
+        "total": 23,
+        "percentage": "100.0"
+      },
+      "display_name": {
+        "count": 23,
+        "total": 23,
+        "percentage": "100.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 23,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "20.0",
+      "profile_completeness": "100.0"
+    },
+    {
+      "team_id": "132",
+      "team_name": "Virginia Tech",
+      "pitcher_count": 20,
+      "headshot": {
+        "count": 20,
+        "total": 20,
+        "percentage": "100.0"
+      },
+      "height": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "weight": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "year": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "hometown": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "bats_throws": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "position": {
+        "count": 20,
+        "total": 20,
+        "percentage": "100.0"
+      },
+      "number": {
+        "count": 19,
+        "total": 20,
+        "percentage": "95.0"
+      },
+      "display_name": {
+        "count": 20,
+        "total": 20,
+        "percentage": "100.0"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 20,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "0.0",
+      "profile_completeness": "98.3"
+    },
+    {
+      "team_id": "133",
+      "team_name": "Washington",
+      "pitcher_count": 21,
+      "headshot": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "height": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "weight": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "year": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "hometown": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "bats_throws": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "position": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "number": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "0.0",
+      "profile_completeness": "57.1"
+    },
+    {
+      "team_id": "134",
+      "team_name": "Washington State",
+      "pitcher_count": 21,
+      "headshot": {
+        "count": 19,
+        "total": 21,
+        "percentage": "90.5"
+      },
+      "height": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "weight": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "year": {
+        "count": 19,
+        "total": 21,
+        "percentage": "90.5"
+      },
+      "hometown": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "bats_throws": {
+        "count": 18,
+        "total": 21,
+        "percentage": "85.7"
+      },
+      "position": {
+        "count": 19,
+        "total": 21,
+        "percentage": "90.5"
+      },
+      "number": {
+        "count": 19,
+        "total": 21,
+        "percentage": "90.5"
+      },
+      "display_name": {
+        "count": 19,
+        "total": 21,
+        "percentage": "90.5"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 21,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "86.7",
+      "profile_completeness": "90.5"
+    },
+    {
+      "team_id": "136",
+      "team_name": "West Virginia",
+      "pitcher_count": 30,
+      "headshot": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "height": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "weight": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "year": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "hometown": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "bats_throws": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "position": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "number": {
+        "count": 0,
+        "total": 30,
+        "percentage": "0.0"
+      },
+      "display_name": {
+        "count": 25,
+        "total": 30,
+        "percentage": "83.3"
+      },
+      "espn_link": {
+        "count": 0,
+        "total": 30,
+        "percentage": "0.0"
+      },
+      "bio_completeness": "83.3",
+      "profile_completeness": "55.5"
+    }
+  ],
+  "priority_gaps": {
+    "no_headshots": [
+      {
+        "team_name": "BYU",
+        "pitcher_count": 22
+      }
+    ],
+    "low_bio": [
+      {
+        "team_name": "Baylor",
+        "bio_completeness": "12.7",
+        "pitcher_count": 22
+      },
+      {
+        "team_name": "Illinois",
+        "bio_completeness": "7.3",
+        "pitcher_count": 22
+      },
+      {
+        "team_name": "Indiana",
+        "bio_completeness": "15.0",
+        "pitcher_count": 12
+      },
+      {
+        "team_name": "Kansas",
+        "bio_completeness": "26.9",
+        "pitcher_count": 32
+      },
+      {
+        "team_name": "Miami",
+        "bio_completeness": "22.9",
+        "pitcher_count": 27
+      },
+      {
+        "team_name": "Northwestern",
+        "bio_completeness": "5.9",
+        "pitcher_count": 17
+      },
+      {
+        "team_name": "Ohio State",
+        "bio_completeness": "0.0",
+        "pitcher_count": 16
+      },
+      {
+        "team_name": "Oklahoma",
+        "bio_completeness": "17.8",
+        "pitcher_count": 28
+      },
+      {
+        "team_name": "Oregon State",
+        "bio_completeness": "19.2",
+        "pitcher_count": 25
+      },
+      {
+        "team_name": "Pittsburgh",
+        "bio_completeness": "18.0",
+        "pitcher_count": 20
+      },
+      {
+        "team_name": "Tennessee",
+        "bio_completeness": "27.9",
+        "pitcher_count": 38
+      },
+      {
+        "team_name": "Virginia",
+        "bio_completeness": "20.0",
+        "pitcher_count": 23
+      },
+      {
+        "team_name": "Virginia Tech",
+        "bio_completeness": "0.0",
+        "pitcher_count": 20
+      },
+      {
+        "team_name": "Washington",
+        "bio_completeness": "0.0",
+        "pitcher_count": 21
+      }
+    ],
+    "low_profile": [
+      {
+        "team_name": "Auburn",
+        "profile_completeness": "48.9",
+        "pitcher_count": 47
+      },
+      {
+        "team_name": "Kansas State",
+        "profile_completeness": "34.1",
+        "pitcher_count": 41
+      },
+      {
+        "team_name": "Mississippi State",
+        "profile_completeness": "41.9",
+        "pitcher_count": 35
+      },
+      {
+        "team_name": "Oklahoma",
+        "profile_completeness": "47.6",
+        "pitcher_count": 28
+      },
+      {
+        "team_name": "TCU",
+        "profile_completeness": "32.4",
+        "pitcher_count": 37
+      },
+      {
+        "team_name": "Tennessee",
+        "profile_completeness": "26.3",
+        "pitcher_count": 38
+      },
+      {
+        "team_name": "Texas A&M",
+        "profile_completeness": "46.9",
+        "pitcher_count": 27
+      }
+    ],
+    "no_espn_links": [
+      {
+        "team_name": "Alabama",
+        "pitcher_count": 30
+      },
+      {
+        "team_name": "Auburn",
+        "pitcher_count": 47
+      },
+      {
+        "team_name": "Baylor",
+        "pitcher_count": 22
+      },
+      {
+        "team_name": "BYU",
+        "pitcher_count": 22
+      },
+      {
+        "team_name": "Cincinnati Bearcats",
+        "pitcher_count": 30
+      },
+      {
+        "team_name": "Clemson",
+        "pitcher_count": 27
+      },
+      {
+        "team_name": "Houston",
+        "pitcher_count": 27
+      },
+      {
+        "team_name": "Illinois",
+        "pitcher_count": 22
+      },
+      {
+        "team_name": "Indiana",
+        "pitcher_count": 12
+      },
+      {
+        "team_name": "Iowa",
+        "pitcher_count": 25
+      },
+      {
+        "team_name": "Kansas",
+        "pitcher_count": 32
+      },
+      {
+        "team_name": "Kansas State",
+        "pitcher_count": 41
+      },
+      {
+        "team_name": "Miami",
+        "pitcher_count": 27
+      },
+      {
+        "team_name": "Mississippi State",
+        "pitcher_count": 35
+      },
+      {
+        "team_name": "Northwestern",
+        "pitcher_count": 17
+      },
+      {
+        "team_name": "Ohio State",
+        "pitcher_count": 16
+      },
+      {
+        "team_name": "Oklahoma",
+        "pitcher_count": 28
+      },
+      {
+        "team_name": "Oklahoma State",
+        "pitcher_count": 29
+      },
+      {
+        "team_name": "Oregon",
+        "pitcher_count": 46
+      },
+      {
+        "team_name": "Oregon State",
+        "pitcher_count": 25
+      },
+      {
+        "team_name": "Penn State Nittany Lions",
+        "pitcher_count": 27
+      },
+      {
+        "team_name": "Pittsburgh",
+        "pitcher_count": 20
+      },
+      {
+        "team_name": "Purdue Boilermakers",
+        "pitcher_count": 18
+      },
+      {
+        "team_name": "Rutgers",
+        "pitcher_count": 24
+      },
+      {
+        "team_name": "South Carolina",
+        "pitcher_count": 30
+      },
+      {
+        "team_name": "TCU",
+        "pitcher_count": 37
+      },
+      {
+        "team_name": "Tennessee",
+        "pitcher_count": 38
+      },
+      {
+        "team_name": "Texas",
+        "pitcher_count": 25
+      },
+      {
+        "team_name": "Texas A&M",
+        "pitcher_count": 27
+      },
+      {
+        "team_name": "Texas Tech",
+        "pitcher_count": 31
+      },
+      {
+        "team_name": "Utah",
+        "pitcher_count": 24
+      },
+      {
+        "team_name": "Vanderbilt",
+        "pitcher_count": 24
+      },
+      {
+        "team_name": "Virginia",
+        "pitcher_count": 23
+      },
+      {
+        "team_name": "Virginia Tech",
+        "pitcher_count": 20
+      },
+      {
+        "team_name": "Washington",
+        "pitcher_count": 21
+      },
+      {
+        "team_name": "Washington State",
+        "pitcher_count": 21
+      },
+      {
+        "team_name": "West Virginia",
+        "pitcher_count": 30
+      }
+    ]
+  }
+}

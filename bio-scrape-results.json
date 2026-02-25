@@ -1,0 +1,379 @@
+{
+  "totalUpdated": 385,
+  "totalFailed": 18,
+  "totalSkipped": 597,
+  "teamResults": [
+    {
+      "team_name": "Kentucky",
+      "updated": 22,
+      "skipped": 16,
+      "failed": 0
+    },
+    {
+      "team_name": "Arkansas",
+      "updated": 0,
+      "skipped": 38,
+      "failed": 0
+    },
+    {
+      "team_name": "Auburn",
+      "updated": 0,
+      "skipped": 37,
+      "failed": 0
+    },
+    {
+      "team_name": "Kansas State",
+      "updated": 28,
+      "skipped": 8,
+      "failed": 0
+    },
+    {
+      "team_name": "Oregon",
+      "updated": 0,
+      "skipped": 34,
+      "failed": 0
+    },
+    {
+      "team_name": "Arizona State",
+      "updated": 0,
+      "skipped": 34,
+      "failed": 0
+    },
+    {
+      "team_name": "Nebraska",
+      "updated": 22,
+      "skipped": 8,
+      "failed": 0
+    },
+    {
+      "team_name": "Ole Miss",
+      "updated": 18,
+      "skipped": 12,
+      "failed": 0
+    },
+    {
+      "team_name": "Duke",
+      "updated": 0,
+      "skipped": 29,
+      "failed": 0
+    },
+    {
+      "team_name": "Florida",
+      "updated": 18,
+      "skipped": 10,
+      "failed": 0
+    },
+    {
+      "team_name": "Georgia Tech Yellow Jackets",
+      "updated": 0,
+      "skipped": 28,
+      "failed": 0
+    },
+    {
+      "team_name": "Stanford Cardinal",
+      "updated": 0,
+      "skipped": 26,
+      "failed": 0
+    },
+    {
+      "team_name": "Penn State Nittany Lions",
+      "updated": 24,
+      "skipped": 2,
+      "failed": 0
+    },
+    {
+      "team_name": "TCU",
+      "updated": 19,
+      "skipped": 7,
+      "failed": 0
+    },
+    {
+      "team_name": "Oklahoma State",
+      "updated": 19,
+      "skipped": 5,
+      "failed": 0
+    },
+    {
+      "team_name": "Cincinnati Bearcats",
+      "updated": 0,
+      "skipped": 24,
+      "failed": 0
+    },
+    {
+      "team_name": "Mississippi State",
+      "updated": 10,
+      "skipped": 13,
+      "failed": 0
+    },
+    {
+      "team_name": "Louisville",
+      "updated": 14,
+      "skipped": 9,
+      "failed": 0
+    },
+    {
+      "team_name": "Georgia",
+      "updated": 4,
+      "skipped": 19,
+      "failed": 0
+    },
+    {
+      "team_name": "Florida State",
+      "updated": 12,
+      "skipped": 10,
+      "failed": 0
+    },
+    {
+      "team_name": "USC",
+      "updated": 13,
+      "skipped": 8,
+      "failed": 0
+    },
+    {
+      "team_name": "NC State",
+      "updated": 9,
+      "skipped": 12,
+      "failed": 0
+    },
+    {
+      "team_name": "Tennessee",
+      "updated": 7,
+      "skipped": 14,
+      "failed": 0
+    },
+    {
+      "team_name": "Arizona Wildcats",
+      "updated": 0,
+      "skipped": 21,
+      "failed": 0
+    },
+    {
+      "team_name": "Washington State",
+      "updated": 18,
+      "skipped": 2,
+      "failed": 0
+    },
+    {
+      "team_name": "Virginia Tech",
+      "updated": 0,
+      "skipped": 20,
+      "failed": 0
+    },
+    {
+      "team_name": "UCLA",
+      "updated": 17,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "BYU",
+      "updated": 18,
+      "skipped": 2,
+      "failed": 0
+    },
+    {
+      "team_name": "Wake Forest",
+      "updated": 0,
+      "skipped": 0,
+      "failed": 18
+    },
+    {
+      "team_name": "Iowa",
+      "updated": 13,
+      "skipped": 5,
+      "failed": 0
+    },
+    {
+      "team_name": "North Carolina",
+      "updated": 10,
+      "skipped": 6,
+      "failed": 0
+    },
+    {
+      "team_name": "Kansas",
+      "updated": 8,
+      "skipped": 7,
+      "failed": 0
+    },
+    {
+      "team_name": "LSU",
+      "updated": 7,
+      "skipped": 7,
+      "failed": 0
+    },
+    {
+      "team_name": "Notre Dame",
+      "updated": 3,
+      "skipped": 9,
+      "failed": 0
+    },
+    {
+      "team_name": "California Golden Bears",
+      "updated": 0,
+      "skipped": 10,
+      "failed": 0
+    },
+    {
+      "team_name": "Maryland",
+      "updated": 0,
+      "skipped": 10,
+      "failed": 0
+    },
+    {
+      "team_name": "Missouri",
+      "updated": 3,
+      "skipped": 7,
+      "failed": 0
+    },
+    {
+      "team_name": "Utah",
+      "updated": 6,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "Michigan State",
+      "updated": 6,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "Vanderbilt",
+      "updated": 0,
+      "skipped": 8,
+      "failed": 0
+    },
+    {
+      "team_name": "Alabama",
+      "updated": 5,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "Ohio State",
+      "updated": 0,
+      "skipped": 8,
+      "failed": 0
+    },
+    {
+      "team_name": "South Carolina",
+      "updated": 0,
+      "skipped": 8,
+      "failed": 0
+    },
+    {
+      "team_name": "Pittsburgh",
+      "updated": 6,
+      "skipped": 1,
+      "failed": 0
+    },
+    {
+      "team_name": "Michigan",
+      "updated": 7,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "team_name": "Texas Tech",
+      "updated": 1,
+      "skipped": 6,
+      "failed": 0
+    },
+    {
+      "team_name": "Miami",
+      "updated": 5,
+      "skipped": 2,
+      "failed": 0
+    },
+    {
+      "team_name": "Oklahoma",
+      "updated": 1,
+      "skipped": 6,
+      "failed": 0
+    },
+    {
+      "team_name": "Texas A&M",
+      "updated": 0,
+      "skipped": 7,
+      "failed": 0
+    },
+    {
+      "team_name": "Baylor",
+      "updated": 3,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "Virginia",
+      "updated": 0,
+      "skipped": 5,
+      "failed": 0
+    },
+    {
+      "team_name": "Minnesota",
+      "updated": 5,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "team_name": "Houston",
+      "updated": 0,
+      "skipped": 4,
+      "failed": 0
+    },
+    {
+      "team_name": "Illinois",
+      "updated": 0,
+      "skipped": 4,
+      "failed": 0
+    },
+    {
+      "team_name": "Oregon State",
+      "updated": 0,
+      "skipped": 4,
+      "failed": 0
+    },
+    {
+      "team_name": "Indiana",
+      "updated": 2,
+      "skipped": 1,
+      "failed": 0
+    },
+    {
+      "team_name": "Rutgers",
+      "updated": 0,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "Washington",
+      "updated": 0,
+      "skipped": 3,
+      "failed": 0
+    },
+    {
+      "team_name": "Northwestern",
+      "updated": 2,
+      "skipped": 0,
+      "failed": 0
+    },
+    {
+      "team_name": "Clemson",
+      "updated": 0,
+      "skipped": 1,
+      "failed": 0
+    },
+    {
+      "team_name": "West Virginia",
+      "updated": 0,
+      "skipped": 1,
+      "failed": 0
+    },
+    {
+      "team_name": "Texas",
+      "updated": 0,
+      "skipped": 1,
+      "failed": 0
+    }
+  ]
+}
