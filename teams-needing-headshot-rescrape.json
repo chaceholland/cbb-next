@@ -1,152 +1,128 @@
 [
   {
+    "team_id": "113",
+    "team_name": "Oregon State",
+    "coverage_pct": "0.0",
+    "missing_count": 3
+  },
+  {
     "team_id": "127",
     "team_name": "BYU",
     "coverage_pct": "0.0",
-    "missing_count": 18
+    "missing_count": 14
   },
   {
-    "team_id": "117",
-    "team_name": "Clemson",
-    "coverage_pct": "7.1",
-    "missing_count": 13
-  },
-  {
-    "team_id": "193",
-    "team_name": "South Carolina",
-    "coverage_pct": "7.7",
-    "missing_count": 12
-  },
-  {
-    "team_id": "60",
-    "team_name": "Arizona Wildcats",
-    "coverage_pct": "10.0",
-    "missing_count": 9
+    "team_id": "133",
+    "team_name": "Washington",
+    "coverage_pct": "0.0",
+    "missing_count": 2
   },
   {
     "team_id": "95",
     "team_name": "NC State",
-    "coverage_pct": "10.0",
-    "missing_count": 9
+    "coverage_pct": "7.1",
+    "missing_count": 13
+  },
+  {
+    "team_id": "60",
+    "team_name": "Arizona Wildcats",
+    "coverage_pct": "7.7",
+    "missing_count": 12
   },
   {
     "team_id": "96",
     "team_name": "North Carolina",
+    "coverage_pct": "8.3",
+    "missing_count": 11
+  },
+  {
+    "team_id": "193",
+    "team_name": "South Carolina",
     "coverage_pct": "11.1",
     "missing_count": 8
   },
   {
-    "team_id": "176",
-    "team_name": "Miami",
-    "coverage_pct": "12.5",
-    "missing_count": 7
-  },
-  {
     "team_id": "72",
     "team_name": "Florida State",
-    "coverage_pct": "15.4",
-    "missing_count": 11
-  },
-  {
-    "team_id": "75",
-    "team_name": "Florida",
-    "coverage_pct": "16.7",
-    "missing_count": 15
-  },
-  {
-    "team_id": "97",
-    "team_name": "Wake Forest",
-    "coverage_pct": "18.2",
-    "missing_count": 9
-  },
-  {
-    "team_id": "112",
-    "team_name": "Oklahoma",
-    "coverage_pct": "18.2",
-    "missing_count": 9
+    "coverage_pct": "13.3",
+    "missing_count": 13
   },
   {
     "team_id": "91",
     "team_name": "Missouri",
-    "coverage_pct": "20.0",
-    "missing_count": 4
+    "coverage_pct": "14.3",
+    "missing_count": 6
+  },
+  {
+    "team_id": "97",
+    "team_name": "Wake Forest",
+    "coverage_pct": "14.3",
+    "missing_count": 12
+  },
+  {
+    "team_id": "75",
+    "team_name": "Florida",
+    "coverage_pct": "15.8",
+    "missing_count": 16
   },
   {
     "team_id": "199",
     "team_name": "Tennessee",
-    "coverage_pct": "23.5",
-    "missing_count": 13
-  },
-  {
-    "team_id": "88",
-    "team_name": "Michigan State",
-    "coverage_pct": "25.0",
-    "missing_count": 3
+    "coverage_pct": "18.2",
+    "missing_count": 18
   },
   {
     "team_id": "92",
     "team_name": "Ole Miss",
-    "coverage_pct": "25.0",
-    "missing_count": 15
-  },
-  {
-    "team_id": "121",
-    "team_name": "Baylor",
-    "coverage_pct": "26.7",
-    "missing_count": 11
+    "coverage_pct": "19.2",
+    "missing_count": 21
   },
   {
     "team_id": "83",
     "team_name": "Louisville",
+    "coverage_pct": "25.0",
+    "missing_count": 12
+  },
+  {
+    "team_id": "88",
+    "team_name": "Michigan State",
     "coverage_pct": "28.6",
-    "missing_count": 10
+    "missing_count": 5
   },
   {
     "team_id": "66",
     "team_name": "UCLA",
-    "coverage_pct": "33.3",
-    "missing_count": 12
+    "coverage_pct": "30.4",
+    "missing_count": 16
   },
   {
-    "team_id": "153",
-    "team_name": "Illinois",
+    "team_id": "112",
+    "team_name": "Oklahoma",
     "coverage_pct": "33.3",
     "missing_count": 4
   },
   {
-    "team_id": "123",
-    "team_name": "Texas A&M",
-    "coverage_pct": "35.7",
-    "missing_count": 9
-  },
-  {
-    "team_id": "150",
-    "team_name": "Mississippi State",
-    "coverage_pct": "37.9",
+    "team_id": "82",
+    "team_name": "Kentucky",
+    "coverage_pct": "41.9",
     "missing_count": 18
-  },
-  {
-    "team_id": "68",
-    "team_name": "USC",
-    "coverage_pct": "44.4",
-    "missing_count": 5
-  },
-  {
-    "team_id": "126",
-    "team_name": "Texas",
-    "coverage_pct": "45.5",
-    "missing_count": 6
-  },
-  {
-    "team_id": "78",
-    "team_name": "Georgia",
-    "coverage_pct": "45.8",
-    "missing_count": 13
   },
   {
     "team_id": "99",
     "team_name": "Nebraska",
-    "coverage_pct": "46.7",
-    "missing_count": 8
+    "coverage_pct": "43.8",
+    "missing_count": 9
+  },
+  {
+    "team_id": "78",
+    "team_name": "Georgia",
+    "coverage_pct": "45.2",
+    "missing_count": 17
+  },
+  {
+    "team_id": "123",
+    "team_name": "Texas A&M",
+    "coverage_pct": "45.5",
+    "missing_count": 6
   }
 ]

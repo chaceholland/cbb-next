@@ -1,0 +1,3810 @@
+{
+  "totalGroups": 222,
+  "totalDuplicates": 494,
+  "deleted": 272,
+  "errors": [],
+  "details": [
+    {
+      "team": "Unknown",
+      "normalized_name": "nolan peel",
+      "keeper": {
+        "pitcher_id": "102-P5",
+        "name": "Nolan Peel",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93634",
+          "name": "Nolan Peel",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "luke fithian",
+      "keeper": {
+        "pitcher_id": "102-P6",
+        "name": "Luke Fithian",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93628",
+          "name": "Luke Fithian",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "noah wech",
+      "keeper": {
+        "pitcher_id": "110-P29",
+        "name": "Noah Wech",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87213",
+          "name": "Noah Wech",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94545",
+          "name": "Noah - P Wech",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "matthew brown",
+      "keeper": {
+        "pitcher_id": "110-P30",
+        "name": "Matthew Brown",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87196",
+          "name": "Matthew Brown",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94546",
+          "name": "Matthew - P Brown",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brennan phillips",
+      "keeper": {
+        "pitcher_id": "110-P31",
+        "name": "Brennan Phillips",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71988",
+          "name": "Brennan - P Phillips",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "drew blake",
+      "keeper": {
+        "pitcher_id": "110-P32",
+        "name": "Drew Blake",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "54542",
+          "name": "Drew Blake",
+          "score": 40
+        },
+        {
+          "pitcher_id": "59108",
+          "name": "Drew - P Blake",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "mario pesca",
+      "keeper": {
+        "pitcher_id": "110-P45",
+        "name": "Mario Pesca",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87205",
+          "name": "Mario Pesca",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83778",
+          "name": "Mario - P Pesca",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "hunter watkins",
+      "keeper": {
+        "pitcher_id": "110-P46",
+        "name": "Hunter Watkins",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87212",
+          "name": "Hunter Watkins",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94553",
+          "name": "Hunter - P Watkins",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "harrison bodendorf",
+      "keeper": {
+        "pitcher_id": "87194",
+        "name": "Harrison Bodendorf",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "72886",
+          "name": "Harrison - P Bodendorf",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ethan lund",
+      "keeper": {
+        "pitcher_id": "110-P26",
+        "name": "Ethan Lund",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94543",
+          "name": "Ethan - P Lund",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "stormy rhodes",
+      "keeper": {
+        "pitcher_id": "110-P28",
+        "name": "Stormy Rhodes",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87207",
+          "name": "Stormy Rhodes",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94544",
+          "name": "Stormy - P Rhodes",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ryan ure",
+      "keeper": {
+        "pitcher_id": "54557",
+        "name": "Ryan Ure",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "59105",
+          "name": "Ryan - P Ure",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jason bodin",
+      "keeper": {
+        "pitcher_id": "112-P14",
+        "name": "Jason Bodin",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87418",
+          "name": "Jason Bodin",
+          "score": 40
+        },
+        {
+          "pitcher_id": "77745",
+          "name": "Jason - P Bodin",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "gavyn jones",
+      "keeper": {
+        "pitcher_id": "112-P3",
+        "name": "Gavyn Jones",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87433",
+          "name": "Gavyn Jones",
+          "score": 40
+        },
+        {
+          "pitcher_id": "91944",
+          "name": "Gavyn - P Jones",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "cameron johnson",
+      "keeper": {
+        "pitcher_id": "112-P11",
+        "name": "Cameron Johnson",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77071",
+          "name": "Cameron - P Johnson",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "reid hensley",
+      "keeper": {
+        "pitcher_id": "112-P17",
+        "name": "Reid Hensley",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77850",
+          "name": "Reid Hensley",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83694",
+          "name": "Reid - P Hensley",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "malachi witherspoon",
+      "keeper": {
+        "pitcher_id": "77865",
+        "name": "Malachi Witherspoon",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83689",
+          "name": "Malachi - P Witherspoon",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "cade crossland",
+      "keeper": {
+        "pitcher_id": "87423",
+        "name": "Cade Crossland",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "91945",
+          "name": "Cade - P Crossland",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "kyson witherspoon",
+      "keeper": {
+        "pitcher_id": "77864",
+        "name": "Kyson Witherspoon",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83690",
+          "name": "Kyson Witherspoon",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dylan crooks",
+      "keeper": {
+        "pitcher_id": "77843",
+        "name": "Dylan Crooks",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83695",
+          "name": "Dylan - P Crooks",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jaden barfield",
+      "keeper": {
+        "pitcher_id": "112-P9",
+        "name": "Jaden Barfield",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87417",
+          "name": "Jaden Barfield",
+          "score": 40
+        },
+        {
+          "pitcher_id": "91947",
+          "name": "Jaden - P Barfield",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "michael catalano",
+      "keeper": {
+        "pitcher_id": "112-P10",
+        "name": "Michael Catalano",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87421",
+          "name": "Michael Catalano",
+          "score": 40
+        },
+        {
+          "pitcher_id": "91948",
+          "name": "Michael - P Catalano",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "james hitt",
+      "keeper": {
+        "pitcher_id": "46644",
+        "name": "James Hitt",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "51061",
+          "name": "James - P Hitt",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dylan tate",
+      "keeper": {
+        "pitcher_id": "87440",
+        "name": "Dylan Tate",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "91949",
+          "name": "Dylan - P Tate",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dax whitney",
+      "keeper": {
+        "pitcher_id": "113-P24",
+        "name": "Dax Whitney",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "84730",
+          "name": "Dax - P Whitney",
+          "score": 120
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "eric segura",
+      "keeper": {
+        "pitcher_id": "113-P26",
+        "name": "Eric Segura",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83664",
+          "name": "Eric - P Segura",
+          "score": 120
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "zach kmatz",
+      "keeper": {
+        "pitcher_id": "113-P36",
+        "name": "Zach Kmatz",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "91892",
+          "name": "Zach - P Kmatz",
+          "score": 120
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "wyatt queen",
+      "keeper": {
+        "pitcher_id": "113-P27",
+        "name": "Wyatt Queen",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "91889",
+          "name": "Wyatt - P Queen",
+          "score": 120
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "aj hutcheson",
+      "keeper": {
+        "pitcher_id": "113-P33",
+        "name": "AJ Hutcheson",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "72547",
+          "name": "AJ - P Hutcheson",
+          "score": 120
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ethan kleinschmit",
+      "keeper": {
+        "pitcher_id": "113-P28",
+        "name": "Ethan Kleinschmit",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87674",
+          "name": "Ethan - P Kleinschmit",
+          "score": 120
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "nathan dvorsky",
+      "keeper": {
+        "pitcher_id": "117-P5",
+        "name": "Nathan Dvorsky",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65879",
+          "name": "Nathan Dvorsky",
+          "score": 40
+        },
+        {
+          "pitcher_id": "74151",
+          "name": "Nathan - P Dvorsky",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "eston simpson",
+      "keeper": {
+        "pitcher_id": "117-P21",
+        "name": "Eston Simpson",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95133",
+          "name": "Eston Simpson",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "michael sharman",
+      "keeper": {
+        "pitcher_id": "117-P9",
+        "name": "Michael Sharman",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95131",
+          "name": "Michael Sharman",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "joe allen",
+      "keeper": {
+        "pitcher_id": "117-P6",
+        "name": "Joe Allen",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65871",
+          "name": "Joe Allen",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83580",
+          "name": "Joe - P Allen",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "talan bell",
+      "keeper": {
+        "pitcher_id": "117-P24",
+        "name": "Talan Bell",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "89271",
+          "name": "Talan - P Bell",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jacob mcgovern",
+      "keeper": {
+        "pitcher_id": "117-P11",
+        "name": "Jacob McGovern",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83581",
+          "name": "Jacob - P McGovern",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "justin leguernic",
+      "keeper": {
+        "pitcher_id": "117-P13",
+        "name": "Justin LeGuernic",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80342",
+          "name": "Justin LeGuernic",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83582",
+          "name": "Justin - P LeGuernic",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "drew titsworth",
+      "keeper": {
+        "pitcher_id": "117-P1",
+        "name": "Drew Titsworth",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80352",
+          "name": "Drew Titsworth",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83576",
+          "name": "Drew - P Titsworth",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dion brown",
+      "keeper": {
+        "pitcher_id": "117-P23",
+        "name": "Dion Brown",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90279",
+          "name": "Dion Brown",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "aidan knaak",
+      "keeper": {
+        "pitcher_id": "117-P4",
+        "name": "Aidan Knaak",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80341",
+          "name": "Aidan Knaak",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83578",
+          "name": "Aidan - P Knaak",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "danny nelson",
+      "keeper": {
+        "pitcher_id": "117-P16",
+        "name": "Danny Nelson",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95129",
+          "name": "Danny Nelson",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "chance fitzgerald",
+      "keeper": {
+        "pitcher_id": "117-P22",
+        "name": "Chance Fitzgerald",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83584",
+          "name": "Chance - P Fitzgerald",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "hayden simmerson",
+      "keeper": {
+        "pitcher_id": "117-P2",
+        "name": "Hayden Simmerson",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95132",
+          "name": "Hayden Simmerson",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "landon fowler",
+      "keeper": {
+        "pitcher_id": "117-P18",
+        "name": "Landon Fowler",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95120",
+          "name": "Landon Fowler",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brendon bennett",
+      "keeper": {
+        "pitcher_id": "117-P12",
+        "name": "Brendon Bennett",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "89272",
+          "name": "Brendon - P Bennett",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "alex kranzler",
+      "keeper": {
+        "pitcher_id": "120-P18",
+        "name": "Alex Kranzler",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "76985",
+          "name": "Alex Kranzler",
+          "score": 40
+        },
+        {
+          "pitcher_id": "84127",
+          "name": "Alex - P Kranzler",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "sawyer hawks",
+      "keeper": {
+        "pitcher_id": "120-P19",
+        "name": "Sawyer Hawks",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "76980",
+          "name": "Sawyer Hawks",
+          "score": 40
+        },
+        {
+          "pitcher_id": "63323",
+          "name": "Sawyer - P Hawks",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "levi huesman",
+      "keeper": {
+        "pitcher_id": "120-P7",
+        "name": "Levi Huesman",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "76982",
+          "name": "Levi Huesman",
+          "score": 40
+        },
+        {
+          "pitcher_id": "71935",
+          "name": "Levi - P Huesman",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "cody bowker",
+      "keeper": {
+        "pitcher_id": "120-P14",
+        "name": "Cody Bowker",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90442",
+          "name": "Cody Bowker",
+          "score": 40
+        },
+        {
+          "pitcher_id": "71273",
+          "name": "Cody Bowker",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "austin nye",
+      "keeper": {
+        "pitcher_id": "120-P10",
+        "name": "Austin Nye",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90453",
+          "name": "Austin Nye",
+          "score": 40
+        },
+        {
+          "pitcher_id": "91935",
+          "name": "Austin - P Nye",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "connor fennell",
+      "keeper": {
+        "pitcher_id": "120-P9",
+        "name": "Connor Fennell",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90446",
+          "name": "Connor Fennell",
+          "score": 40
+        },
+        {
+          "pitcher_id": "78062",
+          "name": "Connor - P Fennell",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jd thompson",
+      "keeper": {
+        "pitcher_id": "120-P3",
+        "name": "JD Thompson",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65438",
+          "name": "J.D. Thompson",
+          "score": 40
+        },
+        {
+          "pitcher_id": "73884",
+          "name": "J.D. Thompson",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "england bryan",
+      "keeper": {
+        "pitcher_id": "120-P23",
+        "name": "England Bryan",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90444",
+          "name": "England Bryan",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "luke guth",
+      "keeper": {
+        "pitcher_id": "120-P5",
+        "name": "Luke Guth",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "76978",
+          "name": "Luke Guth",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "miller green",
+      "keeper": {
+        "pitcher_id": "120-P21",
+        "name": "Miller Green",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "84131",
+          "name": "Miller - P Green",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ethan calder",
+      "keeper": {
+        "pitcher_id": "121-P29",
+        "name": "Ethan Calder",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "67369",
+          "name": "Ethan Calder",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "patrick hail",
+      "keeper": {
+        "pitcher_id": "121-P37",
+        "name": "Patrick Hail",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "78029",
+          "name": "Patrick Hail",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "stefan stahl",
+      "keeper": {
+        "pitcher_id": "121-P36",
+        "name": "Stefan Stahl",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87034",
+          "name": "Stefan Stahl",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "bryson bales",
+      "keeper": {
+        "pitcher_id": "121-P31",
+        "name": "Bryson Bales",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87019",
+          "name": "Bryson Bales",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "rj ruais",
+      "keeper": {
+        "pitcher_id": "121-P42",
+        "name": "RJ Ruais",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "78033",
+          "name": "Rj Ruais",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "grayson murry",
+      "keeper": {
+        "pitcher_id": "121-P34",
+        "name": "Grayson Murry",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87030",
+          "name": "Grayson Murry",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "lucas davenport",
+      "keeper": {
+        "pitcher_id": "121-P35",
+        "name": "Lucas Davenport",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87024",
+          "name": "Lucas Davenport",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "andrew petrowski",
+      "keeper": {
+        "pitcher_id": "121-P24",
+        "name": "Andrew Petrowski",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "67378",
+          "name": "Andrew Petrowski",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "carson bailey",
+      "keeper": {
+        "pitcher_id": "121-P26",
+        "name": "Carson Bailey",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87017",
+          "name": "Carson Bailey",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "mason green",
+      "keeper": {
+        "pitcher_id": "121-P23",
+        "name": "Mason Green",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "78028",
+          "name": "Mason Green",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "gabe craig",
+      "keeper": {
+        "pitcher_id": "121-P27",
+        "name": "Gabe Craig",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "67371",
+          "name": "Gabe Craig",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "caleb bunch",
+      "keeper": {
+        "pitcher_id": "121-P39",
+        "name": "Caleb Bunch",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87021",
+          "name": "Caleb Bunch",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "aiden sims",
+      "keeper": {
+        "pitcher_id": "123-P6",
+        "name": "Aiden Sims",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86362",
+          "name": "Aiden Sims",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ethan darden",
+      "keeper": {
+        "pitcher_id": "123-P16",
+        "name": "Ethan Darden",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95653",
+          "name": "Ethan Darden",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "gavin lyons",
+      "keeper": {
+        "pitcher_id": "123-P9",
+        "name": "Gavin Lyons",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86358",
+          "name": "Gavin Lyons",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "clayton freshcorn",
+      "keeper": {
+        "pitcher_id": "123-P8",
+        "name": "Clayton Freshcorn",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86350",
+          "name": "Clayton Freshcorn",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "grant cunningham",
+      "keeper": {
+        "pitcher_id": "123-P12",
+        "name": "Grant Cunningham",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "72495",
+          "name": "Grant Cunningham",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "weston moss",
+      "keeper": {
+        "pitcher_id": "123-P7",
+        "name": "Weston Moss",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "78335",
+          "name": "Weston Moss",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "shane sdao",
+      "keeper": {
+        "pitcher_id": "123-P15",
+        "name": "Shane Sdao",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65632",
+          "name": "Shane Sdao",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "josh stewart",
+      "keeper": {
+        "pitcher_id": "123-P2",
+        "name": "Josh Stewart",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "56111",
+          "name": "Josh Stewart",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "caden mccoy",
+      "keeper": {
+        "pitcher_id": "123-P10",
+        "name": "Caden McCoy",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86359",
+          "name": "Caden McCoy",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "diego luzardo",
+      "keeper": {
+        "pitcher_id": "124-P28",
+        "name": "Diego Luzardo",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "81782",
+          "name": "Diego Luzardo",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "chris scinta",
+      "keeper": {
+        "pitcher_id": "124-P32",
+        "name": "Chris Scinta",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90965",
+          "name": "Chris Scinta",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "chris perez",
+      "keeper": {
+        "pitcher_id": "124-P37",
+        "name": "Chris Perez",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90962",
+          "name": "Chris Perez",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "paul schmitz",
+      "keeper": {
+        "pitcher_id": "124-P29",
+        "name": "Paul Schmitz",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71004",
+          "name": "Paul Schmitz",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "david stich",
+      "keeper": {
+        "pitcher_id": "124-P40",
+        "name": "David Stich",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90967",
+          "name": "David Stich",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "eric van valkenburg",
+      "keeper": {
+        "pitcher_id": "124-P39",
+        "name": "Eric Van Valkenburg",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90969",
+          "name": "Eric Van Valkenburg",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "alex solis",
+      "keeper": {
+        "pitcher_id": "124-P22",
+        "name": "Alex Solis",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "81789",
+          "name": "Alex Solis",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "richie roman",
+      "keeper": {
+        "pitcher_id": "124-P41",
+        "name": "Richie Roman",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "81786",
+          "name": "Richie Roman",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "kendall hoffman",
+      "keeper": {
+        "pitcher_id": "124-P42",
+        "name": "Kendall Hoffman",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90954",
+          "name": "Kendall Hoffman",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dylan volantis",
+      "keeper": {
+        "pitcher_id": "126-P23",
+        "name": "Dylan Volantis",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90411",
+          "name": "Dylan Volantis",
+          "score": 40
+        },
+        {
+          "pitcher_id": "92247",
+          "name": "Dylan - P Volantis",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "hudson hamilton",
+      "keeper": {
+        "pitcher_id": "126-P16",
+        "name": "Hudson Hamilton",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "84322",
+          "name": "Hudson - P Hamilton",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jason flores",
+      "keeper": {
+        "pitcher_id": "126-P1",
+        "name": "Jason Flores",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90398",
+          "name": "Jason Flores",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "cody howard",
+      "keeper": {
+        "pitcher_id": "126-P13",
+        "name": "Cody Howard",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "61235",
+          "name": "Cody Howard",
+          "score": 40
+        },
+        {
+          "pitcher_id": "61236",
+          "name": "Cody - P Howard",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "grayson saunier",
+      "keeper": {
+        "pitcher_id": "65739",
+        "name": "Grayson Saunier",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "74225",
+          "name": "Grayson - P Saunier",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "thomas burns",
+      "keeper": {
+        "pitcher_id": "126-P14",
+        "name": "Thomas Burns",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90395",
+          "name": "Thomas Burns",
+          "score": 40
+        },
+        {
+          "pitcher_id": "80053",
+          "name": "Thomas - P Burns",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ruger riojas",
+      "keeper": {
+        "pitcher_id": "126-P4",
+        "name": "Ruger Riojas",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "72161",
+          "name": "Ruger Riojas",
+          "score": 40
+        },
+        {
+          "pitcher_id": "72162",
+          "name": "Ruger - P Riojas",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "max grubbs",
+      "keeper": {
+        "pitcher_id": "126-P12",
+        "name": "Max Grubbs",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65960",
+          "name": "Max Grubbs",
+          "score": 40
+        },
+        {
+          "pitcher_id": "73982",
+          "name": "Max - P Grubbs",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "luke harrison",
+      "keeper": {
+        "pitcher_id": "126-P17",
+        "name": "Luke Harrison",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "56102",
+          "name": "Luke Harrison",
+          "score": 40
+        },
+        {
+          "pitcher_id": "59924",
+          "name": "Luke - P Harrison",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "nate wochner",
+      "keeper": {
+        "pitcher_id": "127-P19",
+        "name": "Nate Wochner",
+        "score": 100
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95238",
+          "name": "Nate Wochner",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "justis reiser",
+      "keeper": {
+        "pitcher_id": "127-P8",
+        "name": "Justis Reiser",
+        "score": 130
+      },
+      "deleted": [
+        {
+          "pitcher_id": "61318",
+          "name": "Justis Reiser",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "wayland crane",
+      "keeper": {
+        "pitcher_id": "127-P3",
+        "name": "Wayland Crane",
+        "score": 100
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95229",
+          "name": "Wayland Crane",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ashton johnson",
+      "keeper": {
+        "pitcher_id": "127-P18",
+        "name": "Ashton Johnson",
+        "score": 100
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90912",
+          "name": "Ashton Johnson",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "garrison sumner",
+      "keeper": {
+        "pitcher_id": "127-P13",
+        "name": "Garrison Sumner",
+        "score": 100
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90918",
+          "name": "Garrison Sumner",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "luke sterner",
+      "keeper": {
+        "pitcher_id": "127-P7",
+        "name": "Luke Sterner",
+        "score": 100
+      },
+      "deleted": [
+        {
+          "pitcher_id": "82545",
+          "name": "Luke Sterner",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "colter mcanelly",
+      "keeper": {
+        "pitcher_id": "128-P20",
+        "name": "Colter McAnelly",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "88231",
+          "name": "Colter Mcanelly",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ian culver",
+      "keeper": {
+        "pitcher_id": "128-P30",
+        "name": "Ian Culver",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "88216",
+          "name": "Ian Culver",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dylan gazaway",
+      "keeper": {
+        "pitcher_id": "128-P34",
+        "name": "Dylan Gazaway",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "88222",
+          "name": "Dylan Gazaway",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "easton jones",
+      "keeper": {
+        "pitcher_id": "128-P32",
+        "name": "Easton Jones",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "88225",
+          "name": "Easton Jones",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dillon fine",
+      "keeper": {
+        "pitcher_id": "128-P36",
+        "name": "Dillon Fine",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "88221",
+          "name": "Dillon Fine",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brett renfrow",
+      "keeper": {
+        "pitcher_id": "virginia-tech-P3",
+        "name": "Brett Renfrow",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77791",
+          "name": "Brett Renfrow",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "gunnar nichols",
+      "keeper": {
+        "pitcher_id": "133-P28",
+        "name": "Gunnar Nichols",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87759",
+          "name": "Gunnar Nichols",
+          "score": 140
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jackson thomas",
+      "keeper": {
+        "pitcher_id": "133-P32",
+        "name": "Jackson Thomas",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "87765",
+          "name": "Jackson Thomas",
+          "score": 140
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ryan falke",
+      "keeper": {
+        "pitcher_id": "134-P11",
+        "name": "Ryan Falke",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95190",
+          "name": "Ryan Falke",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "taber fast",
+      "keeper": {
+        "pitcher_id": "134-P1",
+        "name": "Taber Fast",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95191",
+          "name": "Taber Fast",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "august richie",
+      "keeper": {
+        "pitcher_id": "134-P2",
+        "name": "August Richie",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95200",
+          "name": "August Richie",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "nick lewis",
+      "keeper": {
+        "pitcher_id": "134-P3",
+        "name": "Nick Lewis",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "78902",
+          "name": "Nick Lewis",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "gabe schneider",
+      "keeper": {
+        "pitcher_id": "134-P5",
+        "name": "Gabe Schneider",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85841",
+          "name": "Gabe Schneider",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "griffin smith",
+      "keeper": {
+        "pitcher_id": "134-P6",
+        "name": "Griffin Smith",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85845",
+          "name": "Griffin Smith",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ingmar hutzezon",
+      "keeper": {
+        "pitcher_id": "134-P15",
+        "name": "Ingmar Hutzezon",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85834",
+          "name": "Ingmar Hutzezon",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "trevor stowe",
+      "keeper": {
+        "pitcher_id": "134-P17",
+        "name": "Trevor Stowe",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85846",
+          "name": "Trevor Stowe",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "erik rodriguez",
+      "keeper": {
+        "pitcher_id": "134-P9",
+        "name": "Erik Rodriguez",
+        "score": 200
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95203",
+          "name": "Erik Rodriguez",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jj glasscock",
+      "keeper": {
+        "pitcher_id": "136-P26",
+        "name": "JJ Glasscock",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "81334",
+          "name": "JJ Glasscock",
+          "score": 40
+        },
+        {
+          "pitcher_id": "84386",
+          "name": "JJ - P Glasscock",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "david hagen",
+      "keeper": {
+        "pitcher_id": "136-P33",
+        "name": "David Hagen",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90521",
+          "name": "David Hagen",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "griffin kirn",
+      "keeper": {
+        "pitcher_id": "90528",
+        "name": "Griffin Kirn",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "92501",
+          "name": "Griffin - P Kirn",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "reese bassinger",
+      "keeper": {
+        "pitcher_id": "136-P35",
+        "name": "Reese Bassinger",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90518",
+          "name": "Reese Bassinger",
+          "score": 40
+        },
+        {
+          "pitcher_id": "82674",
+          "name": "Reese - P Bassinger",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "robby porco",
+      "keeper": {
+        "pitcher_id": "71928",
+        "name": "Robby Porco",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71929",
+          "name": "Robby - P Porco",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "carson estridge",
+      "keeper": {
+        "pitcher_id": "136-P43",
+        "name": "Carson Estridge",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71925",
+          "name": "Carson Estridge",
+          "score": 40
+        },
+        {
+          "pitcher_id": "71926",
+          "name": "Carson - P Estridge",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "chase meyer",
+      "keeper": {
+        "pitcher_id": "136-P50",
+        "name": "Chase Meyer",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "81342",
+          "name": "Chase Meyer",
+          "score": 40
+        },
+        {
+          "pitcher_id": "84389",
+          "name": "Chase - P Meyer",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ben mcdougal",
+      "keeper": {
+        "pitcher_id": "136-P49",
+        "name": "Ben McDougal",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90530",
+          "name": "Ben McDougal",
+          "score": 40
+        },
+        {
+          "pitcher_id": "92502",
+          "name": "Ben - P McDougal",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jack kartsonas",
+      "keeper": {
+        "pitcher_id": "48518",
+        "name": "Jack Kartsonas",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "74483",
+          "name": "Jack - P Kartsonas",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "cole fehrman",
+      "keeper": {
+        "pitcher_id": "71914",
+        "name": "Cole Fehrman",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71915",
+          "name": "Cole - P Fehrman",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "tyler fay",
+      "keeper": {
+        "pitcher_id": "148-P35",
+        "name": "Tyler Fay",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "74005",
+          "name": "Tyler Fay",
+          "score": 40
+        },
+        {
+          "pitcher_id": "74006",
+          "name": "Tyler - P Fay",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jt blackwood",
+      "keeper": {
+        "pitcher_id": "148-P37",
+        "name": "JT Blackwood",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86146",
+          "name": "JT Blackwood",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "hagan banks",
+      "keeper": {
+        "pitcher_id": "148-P48",
+        "name": "Hagan Banks",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "54504",
+          "name": "Hagan Banks",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "joe chiarodo",
+      "keeper": {
+        "pitcher_id": "148-P71",
+        "name": "Joe Chiarodo",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95172",
+          "name": "Joe Chiarodo",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "tate robertson",
+      "keeper": {
+        "pitcher_id": "148-P44",
+        "name": "Tate Robertson",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "83733",
+          "name": "Tate Robertson",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "luke smyers",
+      "keeper": {
+        "pitcher_id": "148-P66",
+        "name": "Luke Smyers",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95184",
+          "name": "Luke Smyers",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "owen sarna",
+      "keeper": {
+        "pitcher_id": "148-P67",
+        "name": "Owen Sarna",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95183",
+          "name": "Owen Sarna",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "evan steckmesser",
+      "keeper": {
+        "pitcher_id": "148-P70",
+        "name": "Evan Steckmesser",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95185",
+          "name": "Evan Steckmesser",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "matthew heiberger",
+      "keeper": {
+        "pitcher_id": "148-P34",
+        "name": "Matthew Heiberger",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77256",
+          "name": "Matthew Heiberger",
+          "score": 40
+        },
+        {
+          "pitcher_id": "83738",
+          "name": "Matthew - P Heiberger",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "myles upchurch",
+      "keeper": {
+        "pitcher_id": "148-P64",
+        "name": "Myles Upchurch",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95186",
+          "name": "Myles Upchurch",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "riley quick",
+      "keeper": {
+        "pitcher_id": "73987",
+        "name": "Riley Quick",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65138",
+          "name": "Riley Quick",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "sam mitchell",
+      "keeper": {
+        "pitcher_id": "148-P51",
+        "name": "Sam Mitchell",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77261",
+          "name": "Sam Mitchell",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "braylon myers",
+      "keeper": {
+        "pitcher_id": "54517",
+        "name": "Braylon Myers",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "61159",
+          "name": "Braylon - P Myers",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "connor lehman",
+      "keeper": {
+        "pitcher_id": "148-P59",
+        "name": "Connor Lehman",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86156",
+          "name": "Connor Lehman",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "carson ozmer",
+      "keeper": {
+        "pitcher_id": "86160",
+        "name": "Carson Ozmer",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "55661",
+          "name": "Carson - P Ozmer",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "luke dotson",
+      "keeper": {
+        "pitcher_id": "77314",
+        "name": "Luke Dotson",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "84235",
+          "name": "Luke - P Dotson",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "pico kohn",
+      "keeper": {
+        "pitcher_id": "54374",
+        "name": "Pico Kohn",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "74210",
+          "name": "Pico - P Kohn",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "william kirk",
+      "keeper": {
+        "pitcher_id": "150-P26",
+        "name": "William Kirk",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95614",
+          "name": "William Kirk",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "parker rhodes",
+      "keeper": {
+        "pitcher_id": "150-P29",
+        "name": "Parker Rhodes",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95622",
+          "name": "Parker Rhodes",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "noah sullivan",
+      "keeper": {
+        "pitcher_id": "150-P30",
+        "name": "Noah Sullivan",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85892",
+          "name": "Noah Sullivan",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jack bauer",
+      "keeper": {
+        "pitcher_id": "150-P32",
+        "name": "Jack Bauer",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95608",
+          "name": "Jack Bauer",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ryan mcpherson",
+      "keeper": {
+        "pitcher_id": "150-P34",
+        "name": "Ryan McPherson",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85883",
+          "name": "Ryan McPherson",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94535",
+          "name": "Ryan - P McPherson",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jack gleason",
+      "keeper": {
+        "pitcher_id": "150-P42",
+        "name": "Jack Gleason",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94538",
+          "name": "Jack Gleason",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jackson logar",
+      "keeper": {
+        "pitcher_id": "150-P36",
+        "name": "Jackson Logar",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95615",
+          "name": "Jackson Logar",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "duke stone",
+      "keeper": {
+        "pitcher_id": "150-P25",
+        "name": "Duke Stone",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85891",
+          "name": "Duke Stone",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "stone simmons",
+      "keeper": {
+        "pitcher_id": "35245",
+        "name": "Stone Simmons",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "47583",
+          "name": "Stone - P Simmons",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jacob pruitt",
+      "keeper": {
+        "pitcher_id": "85885",
+        "name": "Jacob Pruitt",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71969",
+          "name": "Jacob - P Pruitt",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "ben davis",
+      "keeper": {
+        "pitcher_id": "150-P38",
+        "name": "Ben Davis",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94537",
+          "name": "Ben - P Davis",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dane burns",
+      "keeper": {
+        "pitcher_id": "150-P43",
+        "name": "Dane Burns",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85876",
+          "name": "Dane Burns",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94540",
+          "name": "Dane - P Burns",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "tanner beliveau",
+      "keeper": {
+        "pitcher_id": "150-P27",
+        "name": "Tanner Beliveau",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95609",
+          "name": "Tanner Beliveau",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "tyler pitzer",
+      "keeper": {
+        "pitcher_id": "150-P39",
+        "name": "Tyler Pitzer",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95620",
+          "name": "Tyler Pitzer",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "maddox webb",
+      "keeper": {
+        "pitcher_id": "150-P35",
+        "name": "Maddox Webb",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95628",
+          "name": "Maddox Webb",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "charlie foster",
+      "keeper": {
+        "pitcher_id": "150-P24",
+        "name": "Charlie Foster",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "85879",
+          "name": "Charlie Foster",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94530",
+          "name": "Charlie - P Foster",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "tomas valincius",
+      "keeper": {
+        "pitcher_id": "150-P23",
+        "name": "Tomas Valincius",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95626",
+          "name": "Tomas Valincius",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "karson ligon",
+      "keeper": {
+        "pitcher_id": "77319",
+        "name": "Karson Ligon",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "59205",
+          "name": "Karson - P Ligon",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "evan siary",
+      "keeper": {
+        "pitcher_id": "65221",
+        "name": "Evan Siary",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "74211",
+          "name": "Evan - P Siary",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "mitch dye",
+      "keeper": {
+        "pitcher_id": "153-P12",
+        "name": "Mitch Dye",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93575",
+          "name": "Mitch Dye",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "reed gannon",
+      "keeper": {
+        "pitcher_id": "153-P11",
+        "name": "Reed Gannon",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80711",
+          "name": "Reed Gannon",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "regan hall",
+      "keeper": {
+        "pitcher_id": "153-P3",
+        "name": "Regan Hall",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80712",
+          "name": "Regan Hall",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "zach bates",
+      "keeper": {
+        "pitcher_id": "153-P21",
+        "name": "Zach Bates",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93573",
+          "name": "Zach Bates",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "nathan taylor",
+      "keeper": {
+        "pitcher_id": "cincinnati-P3",
+        "name": "Nathan Taylor",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80780",
+          "name": "Nathan Taylor",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94493",
+          "name": "Nathan - P Taylor",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dominic mauro",
+      "keeper": {
+        "pitcher_id": "cincinnati-P7",
+        "name": "Dominic Mauro",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95990",
+          "name": "Dominic Mauro",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "carson marsh",
+      "keeper": {
+        "pitcher_id": "cincinnati-P11",
+        "name": "Carson Marsh",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "80774",
+          "name": "Carson Marsh",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94503",
+          "name": "Carson - P Marsh",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dillon schueler",
+      "keeper": {
+        "pitcher_id": "cincinnati-P18",
+        "name": "Dillon Schueler",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95994",
+          "name": "Dillon Schueler",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brenden garula",
+      "keeper": {
+        "pitcher_id": "cincinnati-P21",
+        "name": "Brenden Garula",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "67592",
+          "name": "Brenden Garula",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "rodney shultz",
+      "keeper": {
+        "pitcher_id": "88740",
+        "name": "Rodney Shultz",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94495",
+          "name": "Rodney - P Shultz",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "kellen oconnor",
+      "keeper": {
+        "pitcher_id": "88733",
+        "name": "Kellen O'Connor",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94512",
+          "name": "Kellen - P O'Connor",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "adam buczkowski",
+      "keeper": {
+        "pitcher_id": "cincinnati-P13",
+        "name": "Adam Buczkowski",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "88725",
+          "name": "Adam Buczkowski",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94504",
+          "name": "Adam - P Buczkowski",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "joel pineiro",
+      "keeper": {
+        "pitcher_id": "88735",
+        "name": "Joel Pineiro",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94508",
+          "name": "Joel - P Pineiro",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brandon scheurer",
+      "keeper": {
+        "pitcher_id": "88738",
+        "name": "Brandon Scheurer",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94494",
+          "name": "Brandon - P Scheurer",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "adam mrakitsch",
+      "keeper": {
+        "pitcher_id": "88731",
+        "name": "Adam Mrakitsch",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "60377",
+          "name": "Adam - P Mrakitsch",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "michael conte",
+      "keeper": {
+        "pitcher_id": "80764",
+        "name": "Michael Conte",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "60380",
+          "name": "Michael - P Conte",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "justin hackett",
+      "keeper": {
+        "pitcher_id": "iowa-P20",
+        "name": "Justin Hackett",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65414",
+          "name": "Justin Hackett",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dominic voegele",
+      "keeper": {
+        "pitcher_id": "168-P27",
+        "name": "Dominic Voegele",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93204",
+          "name": "Dominic - P Voegele",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dalton smith",
+      "keeper": {
+        "pitcher_id": "168-P32",
+        "name": "Dalton Smith",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93208",
+          "name": "Dalton - P Smith",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "kannon carr",
+      "keeper": {
+        "pitcher_id": "168-P31",
+        "name": "Kannon Carr",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "89982",
+          "name": "Kannon Carr",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "manning west",
+      "keeper": {
+        "pitcher_id": "168-P45",
+        "name": "Manning West",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "90001",
+          "name": "Manning West",
+          "score": 40
+        },
+        {
+          "pitcher_id": "72003",
+          "name": "Manning - P West",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "eric lin",
+      "keeper": {
+        "pitcher_id": "58872",
+        "name": "Eric Lin",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "89992",
+          "name": "Eric Lin",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "malakai vetock",
+      "keeper": {
+        "pitcher_id": "90000",
+        "name": "Malakai Vetock",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "71664",
+          "name": "Malakai Vetock",
+          "score": 40
+        },
+        {
+          "pitcher_id": "73195",
+          "name": "Malakai - P Vetock",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "thaniel trumper",
+      "keeper": {
+        "pitcher_id": "70218",
+        "name": "Thaniel Trumper",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93205",
+          "name": "Thaniel - P Trumper",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "alex breckheimer",
+      "keeper": {
+        "pitcher_id": "89980",
+        "name": "Alex Breckheimer",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "93213",
+          "name": "Alex - P Breckheimer",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jake dorn",
+      "keeper": {
+        "pitcher_id": "176-P13",
+        "name": "Jake Dorn",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86373",
+          "name": "Jake Dorn",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94525",
+          "name": "Jake - P Dorn",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "rob evans",
+      "keeper": {
+        "pitcher_id": "176-P2",
+        "name": "Rob Evans",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86374",
+          "name": "Rob Evans",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94517",
+          "name": "Rob - P Evans",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "michael fernandez",
+      "keeper": {
+        "pitcher_id": "176-P12",
+        "name": "Michael Fernandez",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86375",
+          "name": "Michael Fernandez",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94523",
+          "name": "Michael - P Fernandez",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "tate derias",
+      "keeper": {
+        "pitcher_id": "176-P7",
+        "name": "Tate DeRias",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86372",
+          "name": "Tate DeRias",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94520",
+          "name": "Tate - P DeRias",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "reese lumpkin",
+      "keeper": {
+        "pitcher_id": "86384",
+        "name": "Reese Lumpkin",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94519",
+          "name": "Reese - P Lumpkin",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "carson fischer",
+      "keeper": {
+        "pitcher_id": "86376",
+        "name": "Carson Fischer",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94516",
+          "name": "Carson - P Fischer",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "will smith",
+      "keeper": {
+        "pitcher_id": "86390",
+        "name": "Will Smith",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "61425",
+          "name": "Will - P Smith",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brian walters",
+      "keeper": {
+        "pitcher_id": "66162",
+        "name": "Brian Walters",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "73966",
+          "name": "Brian - P Walters",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "aj ciscar",
+      "keeper": {
+        "pitcher_id": "176-P17",
+        "name": "AJ Ciscar",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86367",
+          "name": "AJ Ciscar",
+          "score": 40
+        },
+        {
+          "pitcher_id": "94528",
+          "name": "AJ - P Ciscar",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "griffin hugus",
+      "keeper": {
+        "pitcher_id": "86381",
+        "name": "Griffin Hugus",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94518",
+          "name": "Griffin - P Hugus",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jackson cleveland",
+      "keeper": {
+        "pitcher_id": "86368",
+        "name": "Jackson Cleveland",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "94527",
+          "name": "Jackson - P Cleveland",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "alex giroux",
+      "keeper": {
+        "pitcher_id": "86378",
+        "name": "Alex Giroux",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "72895",
+          "name": "Alex - P Giroux",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "parker marlatt",
+      "keeper": {
+        "pitcher_id": "2579-P18",
+        "name": "Parker Marlatt",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77239",
+          "name": "Parker Marlatt",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "logan prisco",
+      "keeper": {
+        "pitcher_id": "2579-P14",
+        "name": "Logan Prisco",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95025",
+          "name": "Logan Prisco",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "riley goodman",
+      "keeper": {
+        "pitcher_id": "2579-P16",
+        "name": "Riley Goodman",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95011",
+          "name": "Riley Goodman",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "zach russell",
+      "keeper": {
+        "pitcher_id": "2579-P10",
+        "name": "Zach Russell",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86016",
+          "name": "Zach Russell",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "josh gunther",
+      "keeper": {
+        "pitcher_id": "2579-P9",
+        "name": "Josh Gunther",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95013",
+          "name": "Josh Gunther",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "elijah foster",
+      "keeper": {
+        "pitcher_id": "2579-P7",
+        "name": "Elijah Foster",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95010",
+          "name": "Elijah Foster",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "josh gregoire",
+      "keeper": {
+        "pitcher_id": "2579-P20",
+        "name": "Josh Gregoire",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95012",
+          "name": "Josh Gregoire",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "connor chicoli",
+      "keeper": {
+        "pitcher_id": "2579-P19",
+        "name": "Connor Chicoli",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95006",
+          "name": "Connor Chicoli",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "brandon stone",
+      "keeper": {
+        "pitcher_id": "2579-P13",
+        "name": "Brandon Stone",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86001",
+          "name": "Brandon Stone",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "bradley hodges",
+      "keeper": {
+        "pitcher_id": "2579-P2",
+        "name": "Bradley Hodges",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95015",
+          "name": "Bradley Hodges",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "jake mccoy",
+      "keeper": {
+        "pitcher_id": "2579-P8",
+        "name": "Jake McCoy",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "77241",
+          "name": "Jake McCoy",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "dylan eskew",
+      "keeper": {
+        "pitcher_id": "64992",
+        "name": "Dylan Eskew",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "64993",
+          "name": "Dylan - P Eskew",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "alex valentin",
+      "keeper": {
+        "pitcher_id": "2579-P3",
+        "name": "Alex Valentin",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95029",
+          "name": "Alex Valentin",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "cooper parks",
+      "keeper": {
+        "pitcher_id": "2579-P17",
+        "name": "Cooper Parks",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "86015",
+          "name": "Cooper Parks",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "amp phillips",
+      "keeper": {
+        "pitcher_id": "2579-P5",
+        "name": "Amp Phillips",
+        "score": 230
+      },
+      "deleted": [
+        {
+          "pitcher_id": "95023",
+          "name": "Amp Phillips",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "mason brassfield",
+      "keeper": {
+        "pitcher_id": "198-P25",
+        "name": "Mason Brassfield",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "92553",
+          "name": "Mason - P Brassfield",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "kade durnin",
+      "keeper": {
+        "pitcher_id": "198-P29",
+        "name": "Kade Durnin",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "92267",
+          "name": "Kade Durnin",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "uli fernsler",
+      "keeper": {
+        "pitcher_id": "198-P32",
+        "name": "Uli Fernsler",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "96420",
+          "name": "Uli Fernsler",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "nate stern",
+      "keeper": {
+        "pitcher_id": "198-P34",
+        "name": "Nate Stern",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "92280",
+          "name": "Nate Stern",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "walter quinn",
+      "keeper": {
+        "pitcher_id": "198-P36",
+        "name": "Walter Quinn",
+        "score": 190
+      },
+      "deleted": [
+        {
+          "pitcher_id": "96427",
+          "name": "Walter Quinn",
+          "score": 40
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "louis rodriguez",
+      "keeper": {
+        "pitcher_id": "198-P24",
+        "name": "Louis Rodriguez",
+        "score": 220
+      },
+      "deleted": [
+        {
+          "pitcher_id": "65422",
+          "name": "Louis Rodriguez",
+          "score": 40
+        },
+        {
+          "pitcher_id": "72081",
+          "name": "Louis - P Rodriguez",
+          "score": 20
+        }
+      ]
+    },
+    {
+      "team": "Unknown",
+      "normalized_name": "trever baumler",
+      "keeper": {
+        "pitcher_id": "92260",
+        "name": "Trever Baumler",
+        "score": 40
+      },
+      "deleted": [
+        {
+          "pitcher_id": "92554",
+          "name": "Trever - P Baumler",
+          "score": 20
+        }
+      ]
+    }
+  ]
+}
