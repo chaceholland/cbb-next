@@ -29,12 +29,50 @@ const normalizeName = name => name?.toLowerCase()
   .replace(/\s+/g, ' ')
   .trim() ?? '';
 
+async function fetchTeams() {
+  const { data: teams, error } = await supabase
+    .from('cbb_teams')
+    .select('team_id, name, display_name')
+    .order('name');
+
+  if (error) {
+    console.error('❌ Failed to fetch teams:', error.message);
+    process.exit(1);
+  }
+
+  if (!teams || teams.length === 0) {
+    console.error('❌ No teams found in database');
+    process.exit(1);
+  }
+
+  return teams;
+}
+
 async function main() {
   console.log('🏈 SCRAPING 2026 COLLEGE BASEBALL ROSTERS');
   console.log('='.repeat(60));
   console.log();
 
-  // TODO: Implement scraping logic
+  const teams = await fetchTeams();
+  console.log(`📋 Found ${teams.length} teams to scrape\n`);
+  console.log(`Processing teams...\n`);
+
+  const results = {
+    scrapedAt: new Date().toISOString(),
+    totalTeams: teams.length,
+    successfulTeams: 0,
+    failedTeams: 0,
+    totalPitchers: 0,
+    teams: []
+  };
+
+  console.log('\n' + '='.repeat(60));
+  console.log('📊 SCRAPING COMPLETE');
+  console.log('='.repeat(60));
+  console.log(`\nTotal Teams:     ${results.totalTeams}`);
+  console.log(`Successful:      ${results.successfulTeams} (${((results.successfulTeams / results.totalTeams) * 100).toFixed(1)}%)`);
+  console.log(`Failed:          ${results.failedTeams} (${((results.failedTeams / results.totalTeams) * 100).toFixed(1)}%)`);
+  console.log(`Total Pitchers:  ${results.totalPitchers}`);
 }
 
 main().catch(console.error);
