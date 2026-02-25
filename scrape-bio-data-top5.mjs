@@ -114,6 +114,41 @@ async function scrapeTeamRoster(browser, team) {
         });
       }
 
+      // Strategy 3: Boston College text-based parsing
+      if (results.length === 0) {
+        const text = document.body.innerText;
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+        for (let i = 0; i < lines.length; i++) {
+          if (lines[i] === 'Position' && i > 0) {
+            const name = lines[i - 1];
+            const position = lines[i + 1];
+
+            if (position && (position.includes('RHP') || position.includes('LHP') || position === 'P')) {
+              let year = '', height = '', weight = '', bats_throws = '', hometown = '';
+
+              for (let j = i; j < Math.min(i + 20, lines.length); j++) {
+                if (lines[j] === 'Academic Year' && j + 1 < lines.length) year = lines[j + 1];
+                if (lines[j] === 'Height' && j + 1 < lines.length) height = lines[j + 1];
+                if (lines[j] === 'Weight' && j + 1 < lines.length) weight = lines[j + 1];
+                if (lines[j] === 'Custom Field 1' && j + 1 < lines.length) bats_throws = lines[j + 1];
+                if (lines[j] === 'Hometown' && j + 1 < lines.length) hometown = lines[j + 1];
+              }
+
+              results.push({
+                name,
+                position,
+                year,
+                height,
+                weight,
+                bats_throws,
+                hometown
+              });
+            }
+          }
+        }
+      }
+
       return results;
     });
 
