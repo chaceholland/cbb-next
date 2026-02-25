@@ -38,12 +38,88 @@ async function confirm(question) {
   });
 }
 
+// Load and validate scraped data from JSON
+function loadScrapedData() {
+  const jsonPath = join(__dirname, '2026-rosters.json');
+
+  if (!existsSync(jsonPath)) {
+    throw new Error('2026-rosters.json not found!');
+  }
+
+  const data = JSON.parse(readFileSync(jsonPath, 'utf-8'));
+
+  console.log('✅ Loaded 2026-rosters.json');
+  console.log(`   Scraped: ${new Date(data.scrapedAt).toLocaleString()}`);
+  console.log(`   Total teams: ${data.totalTeams}`);
+  console.log(`   Successful: ${data.successfulTeams}`);
+  console.log(`   Failed: ${data.failedTeams}`);
+  console.log(`   Total pitchers: ${data.totalPitchers}`);
+  console.log();
+
+  return data;
+}
+
+// Get current database statistics
+async function getCurrentStats() {
+  console.log('📊 Current Database State:');
+
+  const { count: pitcherCount, error: pitcherError } = await supabase
+    .from('cbb_pitchers')
+    .select('*', { count: 'exact', head: true });
+
+  if (pitcherError) {
+    throw new Error(`Failed to count pitchers: ${pitcherError.message}`);
+  }
+
+  const { count: participationCount, error: participationError } = await supabase
+    .from('cbb_pitcher_game_participation')
+    .select('*', { count: 'exact', head: true });
+
+  if (participationError) {
+    throw new Error(`Failed to count participation records: ${participationError.message}`);
+  }
+
+  console.log(`   Current pitchers: ${pitcherCount}`);
+  console.log(`   Current participation records: ${participationCount}`);
+  console.log();
+
+  return { pitcherCount, participationCount };
+}
+
 async function main() {
   console.log('📋 2026 ROSTER REPLACEMENT');
   console.log('='.repeat(60));
   console.log();
 
-  // TODO: Implement replacement logic
+  // Load scraped data
+  const scrapedData = loadScrapedData();
+
+  // Get current database stats
+  const currentStats = await getCurrentStats();
+
+  // Show summary
+  console.log('⚠️  WARNING: This will DELETE all existing pitcher data!');
+  console.log(`   Will delete: ${currentStats.pitcherCount} pitchers`);
+  console.log(`   Will delete: ${currentStats.participationCount} participation records`);
+  console.log(`   Will insert: ${scrapedData.totalPitchers} new pitchers`);
+  console.log();
+
+  // Get confirmation
+  const confirmed = await confirm('Type "yes" to continue: ');
+  if (!confirmed) {
+    console.log('❌ Operation cancelled.');
+    return;
+  }
+
+  console.log();
+  console.log('🚀 Starting replacement...');
+  console.log();
+
+  // TODO: Delete old data
+  // TODO: Insert new data
+  // TODO: Show final stats
+
+  console.log('✅ Replacement complete!');
 }
 
 main().catch(console.error);
