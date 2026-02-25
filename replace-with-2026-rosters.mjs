@@ -72,7 +72,7 @@ async function getCurrentStats() {
   }
 
   const { count: participationCount, error: participationError } = await supabase
-    .from('cbb_pitcher_game_participation')
+    .from('cbb_pitcher_participation')
     .select('*', { count: 'exact', head: true });
 
   if (participationError) {
@@ -93,7 +93,7 @@ async function deleteOldData() {
   // Step 1: Delete participation records (respects foreign key)
   console.log('   Deleting participation records...');
   const { error: participationError } = await supabase
-    .from('cbb_pitcher_game_participation')
+    .from('cbb_pitcher_participation')
     .delete()
     .neq('pitcher_id', '___MATCH_NOTHING___');
 
