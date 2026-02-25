@@ -185,8 +185,6 @@ async function scrapeTeamRoster(browser, team) {
       return players;
     });
 
-    await page.close();
-
     // Filter for pitchers only
     const pitchers = rosterData.filter(p =>
       p.position && /^(P|RHP|LHP)$/i.test(p.position)
@@ -203,10 +201,15 @@ async function scrapeTeamRoster(browser, team) {
     return teamResult;
 
   } catch (error) {
-    await page.close();
     teamResult.status = 'failed';
     teamResult.error = error.message;
     return teamResult;
+  } finally {
+    try {
+      await page.close();
+    } catch (closeError) {
+      // Ignore close errors - page may not exist
+    }
   }
 }
 
