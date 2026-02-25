@@ -30,7 +30,10 @@ export function PitcherCard({ pitcher, index, onClick, isFavorite = false, onTog
   const [imgError, setImgError] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
 
-  const staggerDelay = Math.min(index * 0.04, 0.5);
+  // Only animate first 12 cards for performance
+  const shouldAnimate = index < 12;
+  const staggerDelay = shouldAnimate ? Math.min(index * 0.03, 0.36) : 0;
+
   const showHeadshot = pitcher.headshot && !imgError;
   const showTeamLogo = !showHeadshot && pitcher.team.logo;
 
@@ -48,15 +51,8 @@ export function PitcherCard({ pitcher, index, onClick, isFavorite = false, onTog
     onToggleFavorite?.(pitcher.pitcher_id);
   };
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: staggerDelay, ease: 'easeOut' }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      onClick={onClick}
-      className="cursor-pointer"
-    >
+  // Shared card content
+  const cardContent = (
       <div className="rounded-2xl bg-white shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden border border-slate-100">
         {/* Headshot / Team logo area */}
         <div className="relative aspect-square bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center overflow-hidden">
@@ -76,7 +72,9 @@ export function PitcherCard({ pitcher, index, onClick, isFavorite = false, onTog
                 onLoad={() => setImgLoading(false)}
                 onError={() => { setImgError(true); setImgLoading(false); }}
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                priority={index < 8}
+                priority={index < 4}
+                loading={index < 8 ? 'eager' : 'lazy'}
+                quality={75}
               />
             </>
           ) : showTeamLogo ? (
@@ -88,6 +86,8 @@ export function PitcherCard({ pitcher, index, onClick, isFavorite = false, onTog
                 height={120}
                 className="object-contain opacity-80"
                 onError={() => {/* silent fail */}}
+                loading={index < 8 ? 'eager' : 'lazy'}
+                quality={85}
               />
             </div>
           ) : (
@@ -143,6 +143,27 @@ export function PitcherCard({ pitcher, index, onClick, isFavorite = false, onTog
           </div>
         </div>
       </div>
-    </motion.div>
+  );
+
+  // Return with or without animation based on index
+  if (shouldAnimate) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: staggerDelay, ease: 'easeOut' }}
+        whileHover={{ y: -4, transition: { duration: 0.15 } }}
+        onClick={onClick}
+        className="cursor-pointer"
+      >
+        {cardContent}
+      </motion.div>
+    );
+  }
+
+  return (
+    <div onClick={onClick} className="cursor-pointer">
+      {cardContent}
+    </div>
   );
 }
