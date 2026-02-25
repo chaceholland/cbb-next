@@ -1,0 +1,157 @@
+{
+  "totalUpdated": 5,
+  "totalFailed": 28,
+  "totalSkipped": 67,
+  "teamResults": [
+    {
+      "team_name": "BYU",
+      "updated": 0,
+      "failed": 28,
+      "skipped": 0
+    },
+    {
+      "team_name": "Clemson",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "South Carolina",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Arizona Wildcats",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "NC State",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "North Carolina",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 5
+    },
+    {
+      "team_name": "Miami",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Florida State",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Florida",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Wake Forest",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Oklahoma",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 3
+    },
+    {
+      "team_name": "Missouri",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "USC",
+      "updated": 5,
+      "failed": 0,
+      "skipped": 11
+    },
+    {
+      "team_name": "Tennessee",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Michigan State",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 28
+    },
+    {
+      "team_name": "Ole Miss",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Baylor",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Louisville",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 20
+    },
+    {
+      "team_name": "UCLA",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Illinois",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Texas A&M",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Mississippi State",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Texas",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Georgia",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "team_name": "Nebraska",
+      "updated": 0,
+      "failed": 0,
+      "skipped": 0
+    }
+  ]
+}

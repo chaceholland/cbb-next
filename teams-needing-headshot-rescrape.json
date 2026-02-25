@@ -72,12 +72,6 @@
     "missing_count": 4
   },
   {
-    "team_id": "68",
-    "team_name": "USC",
-    "coverage_pct": "22.2",
-    "missing_count": 7
-  },
-  {
     "team_id": "199",
     "team_name": "Tennessee",
     "coverage_pct": "23.5",
@@ -130,6 +124,12 @@
     "team_name": "Mississippi State",
     "coverage_pct": "37.9",
     "missing_count": 18
+  },
+  {
+    "team_id": "68",
+    "team_name": "USC",
+    "coverage_pct": "44.4",
+    "missing_count": 5
   },
   {
     "team_id": "126",
