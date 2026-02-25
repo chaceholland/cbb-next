@@ -116,6 +116,63 @@ async function deleteOldData() {
   console.log();
 }
 
+// Insert new rosters with batch operations
+async function insertNewRosters(scrapedData) {
+  console.log('📥 Inserting new rosters...');
+
+  let totalInserted = 0;
+  let teamsProcessed = 0;
+  const BATCH_SIZE = 100;
+
+  for (const team of scrapedData.teams) {
+    // Skip failed teams or teams with no pitchers
+    if (team.status !== 'success' || !team.pitchers || team.pitchers.length === 0) {
+      continue;
+    }
+
+    // Generate pitcher records with IDs
+    const pitcherRecords = team.pitchers.map((pitcher, index) => ({
+      pitcher_id: `${team.team_id}-P${index + 1}`,
+      team_id: team.team_id,
+      name: pitcher.name,
+      display_name: pitcher.display_name,
+      number: pitcher.number || null,
+      position: pitcher.position,
+      headshot: pitcher.headshot || null,
+      height: pitcher.height || null,
+      weight: pitcher.weight || null,
+      year: pitcher.year || null,
+      hometown: pitcher.hometown || null,
+      bats_throws: pitcher.bats_throws || null
+    }));
+
+    // Insert in batches
+    for (let i = 0; i < pitcherRecords.length; i += BATCH_SIZE) {
+      const batch = pitcherRecords.slice(i, i + BATCH_SIZE);
+
+      const { error } = await supabase
+        .from('cbb_pitchers')
+        .insert(batch);
+
+      if (error) {
+        throw new Error(`Failed to insert pitchers for ${team.team_name}: ${error.message}`);
+      }
+
+      totalInserted += batch.length;
+    }
+
+    teamsProcessed++;
+    if (teamsProcessed % 10 === 0) {
+      console.log(`   Processed ${teamsProcessed} teams, inserted ${totalInserted} pitchers...`);
+    }
+  }
+
+  console.log(`   ✅ Inserted ${totalInserted} pitchers from ${teamsProcessed} teams`);
+  console.log();
+
+  return { totalInserted, teamsProcessed };
+}
+
 async function main() {
   console.log('📋 2026 ROSTER REPLACEMENT');
   console.log('='.repeat(60));
@@ -148,10 +205,18 @@ async function main() {
   // Delete old data
   await deleteOldData();
 
-  // TODO: Insert new data
-  // TODO: Show final stats
+  // Insert new data
+  const insertStats = await insertNewRosters(scrapedData);
 
+  // Show final stats
+  console.log('📊 Final Database State:');
+  const finalStats = await getCurrentStats();
+
+  console.log('='.repeat(60));
   console.log('✅ Replacement complete!');
+  console.log(`   Teams processed: ${insertStats.teamsProcessed}`);
+  console.log(`   Pitchers inserted: ${insertStats.totalInserted}`);
+  console.log(`   Database now has: ${finalStats.pitcherCount} pitchers`);
 }
 
 main().catch(console.error);
