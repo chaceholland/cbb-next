@@ -23,6 +23,74 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// Team roster URL mapping - maps team names to their 2026 roster URLs
+const TEAM_URL_MAP = {
+  'Alabama': 'https://rolltide.com/sports/baseball/roster',
+  'Arizona State': 'https://thesundevils.com/sports/baseball/roster',
+  'Arizona Wildcats': 'https://arizonawildcats.com/sports/baseball/roster',
+  'Arkansas': 'https://arkansasrazorbacks.com/sports/baseball/roster',
+  'Auburn': 'https://auburntigers.com/sports/baseball/roster',
+  'Baylor': 'https://baylorbears.com/sports/baseball/roster',
+  'Boston College': 'https://bceagles.com/sports/baseball/roster',
+  'BYU': 'https://byucougars.com/sports/baseball/roster',
+  'California Golden Bears': 'https://calbears.com/sports/baseball/roster',
+  'Cincinnati Bearcats': 'https://gobearcats.com/sports/baseball/roster',
+  'Clemson': 'https://clemsontigers.com/sports/baseball/roster',
+  'Duke': 'https://goduke.com/sports/baseball/roster',
+  'Florida': 'https://floridagators.com/sports/baseball/roster',
+  'Florida State': 'https://seminoles.com/sports/baseball/roster',
+  'Georgia': 'https://georgiadogs.com/sports/baseball/roster',
+  'Georgia Tech Yellow Jackets': 'https://ramblinwreck.com/sports/baseball/roster',
+  'Houston': 'https://uhcougars.com/sports/baseball/roster',
+  'Illinois': 'https://fightingillini.com/sports/baseball/roster',
+  'Indiana': 'https://iuhoosiers.com/sports/baseball/roster',
+  'Iowa': 'https://hawkeyesports.com/sports/baseball/roster',
+  'Kansas': 'https://kuathletics.com/sports/baseball/roster',
+  'Kansas State': 'https://kstatesports.com/sports/baseball/roster',
+  'Kentucky': 'https://ukathletics.com/sports/baseball/roster',
+  'Louisville': 'https://gocards.com/sports/baseball/roster',
+  'LSU': 'https://lsusports.net/sports/baseball/roster',
+  'Maryland': 'https://umterps.com/sports/baseball/roster',
+  'Miami': 'https://hurricanesports.com/sports/baseball/roster',
+  'Michigan': 'https://mgoblue.com/sports/baseball/roster',
+  'Michigan State': 'https://msuspartans.com/sports/baseball/roster',
+  'Minnesota': 'https://gophersports.com/sports/baseball/roster',
+  'Mississippi State': 'https://hailstate.com/sports/baseball/roster',
+  'Missouri': 'https://mutigers.com/sports/baseball/roster',
+  'NC State': 'https://gopack.com/sports/baseball/roster',
+  'Nebraska': 'https://huskers.com/sports/baseball/roster',
+  'North Carolina': 'https://goheels.com/sports/baseball/roster',
+  'Northwestern': 'https://nusports.com/sports/baseball/roster',
+  'Notre Dame': 'https://und.com/sports/baseball/roster',
+  'Ohio State': 'https://ohiostatebuckeyes.com/sports/baseball/roster',
+  'Oklahoma': 'https://soonersports.com/sports/baseball/roster',
+  'Oklahoma State': 'https://okstate.com/sports/baseball/roster',
+  'Ole Miss': 'https://olemisssports.com/sports/baseball/roster',
+  'Oregon': 'https://goducks.com/sports/baseball/roster',
+  'Oregon State': 'https://osubeavers.com/sports/baseball/roster',
+  'Penn State Nittany Lions': 'https://gopsusports.com/sports/baseball/roster',
+  'Pittsburgh': 'https://pittsburghpanthers.com/sports/baseball/roster',
+  'Purdue Boilermakers': 'https://purduesports.com/sports/baseball/roster',
+  'Rutgers': 'https://scarletknights.com/sports/baseball/roster',
+  'South Carolina': 'https://gamecocksonline.com/sports/baseball/roster',
+  'Stanford Cardinal': 'https://gostanford.com/sports/baseball/roster',
+  'TCU': 'https://gofrogs.com/sports/baseball/roster',
+  'Tennessee': 'https://utsports.com/sports/baseball/roster',
+  'Texas': 'https://texassports.com/sports/baseball/roster',
+  'Texas A&M': 'https://12thman.com/sports/baseball/roster',
+  'Texas Tech': 'https://texastech.com/sports/baseball/roster',
+  'UCLA': 'https://uclabruins.com/sports/baseball/roster',
+  'USC': 'https://usctrojans.com/sports/baseball/roster',
+  'Utah': 'https://utahutes.com/sports/baseball/roster',
+  'Vanderbilt': 'https://vucommodores.com/sports/baseball/roster',
+  'Virginia': 'https://virginiasports.com/sports/baseball/roster',
+  'Virginia Tech': 'https://hokiesports.com/sports/baseball/roster',
+  'Wake Forest': 'https://godeacs.com/sports/baseball/roster',
+  'Washington': 'https://gohuskies.com/sports/baseball/roster',
+  'Washington State': 'https://wsucougars.com/sports/baseball/roster',
+  'West Virginia': 'https://wvusports.com/sports/baseball/roster',
+};
+
 // Normalize name for deduplication (lowercase, remove special chars)
 const normalizeName = name => name?.toLowerCase()
   .replace(/[^a-z\s]/g, '')
@@ -231,6 +299,40 @@ async function main() {
     teams: []
   };
 
+  const browser = await chromium.launch({ headless: true });
+
+  for (const team of teams) {
+    // Add URL from mapping to team object
+    const teamName = team.name || team.display_name;
+    const roster_url = TEAM_URL_MAP[teamName];
+
+    const teamWithUrl = {
+      ...team,
+      roster_url
+    };
+
+    const teamResult = await scrapeTeamRoster(browser, teamWithUrl);
+    results.teams.push(teamResult);
+
+    if (teamResult.status === 'success') {
+      results.successfulTeams++;
+      results.totalPitchers += teamResult.pitchers.length;
+      console.log(`✅ ${teamResult.team_name} (${teamResult.pitchers.length} pitchers)`);
+    } else if (teamResult.status === 'warning') {
+      results.successfulTeams++;
+      console.log(`⚠️  ${teamResult.team_name} - ${teamResult.error}`);
+    } else {
+      results.failedTeams++;
+      console.log(`❌ ${teamResult.team_name} - ${teamResult.error}`);
+    }
+  }
+
+  await browser.close();
+
+  // Save results to JSON
+  const outputPath = join(__dirname, '2026-rosters.json');
+  writeFileSync(outputPath, JSON.stringify(results, null, 2), 'utf-8');
+
   console.log('\n' + '='.repeat(60));
   console.log('📊 SCRAPING COMPLETE');
   console.log('='.repeat(60));
@@ -238,6 +340,7 @@ async function main() {
   console.log(`Successful:      ${results.successfulTeams} (${((results.successfulTeams / results.totalTeams) * 100).toFixed(1)}%)`);
   console.log(`Failed:          ${results.failedTeams} (${((results.failedTeams / results.totalTeams) * 100).toFixed(1)}%)`);
   console.log(`Total Pitchers:  ${results.totalPitchers}`);
+  console.log(`\n💾 Results saved to: ${outputPath}`);
 }
 
 main().catch(console.error);
