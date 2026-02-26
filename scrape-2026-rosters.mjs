@@ -141,6 +141,81 @@ async function scrapeTeamRoster(browser, team) {
     // Extract roster data
     const rosterData = await page.evaluate(() => {
       const players = [];
+
+      // PRIORITY 1: Try card view first (has headshots!)
+      const cardContainer = document.querySelector('.c-rosterpage__players--card-view');
+      if (cardContainer) {
+        const playerCards = cardContainer.querySelectorAll('.s-person-card');
+
+        for (const card of playerCards) {
+          // Extract name from link
+          const nameLink = card.querySelector('a[href*="/roster/"], a[href*="/player/"]');
+          if (!nameLink) continue;
+
+          const nameText = nameLink.textContent?.trim() || '';
+          // Remove "Jersey Number X" suffix if present
+          const name = nameText.replace(/Jersey Number \d+/i, '').trim();
+
+          // Extract headshot
+          const img = card.querySelector('img');
+          const headshot = img?.getAttribute('src') || null;
+
+          // Extract data from card text
+          const cardText = card.textContent || '';
+
+          // Extract position (after "Position " text)
+          let position = null;
+          const posMatch = cardText.match(/Position\s+([A-Z\/]+)/);
+          if (posMatch) position = posMatch[1];
+
+          // Extract number (after "Jersey Number " text)
+          let number = null;
+          const numMatch = cardText.match(/Jersey Number\s+(\d+)/);
+          if (numMatch) number = numMatch[1];
+
+          // Extract height (after "Height " text)
+          let height = null;
+          const heightMatch = cardText.match(/Height\s+([\d'"\s]+)/);
+          if (heightMatch) height = heightMatch[1].trim();
+
+          // Extract weight (after "Weight " text, before " lbs")
+          let weight = null;
+          const weightMatch = cardText.match(/Weight\s+(\d+)\s*lbs/);
+          if (weightMatch) weight = weightMatch[1];
+
+          // Extract year (after "Academic Year " text)
+          let year = null;
+          const yearMatch = cardText.match(/Academic Year\s+([\w.-]+)/);
+          if (yearMatch) year = yearMatch[1];
+
+          // Extract hometown (after "Hometown " text)
+          let hometown = null;
+          const hometownMatch = cardText.match(/Hometown\s+([^]+?)(?:Last School|Previous School|$)/);
+          if (hometownMatch) hometown = hometownMatch[1].trim();
+
+          // Extract bats/throws - not always in card view, try to find it
+          let batsThrows = null;
+          const btMatch = cardText.match(/\b([LR])[-\/]([LR])\b/);
+          if (btMatch) batsThrows = btMatch[0];
+
+          players.push({
+            name,
+            display_name: name,
+            number,
+            position,
+            headshot,
+            height,
+            weight,
+            year,
+            hometown,
+            bats_throws: batsThrows
+          });
+        }
+
+        return players;
+      }
+
+      // FALLBACK: Parse table view (no headshots, but better than nothing)
       const tables = document.querySelectorAll('table');
 
       for (const table of tables) {
