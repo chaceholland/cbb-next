@@ -385,8 +385,48 @@ async function main() {
     console.log(`\n📄 Results saved to: ${logFile}`);
   }
 
+  // Log sync result to Supabase
+  const totalRecords =
+    results.totalPitchers +
+    (d1Results?.totalPitchers || 0) +
+    (ncaaResults?.totalPitchers || 0);
+  const hasErrors = results.errors > 0;
+  try {
+    const { error: syncLogError } = await supabase.from("cbb_sync_log").insert({
+      sync_type: "participation_scrape",
+      source: "auto-scrape-participation",
+      records_count: totalRecords,
+      status: hasErrors ? "error" : "success",
+      error_message: hasErrors
+        ? `${results.errors} game(s) failed out of ${results.total}`
+        : null,
+    });
+    if (syncLogError) {
+      console.error("⚠️  Failed to write sync log:", syncLogError.message);
+    } else if (options.verbose) {
+      console.log("📝 Sync log written to cbb_sync_log");
+    }
+  } catch (err) {
+    console.error("⚠️  Failed to write sync log:", err.message);
+  }
+
   // Exit with appropriate code
   process.exit(results.errors > 0 ? 1 : 0);
 }
 
-main().catch(console.error);
+main().catch(async (err) => {
+  console.error(err);
+  // Log fatal errors to sync log
+  try {
+    await supabase.from("cbb_sync_log").insert({
+      sync_type: "participation_scrape",
+      source: "auto-scrape-participation",
+      records_count: 0,
+      status: "error",
+      error_message: err.message || String(err),
+    });
+  } catch (_) {
+    // ignore logging failures on fatal error
+  }
+  process.exit(1);
+});
