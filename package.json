@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@playwright/test": "^1.58.2",
     "@supabase/supabase-js": "^2.96.0",
     "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
@@ -25,6 +24,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
