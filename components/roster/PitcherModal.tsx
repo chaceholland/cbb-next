@@ -1,17 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { createPortal } from 'react-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { EnrichedPitcher } from '@/lib/supabase/types';
-import { RosterPitcherDataQualityIssue } from './RosterView';
-import { cn } from '@/lib/utils';
-import { PitcherStatsCard } from '@/components/stats/PitcherStatsCard';
-import { PerformanceChart } from '@/components/stats/PerformanceChart';
-import { getPitcherGameStats } from '@/lib/stats/queries';
-import { aggregateSeasonStats, getRecentForm } from '@/lib/stats/aggregations';
-import { PitcherGameStats, PitcherSeasonStats } from '@/lib/stats/types';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { createPortal } from "react-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { EnrichedPitcher } from "@/lib/supabase/types";
+import { RosterPitcherDataQualityIssue } from "./RosterView";
+import { cn } from "@/lib/utils";
+import { PitcherStatsCard } from "@/components/stats/PitcherStatsCard";
+import { PerformanceChart } from "@/components/stats/PerformanceChart";
+import { getPitcherGameStats } from "@/lib/stats/queries";
+import { aggregateSeasonStats, getRecentForm } from "@/lib/stats/aggregations";
+import { PitcherGameStats, PitcherSeasonStats } from "@/lib/stats/types";
 
 interface Props {
   pitcher: EnrichedPitcher | null;
@@ -26,25 +26,45 @@ interface Props {
     teamId: string,
     teamName: string,
     selectedIssues: string[],
-    customNote?: string
+    customNote?: string,
   ) => void;
 }
 
-function DetailRow({ label, value }: { label: string; value: string | null | undefined }) {
+function DetailRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | null | undefined;
+}) {
   return (
     <div className="flex items-start gap-2 py-2 border-b border-slate-100 last:border-0">
-      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide w-24 shrink-0 pt-0.5">{label}</span>
-      <span className="text-sm text-slate-700 font-medium">{value || '—'}</span>
+      <span className="text-xs font-semibold text-slate-400 uppercase tracking-wide w-24 shrink-0 pt-0.5">
+        {label}
+      </span>
+      <span className="text-sm text-slate-700 font-medium">{value || "—"}</span>
     </div>
   );
 }
 
-export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFavorite, hasIssue = false, issueData, onIssueToggle }: Props) {
+export function PitcherModal({
+  pitcher,
+  onClose,
+  isFavorite = false,
+  onToggleFavorite,
+  hasIssue = false,
+  issueData,
+  onIssueToggle,
+}: Props) {
   const [imgError, setImgError] = useState(false);
-  const [activeTab, setActiveTab] = useState<'bio' | 'stats'>('bio');
+  const [activeTab, setActiveTab] = useState<"bio" | "stats">("bio");
   const [games, setGames] = useState<PitcherGameStats[]>([]);
-  const [seasonStats, setSeasonStats] = useState<PitcherSeasonStats | null>(null);
-  const [recentStats, setRecentStats] = useState<PitcherSeasonStats | null>(null);
+  const [seasonStats, setSeasonStats] = useState<PitcherSeasonStats | null>(
+    null,
+  );
+  const [recentStats, setRecentStats] = useState<PitcherSeasonStats | null>(
+    null,
+  );
   const [statsLoading, setStatsLoading] = useState(false);
 
   useEffect(() => {
@@ -64,7 +84,7 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
           gameStats as any,
           pitcher.pitcher_id,
           pitcher.display_name || pitcher.name,
-          pitcher.team_id
+          pitcher.team_id,
         );
         setSeasonStats(season);
 
@@ -74,7 +94,7 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
             recent as any,
             pitcher.pitcher_id,
             pitcher.display_name || pitcher.name,
-            pitcher.team_id
+            pitcher.team_id,
           );
           setRecentStats(recentAgg);
         }
@@ -85,7 +105,7 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
   }
 
   useEffect(() => {
-    if (pitcher && activeTab === 'stats' && games.length === 0) {
+    if (pitcher && activeTab === "stats" && games.length === 0) {
       loadStats();
     }
   }, [pitcher, activeTab]);
@@ -93,7 +113,7 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
   // Reset state when modal closes
   useEffect(() => {
     if (!pitcher) {
-      setActiveTab('bio');
+      setActiveTab("bio");
       setGames([]);
       setSeasonStats(null);
       setRecentStats(null);
@@ -103,20 +123,22 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === "Escape") onClose();
     };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
+    return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (pitcher) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [pitcher]);
 
   const showHeadshot = pitcher?.headshot && !imgError;
@@ -124,12 +146,12 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
 
   const initials = pitcher
     ? (pitcher.display_name || pitcher.name)
-        .split(' ')
-        .map(w => w[0])
-        .join('')
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
         .slice(0, 2)
         .toUpperCase()
-    : '';
+    : "";
 
   return (
     <AnimatePresence>
@@ -150,20 +172,30 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
             <div
               className="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden pointer-events-auto"
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <button
                 onClick={onClose}
                 className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/10 hover:bg-black/20 text-slate-700 transition-colors"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
 
@@ -176,7 +208,10 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                         src={pitcher.headshot!}
                         alt={pitcher.display_name || pitcher.name}
                         fill
-                        className="object-cover"
+                        className={cn(
+                          "object-cover",
+                          pitcher.team.team_id === "294" ? "object-top" : "",
+                        )}
                         onError={() => setImgError(true)}
                       />
                     ) : showTeamLogo ? (
@@ -187,12 +222,16 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                           width={160}
                           height={160}
                           className="object-contain opacity-80"
-                          onError={() => {/* silent */}}
+                          onError={() => {
+                            /* silent */
+                          }}
                         />
                       </div>
                     ) : (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-white font-bold text-6xl">{initials}</span>
+                        <span className="text-white font-bold text-6xl">
+                          {initials}
+                        </span>
                       </div>
                     )}
 
@@ -212,98 +251,120 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                 <div className="flex-1 p-6 overflow-y-auto">
                   {/* Header */}
                   <div className="mb-4">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h2 className="text-2xl font-bold text-slate-800 leading-tight">
-                          {pitcher.display_name || pitcher.name}
-                        </h2>
-                        <p className="text-slate-500 mt-1">{pitcher.team.display_name}</p>
-                        {pitcher.team.conference && (
-                          <p className="text-xs text-slate-400 mt-0.5">{pitcher.team.conference}</p>
-                        )}
-                      </div>
+                    <h2 className="text-2xl font-bold text-slate-800 leading-tight pr-10">
+                      {pitcher.display_name || pitcher.name}
+                    </h2>
+                    <p className="text-slate-500 mt-1">
+                      {pitcher.team.display_name}
+                    </p>
+                    {pitcher.team.conference && (
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        {pitcher.team.conference}
+                      </p>
+                    )}
 
-                      <div className="flex items-center gap-2 shrink-0">
-                        {onToggleFavorite && (
-                          <button
-                            onClick={() => onToggleFavorite(pitcher.pitcher_id)}
-                            className={cn(
-                              'p-2 rounded-full transition-colors',
-                              isFavorite ? 'bg-yellow-100 text-yellow-500' : 'bg-slate-100 text-slate-400 hover:text-yellow-500'
-                            )}
-                          >
-                            <svg className="w-5 h-5" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                            </svg>
-                          </button>
-                        )}
-                        {onIssueToggle && (
-                          <PitcherIssueButton
-                            pitcherId={pitcher.pitcher_id}
-                            pitcherName={pitcher.display_name || pitcher.name}
-                            teamId={pitcher.team_id}
-                            teamName={pitcher.team.display_name}
-                            hasIssue={hasIssue}
-                            issueData={issueData}
-                            onIssueToggle={onIssueToggle}
-                          />
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Position badge */}
-                    {pitcher.position && (
-                      <div className="mt-3">
-                        <span className={cn(
-                          'text-xs font-bold px-3 py-1 rounded-full border',
-                          pitcher.position.toUpperCase().includes('LHP')
-                            ? 'bg-emerald-100 text-emerald-700 border-emerald-200'
-                            : 'bg-blue-100 text-blue-700 border-blue-200'
-                        )}>
+                    {/* Position badge + action buttons row */}
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
+                      {pitcher.position && (
+                        <span
+                          className={cn(
+                            "text-xs font-bold px-3 py-1 rounded-full border",
+                            pitcher.position.toUpperCase().includes("LHP")
+                              ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                              : "bg-blue-100 text-blue-700 border-blue-200",
+                          )}
+                        >
                           {pitcher.position}
                         </span>
-                      </div>
-                    )}
+                      )}
+                      {onToggleFavorite && (
+                        <button
+                          onClick={() => onToggleFavorite(pitcher.pitcher_id)}
+                          className={cn(
+                            "p-2 rounded-full transition-colors",
+                            isFavorite
+                              ? "bg-yellow-100 text-yellow-500"
+                              : "bg-slate-100 text-slate-400 hover:text-yellow-500",
+                          )}
+                          title={
+                            isFavorite
+                              ? "Remove from favorites"
+                              : "Add to favorites"
+                          }
+                        >
+                          <svg
+                            className="w-5 h-5"
+                            fill={isFavorite ? "currentColor" : "none"}
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                      {onIssueToggle && (
+                        <PitcherIssueButton
+                          pitcherId={pitcher.pitcher_id}
+                          pitcherName={pitcher.display_name || pitcher.name}
+                          teamId={pitcher.team_id}
+                          teamName={pitcher.team.display_name}
+                          hasIssue={hasIssue}
+                          issueData={issueData}
+                          onIssueToggle={onIssueToggle}
+                        />
+                      )}
+                    </div>
                   </div>
 
                   {/* Tab switcher */}
                   <div className="flex gap-4 border-b border-slate-200 mb-4">
                     <button
-                      onClick={() => setActiveTab('bio')}
+                      onClick={() => setActiveTab("bio")}
                       className={cn(
-                        'pb-2 px-2 text-sm font-medium transition-colors border-b-2',
-                        activeTab === 'bio'
-                          ? 'border-blue-600 text-blue-600'
-                          : 'border-transparent text-slate-500 hover:text-slate-700'
+                        "pb-2 px-2 text-sm font-medium transition-colors border-b-2",
+                        activeTab === "bio"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-slate-500 hover:text-slate-700",
                       )}
                     >
                       Bio
                     </button>
                     <button
-                      onClick={() => setActiveTab('stats')}
+                      onClick={() => setActiveTab("stats")}
                       className={cn(
-                        'pb-2 px-2 text-sm font-medium transition-colors border-b-2',
-                        activeTab === 'stats'
-                          ? 'border-blue-600 text-blue-600'
-                          : 'border-transparent text-slate-500 hover:text-slate-700'
+                        "pb-2 px-2 text-sm font-medium transition-colors border-b-2",
+                        activeTab === "stats"
+                          ? "border-blue-600 text-blue-600"
+                          : "border-transparent text-slate-500 hover:text-slate-700",
                       )}
                     >
                       Stats
                     </button>
                   </div>
 
-                  {activeTab === 'bio' && (
+                  {activeTab === "bio" && (
                     <>
                       {/* Details */}
                       <div className="space-y-0">
-                    <DetailRow label="Jersey" value={pitcher.number ? `#${pitcher.number}` : null} />
-                    <DetailRow label="Position" value={pitcher.position} />
-                    <DetailRow label="Year" value={pitcher.year} />
-                    <DetailRow label="Height" value={pitcher.height} />
-                    <DetailRow label="Weight" value={pitcher.weight} />
-                    <DetailRow label="Hometown" value={pitcher.hometown} />
-                    <DetailRow label="Bats/Throws" value={pitcher.bats_throws} />
-                  </div>
+                        <DetailRow
+                          label="Jersey"
+                          value={pitcher.number ? `#${pitcher.number}` : null}
+                        />
+                        <DetailRow label="Position" value={pitcher.position} />
+                        <DetailRow label="Year" value={pitcher.year} />
+                        <DetailRow label="Height" value={pitcher.height} />
+                        <DetailRow label="Weight" value={pitcher.weight} />
+                        <DetailRow label="Hometown" value={pitcher.hometown} />
+                        <DetailRow
+                          label="Bats/Throws"
+                          value={pitcher.bats_throws}
+                        />
+                      </div>
 
                       {/* ESPN Link */}
                       {pitcher.espn_link && (
@@ -315,8 +376,18 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white text-sm font-medium hover:opacity-90 transition-opacity"
                           >
                             View on ESPN
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                              />
                             </svg>
                           </a>
                         </div>
@@ -324,17 +395,31 @@ export function PitcherModal({ pitcher, onClose, isFavorite = false, onToggleFav
                     </>
                   )}
 
-                  {activeTab === 'stats' && (
+                  {activeTab === "stats" && (
                     <div className="space-y-4">
                       {statsLoading ? (
-                        <div className="py-12 text-center text-slate-500">Loading stats...</div>
+                        <div className="py-12 text-center text-slate-500">
+                          Loading stats...
+                        </div>
                       ) : games.length === 0 ? (
-                        <div className="py-12 text-center text-slate-500">No stats available</div>
+                        <div className="py-12 text-center text-slate-500">
+                          No stats available
+                        </div>
                       ) : (
                         <>
                           <div className="grid gap-4 grid-cols-1">
-                            <PitcherStatsCard stats={seasonStats} label="Season Stats" className="dark:bg-slate-900 dark:border-slate-700" />
-                            {recentStats && <PitcherStatsCard stats={recentStats} label="Last 5 Games" className="dark:bg-slate-900 dark:border-slate-700" />}
+                            <PitcherStatsCard
+                              stats={seasonStats}
+                              label="Season Stats"
+                              className="dark:bg-slate-900 dark:border-slate-700"
+                            />
+                            {recentStats && (
+                              <PitcherStatsCard
+                                stats={recentStats}
+                                label="Last 5 Games"
+                                className="dark:bg-slate-900 dark:border-slate-700"
+                              />
+                            )}
                           </div>
 
                           <PerformanceChart games={games} metric="era" />
@@ -375,12 +460,12 @@ function PitcherIssueButton({
     teamId: string,
     teamName: string,
     selectedIssues: string[],
-    customNote?: string
+    customNote?: string,
   ) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
-  const [customNote, setCustomNote] = useState('');
+  const [customNote, setCustomNote] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -393,32 +478,32 @@ function PitcherIssueButton({
   useEffect(() => {
     if (showMenu) {
       setSelectedIssues(issueData?.issues || []);
-      setCustomNote(issueData?.customNote || '');
-      setShowCustomInput((issueData?.issues || []).includes('Misc.'));
+      setCustomNote(issueData?.customNote || "");
+      setShowCustomInput((issueData?.issues || []).includes("Misc."));
     }
   }, [showMenu, issueData]);
 
   const issueOptions = [
-    'Missing headshot',
-    'Wrong team',
-    'Missing position',
-    'Missing height/weight',
-    'Missing hometown',
-    'Missing bats/throws',
-    'Incorrect stats',
-    'Try Rescraping for All Data',
-    'Try Rescraping for Headshot Data',
-    'Misc.',
+    "Missing headshot",
+    "Wrong team",
+    "Missing position",
+    "Missing height/weight",
+    "Missing hometown",
+    "Missing bats/throws",
+    "Incorrect stats",
+    "Try Rescraping for All Data",
+    "Try Rescraping for Headshot Data",
+    "Misc.",
   ];
 
   const handleIssueSelect = (issue: string) => {
-    if (issue === 'Misc.') {
+    if (issue === "Misc.") {
       setShowCustomInput(!showCustomInput);
     }
 
-    setSelectedIssues(prev => {
+    setSelectedIssues((prev) => {
       if (prev.includes(issue)) {
-        return prev.filter(i => i !== issue);
+        return prev.filter((i) => i !== issue);
       } else {
         return [...prev, issue];
       }
@@ -426,15 +511,22 @@ function PitcherIssueButton({
   };
 
   const handleSave = () => {
-    onIssueToggle(pitcherId, pitcherName, teamId, teamName, selectedIssues, customNote);
+    onIssueToggle(
+      pitcherId,
+      pitcherName,
+      teamId,
+      teamName,
+      selectedIssues,
+      customNote,
+    );
     setShowMenu(false);
   };
 
   const handleClear = () => {
     setSelectedIssues([]);
-    setCustomNote('');
+    setCustomNote("");
     setShowCustomInput(false);
-    onIssueToggle(pitcherId, pitcherName, teamId, teamName, [], '');
+    onIssueToggle(pitcherId, pitcherName, teamId, teamName, [], "");
     setShowMenu(false);
   };
 
@@ -447,15 +539,20 @@ function PitcherIssueButton({
           setShowMenu(!showMenu);
         }}
         className={cn(
-          'p-2 rounded-full transition-all',
+          "p-2 rounded-full transition-all",
           hasIssue
-            ? 'bg-orange-500 text-white hover:bg-orange-600'
-            : 'bg-slate-100 text-slate-600 hover:bg-slate-300'
+            ? "bg-orange-500 text-white hover:bg-orange-600"
+            : "bg-slate-100 text-slate-600 hover:bg-slate-300",
         )}
         aria-label="Report pitcher data quality issue"
         type="button"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -465,87 +562,103 @@ function PitcherIssueButton({
         </svg>
       </button>
 
-      {showMenu && mounted && createPortal(
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[99999] flex items-center justify-center p-4"
-          onClick={() => setShowMenu(false)}
-        >
+      {showMenu &&
+        mounted &&
+        createPortal(
           <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[99999] flex items-center justify-center p-4"
+            onClick={() => setShowMenu(false)}
           >
-            <div className="p-6 border-b border-slate-200 flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900">Pitcher Data Quality Issues</h3>
+            <div
+              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <div className="p-6 border-b border-slate-200 flex-shrink-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Pitcher Data Quality Issues
+                  </h3>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                    aria-label="Close modal"
+                    type="button"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-sm text-slate-600 mt-2">
+                  {pitcherName} - {teamName}
+                </p>
+              </div>
+
+              <div className="p-6 overflow-y-auto flex-1">
+                <div className="space-y-3">
+                  {issueOptions.map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedIssues.includes(option)}
+                        onChange={() => handleIssueSelect(option)}
+                        className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
+                      />
+                      <span className="text-base text-slate-700">{option}</span>
+                    </label>
+                  ))}
+
+                  {showCustomInput && (
+                    <textarea
+                      value={customNote}
+                      onChange={(e) => setCustomNote(e.target.value)}
+                      placeholder="Describe the issue..."
+                      className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={4}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-slate-200 flex gap-3">
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowMenu(false);
-                  }}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
-                  aria-label="Close modal"
-                  type="button"
+                  onClick={handleClear}
+                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  Clear
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Save
                 </button>
               </div>
-              <p className="text-sm text-slate-600 mt-2">{pitcherName} - {teamName}</p>
             </div>
-
-            <div className="p-6 overflow-y-auto flex-1">
-              <div className="space-y-3">
-                {issueOptions.map(option => (
-                  <label
-                    key={option}
-                    className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedIssues.includes(option)}
-                      onChange={() => handleIssueSelect(option)}
-                      className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
-                    />
-                    <span className="text-base text-slate-700">{option}</span>
-                  </label>
-                ))}
-
-                {showCustomInput && (
-                  <textarea
-                    value={customNote}
-                    onChange={(e) => setCustomNote(e.target.value)}
-                    placeholder="Describe the issue..."
-                    className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={4}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-slate-200 flex gap-3">
-              <button
-                onClick={handleClear}
-                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
-              >
-                Clear
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

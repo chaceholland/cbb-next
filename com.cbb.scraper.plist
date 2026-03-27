@@ -12,6 +12,7 @@
     <string>/Users/chace/Desktop/cbb-next/auto-scrape-participation.mjs</string>
     <string>--days</string>
     <string>14</string>
+    <string>--d1-fallback</string>
   </array>
 
   <key>WorkingDirectory</key>

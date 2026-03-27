@@ -1,0 +1,2 @@
+[   16632ms] [WARNING] Image with src "/logos/68.png?v=1771471267120" is using quality "85" which is not configured in images.qualities [75]. Please update your config to [75, 85].
+Read more: https://nextjs.org/docs/messages/next-image-unconfigured-qualities @ http://localhost:3000/_next/static/chunks/fd326_next_dist_a688d5c0._.js:2297

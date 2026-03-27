@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import { useEffect, useState, useMemo, useCallback } from 'react';
-import Image from 'next/image';
-import { createPortal } from 'react-dom';
-import { supabase } from '@/lib/supabase/client';
-import { CbbPitcher, CbbTeam, EnrichedPitcher } from '@/lib/supabase/types';
-import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
-import { useFilterMemory } from '@/lib/hooks/useFilterMemory';
-import { PitcherCard } from './PitcherCard';
-import { PitcherModal } from './PitcherModal';
-import { RosterSkeleton } from './RosterSkeleton';
-import { RosterFilterPills } from '@/components/FilterPills';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { cn, getEspnLogoUrl } from '@/lib/utils';
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import Image from "next/image";
+import { createPortal } from "react-dom";
+import { supabase } from "@/lib/supabase/client";
+import { CbbPitcher, CbbTeam, EnrichedPitcher } from "@/lib/supabase/types";
+import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
+import { PitcherCard } from "./PitcherCard";
+import { PitcherModal } from "./PitcherModal";
+import { RosterSkeleton } from "./RosterSkeleton";
+import { RosterFilterPills } from "@/components/FilterPills";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { cn, getEspnLogoUrl } from "@/lib/utils";
 
 export type RosterPitcherDataQualityIssue = {
   pitcherKey: string; // team_id:pitcher_id
@@ -30,40 +30,52 @@ export type TeamDataQualityIssue = {
 };
 
 function getConfLabel(conf: string): string {
-  if (conf.includes('SEC')) return 'SEC';
-  if (conf.includes('ACC')) return 'ACC';
-  if (conf.includes('Big 12')) return 'Big 12';
-  if (conf.includes('Big Ten')) return 'Big Ten';
-  if (conf.includes('Pac-12') || conf.includes('Pac 12')) return 'Pac-12';
-  if (conf.includes('American')) return 'American';
-  if (conf.includes('Sun Belt')) return 'Sun Belt';
-  if (conf.includes('C-USA') || conf.includes('Conference USA')) return 'C-USA';
-  if (conf.includes('Mountain West')) return 'Mountain West';
-  if (conf.includes('MAC')) return 'MAC';
-  return 'Other';
+  if (conf.includes("SEC")) return "SEC";
+  if (conf.includes("ACC")) return "ACC";
+  if (conf.includes("Big 12")) return "Big 12";
+  if (conf.includes("Big Ten")) return "Big Ten";
+  if (conf.includes("Pac-12") || conf.includes("Pac 12")) return "Pac-12";
+  if (conf.includes("American")) return "American";
+  if (conf.includes("Sun Belt")) return "Sun Belt";
+  if (conf.includes("C-USA") || conf.includes("Conference USA")) return "C-USA";
+  if (conf.includes("Mountain West")) return "Mountain West";
+  if (conf.includes("MAC")) return "MAC";
+  return "Other";
 }
 
-export function RosterView() {
+export function RosterView({
+  activateFavorites,
+  onFavoritesActivated,
+}: {
+  activateFavorites?: boolean;
+  onFavoritesActivated?: () => void;
+} = {}) {
   const [pitchers, setPitchers] = useState<EnrichedPitcher[]>([]);
   const [teams, setTeams] = useState<CbbTeam[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
-  const [selectedPitcher, setSelectedPitcher] = useState<EnrichedPitcher | null>(null);
-  const [favorites, setFavorites] = useLocalStorage<string[]>('cbb-favorites', []);
+  const savedScrollY = useRef(0);
+  const [selectedPitcher, setSelectedPitcher] =
+    useState<EnrichedPitcher | null>(null);
+  const [favorites, setFavorites] = useLocalStorage<string[]>(
+    "cbb-favorites",
+    [],
+  );
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<string | null>(null);
 
   // Filter memory hook - persists filter state across sessions
-  const { filters, setFilters, clearFilters, isRestored, dismissRestored } = useFilterMemory({
-    key: 'roster-filters',
-    defaultFilters: {
-      searchQuery: '',
-      conference: 'All',
-      hand: 'All',
-      showFavorites: false,
-    },
-  });
+  const { filters, setFilters, clearFilters, isRestored, dismissRestored } =
+    useFilterMemory({
+      key: "roster-filters",
+      defaultFilters: {
+        searchQuery: "",
+        conference: "All",
+        hand: "All",
+        showFavorites: false,
+      },
+    });
 
   // Derived state from filter memory
   const searchQuery = filters.searchQuery as string;
@@ -72,42 +84,89 @@ export function RosterView() {
   const showFavorites = filters.showFavorites as boolean;
 
   // Setters that update filter memory
-  const setSearchQuery = useCallback((query: string) => {
-    setFilters(prev => ({ ...prev, searchQuery: query }));
-  }, [setFilters]);
+  const setSearchQuery = useCallback(
+    (query: string) => {
+      setFilters((prev) => ({ ...prev, searchQuery: query }));
+    },
+    [setFilters],
+  );
 
-  const setConference = useCallback((conf: string) => {
-    setFilters(prev => ({ ...prev, conference: conf }));
-  }, [setFilters]);
+  const setConference = useCallback(
+    (conf: string) => {
+      setFilters((prev) => ({ ...prev, conference: conf }));
+    },
+    [setFilters],
+  );
 
-  const setHand = useCallback((h: string) => {
-    setFilters(prev => ({ ...prev, hand: h }));
-  }, [setFilters]);
+  const setHand = useCallback(
+    (h: string) => {
+      setFilters((prev) => ({ ...prev, hand: h }));
+    },
+    [setFilters],
+  );
 
-  const setShowFavorites = useCallback((show: boolean | ((prev: boolean) => boolean)) => {
-    setFilters(prev => ({ ...prev, showFavorites: typeof show === 'function' ? show(prev.showFavorites as boolean) : show }));
-  }, [setFilters]);
+  const setShowFavorites = useCallback(
+    (show: boolean | ((prev: boolean) => boolean)) => {
+      setFilters((prev) => ({
+        ...prev,
+        showFavorites:
+          typeof show === "function"
+            ? show(prev.showFavorites as boolean)
+            : show,
+      }));
+    },
+    [setFilters],
+  );
+
+  // Activate favorites filter when triggered from nav
+  useEffect(() => {
+    if (activateFavorites) {
+      setShowFavorites(true);
+      onFavoritesActivated?.();
+    }
+  }, [activateFavorites]);
 
   // Data quality issues
-  const [pitcherDataQualityIssues, setPitcherDataQualityIssues] = useLocalStorage<RosterPitcherDataQualityIssue[]>('cbb-roster-pitcher-data-quality-issues', []);
-  const [teamDataQualityIssues, setTeamDataQualityIssues] = useLocalStorage<TeamDataQualityIssue[]>('cbb-team-data-quality-issues', []);
+  const [pitcherDataQualityIssues, setPitcherDataQualityIssues] =
+    useLocalStorage<RosterPitcherDataQualityIssue[]>(
+      "cbb-roster-pitcher-data-quality-issues",
+      [],
+    );
+  const [teamDataQualityIssues, setTeamDataQualityIssues] = useLocalStorage<
+    TeamDataQualityIssue[]
+  >("cbb-team-data-quality-issues", []);
   const [showIssuesOnly, setShowIssuesOnly] = useState(false);
 
   async function handleImportFavorites() {
     setImporting(true);
     setImportResult(null);
     try {
-      const { data } = await supabase.from('favorites').select('pitchers').eq('tracker', 'cbb').eq('user_id', 'default').single();
-      if (!data?.pitchers?.length) { setImportResult('No favorites found in old tracker.'); return; }
-      const currentSet = new Set(pitchers.map(p => p.pitcher_id));
-      const matched = (data.pitchers as string[]).filter(id => currentSet.has(id));
+      const { data } = await supabase
+        .from("favorites")
+        .select("pitchers")
+        .eq("tracker", "cbb")
+        .eq("user_id", "default")
+        .single();
+      if (!data?.pitchers?.length) {
+        setImportResult("No favorites found in old tracker.");
+        return;
+      }
+      const currentSet = new Set(pitchers.map((p) => p.pitcher_id));
+      const matched = (data.pitchers as string[]).filter((id) =>
+        currentSet.has(id),
+      );
       const existing = new Set(favorites);
-      const toAdd = matched.filter(id => !existing.has(id));
-      if (toAdd.length === 0) { setImportResult('All matching favorites already imported.'); return; }
-      setFavorites(prev => [...prev, ...toAdd]);
-      setImportResult(`Imported ${toAdd.length} favorites (${data.pitchers.length - matched.length} unmatched from old tracker).`);
+      const toAdd = matched.filter((id) => !existing.has(id));
+      if (toAdd.length === 0) {
+        setImportResult("All matching favorites already imported.");
+        return;
+      }
+      setFavorites((prev) => [...prev, ...toAdd]);
+      setImportResult(
+        `Imported ${toAdd.length} favorites (${data.pitchers.length - matched.length} unmatched from old tracker).`,
+      );
     } catch {
-      setImportResult('Import failed. Please try again.');
+      setImportResult("Import failed. Please try again.");
     } finally {
       setImporting(false);
     }
@@ -119,13 +178,15 @@ export function RosterView() {
         setLoading(true);
 
         const { data: teamsData, error: teamsError } = await supabase
-          .from('cbb_teams')
-          .select('*')
-          .order('display_name', { ascending: true });
+          .from("cbb_teams")
+          .select("*")
+          .order("display_name", { ascending: true });
         if (teamsError) throw teamsError;
 
         const teamsMap: Record<string, CbbTeam> = {};
-        (teamsData || []).forEach((t: CbbTeam) => { teamsMap[t.team_id] = t; });
+        (teamsData || []).forEach((t: CbbTeam) => {
+          teamsMap[t.team_id] = t;
+        });
         setTeams(teamsData || []);
 
         const allPitchers: CbbPitcher[] = [];
@@ -133,10 +194,10 @@ export function RosterView() {
         const pageSize = 1000;
         while (true) {
           const { data, error: pitchersError } = await supabase
-            .from('cbb_pitchers')
-            .select('*')
+            .from("cbb_pitchers")
+            .select("*")
             .range(page * pageSize, (page + 1) * pageSize - 1)
-            .order('name', { ascending: true });
+            .order("name", { ascending: true });
           if (pitchersError) throw pitchersError;
           if (!data || data.length === 0) break;
           allPitchers.push(...data);
@@ -145,13 +206,13 @@ export function RosterView() {
         }
 
         const enriched: EnrichedPitcher[] = allPitchers
-          .filter(p => teamsMap[p.team_id])
-          .map(p => ({ ...p, team: teamsMap[p.team_id] }));
+          .filter((p) => teamsMap[p.team_id])
+          .map((p) => ({ ...p, team: teamsMap[p.team_id] }));
 
         setPitchers(enriched);
       } catch (err) {
-        console.error('Error fetching roster:', err);
-        setError('Failed to load roster. Please try again.');
+        console.error("Error fetching roster:", err);
+        setError("Failed to load roster. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -161,7 +222,7 @@ export function RosterView() {
 
   const pitchersByTeam = useMemo(() => {
     const map: Record<string, EnrichedPitcher[]> = {};
-    pitchers.forEach(p => {
+    pitchers.forEach((p) => {
       if (!map[p.team_id]) map[p.team_id] = [];
       map[p.team_id].push(p);
     });
@@ -170,8 +231,8 @@ export function RosterView() {
 
   const conferenceCounts = useMemo(() => {
     const counts: Record<string, number> = {};
-    pitchers.forEach(p => {
-      const label = getConfLabel(p.team.conference || '');
+    pitchers.forEach((p) => {
+      const label = getConfLabel(p.team.conference || "");
       counts[label] = (counts[label] || 0) + 1;
     });
     return counts;
@@ -179,10 +240,10 @@ export function RosterView() {
 
   const handCounts = useMemo(() => {
     const counts = { All: pitchers.length, RHP: 0, LHP: 0 };
-    pitchers.forEach(p => {
-      const pos = (p.position || '').toUpperCase();
-      if (pos.includes('LHP') || pos.includes('LEFT')) counts.LHP++;
-      else if (pos.includes('RHP') || pos.includes('RIGHT')) counts.RHP++;
+    pitchers.forEach((p) => {
+      const pos = (p.position || "").toUpperCase();
+      if (pos.includes("LHP") || pos.includes("LEFT")) counts.LHP++;
+      else if (pos.includes("RHP") || pos.includes("RIGHT")) counts.RHP++;
     });
     return counts;
   }, [pitchers]);
@@ -190,7 +251,7 @@ export function RosterView() {
   // Create maps for quick issue lookup
   const pitcherIssuesMap = useMemo(() => {
     const map = new Map<string, RosterPitcherDataQualityIssue>();
-    pitcherDataQualityIssues.forEach(issue => {
+    pitcherDataQualityIssues.forEach((issue) => {
       map.set(issue.pitcherKey, issue);
     });
     return map;
@@ -198,7 +259,7 @@ export function RosterView() {
 
   const teamIssuesMap = useMemo(() => {
     const map = new Map<string, TeamDataQualityIssue>();
-    teamDataQualityIssues.forEach(issue => {
+    teamDataQualityIssues.forEach((issue) => {
       map.set(issue.teamId, issue);
     });
     return map;
@@ -209,13 +270,15 @@ export function RosterView() {
     let result = teams;
 
     // Conference filter
-    if (conference !== 'All') {
-      result = result.filter(t => getConfLabel(t.conference || '') === conference);
+    if (conference !== "All") {
+      result = result.filter(
+        (t) => getConfLabel(t.conference || "") === conference,
+      );
     }
 
     // Issues filter - only show teams with data quality issues
     if (showIssuesOnly) {
-      result = result.filter(t => {
+      result = result.filter((t) => {
         // Check for team-level issues
         if (teamIssuesMap.has(t.team_id)) {
           return true;
@@ -223,7 +286,7 @@ export function RosterView() {
 
         // Check for pitcher-level issues in this team
         const teamPitcherList = pitchersByTeam[t.team_id] || [];
-        return teamPitcherList.some(p => {
+        return teamPitcherList.some((p) => {
           const pitcherKey = `${t.team_id}:${p.pitcher_id}`;
           return pitcherIssuesMap.has(pitcherKey);
         });
@@ -231,7 +294,14 @@ export function RosterView() {
     }
 
     return result;
-  }, [teams, conference, showIssuesOnly, teamIssuesMap, pitchersByTeam, pitcherIssuesMap]);
+  }, [
+    teams,
+    conference,
+    showIssuesOnly,
+    teamIssuesMap,
+    pitchersByTeam,
+    pitcherIssuesMap,
+  ]);
 
   // Pitchers shown in the drill-down view
   const teamPitchers = useMemo(() => {
@@ -239,32 +309,42 @@ export function RosterView() {
     let result = pitchersByTeam[selectedTeamId] || [];
     if (showFavorites) {
       const favSet = new Set(favorites);
-      result = result.filter(p => favSet.has(p.pitcher_id));
+      result = result.filter((p) => favSet.has(p.pitcher_id));
     }
-    if (hand !== 'All') {
-      result = result.filter(p => {
-        const pos = (p.position || '').toUpperCase();
-        if (hand === 'LHP') return pos.includes('LHP') || pos.includes('LEFT');
-        if (hand === 'RHP') return pos.includes('RHP') || pos.includes('RIGHT');
+    if (hand !== "All") {
+      result = result.filter((p) => {
+        const pos = (p.position || "").toUpperCase();
+        if (hand === "LHP") return pos.includes("LHP") || pos.includes("LEFT");
+        if (hand === "RHP") return pos.includes("RHP") || pos.includes("RIGHT");
         return true;
       });
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      result = result.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        (p.display_name || '').toLowerCase().includes(q)
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.display_name || "").toLowerCase().includes(q),
       );
     }
     // Issues filter - only show pitchers with data quality issues
     if (showIssuesOnly) {
-      result = result.filter(p => {
+      result = result.filter((p) => {
         const pitcherKey = `${selectedTeamId}:${p.pitcher_id}`;
         return pitcherIssuesMap.has(pitcherKey);
       });
     }
     return result;
-  }, [selectedTeamId, pitchersByTeam, showFavorites, favorites, hand, searchQuery, showIssuesOnly, pitcherIssuesMap]);
+  }, [
+    selectedTeamId,
+    pitchersByTeam,
+    showFavorites,
+    favorites,
+    hand,
+    searchQuery,
+    showIssuesOnly,
+    pitcherIssuesMap,
+  ]);
 
   // Handler for pitcher data quality issues
   const handlePitcherIssueToggle = (
@@ -273,16 +353,25 @@ export function RosterView() {
     teamId: string,
     teamName: string,
     selectedIssues: string[],
-    customNote?: string
+    customNote?: string,
   ) => {
     const pitcherKey = `${teamId}:${pitcherId}`;
 
-    setPitcherDataQualityIssues(prev => {
-      const existing = prev.filter(issue => issue.pitcherKey !== pitcherKey);
+    setPitcherDataQualityIssues((prev) => {
+      const existing = prev.filter((issue) => issue.pitcherKey !== pitcherKey);
       if (selectedIssues.length === 0) {
         return existing;
       }
-      return [...existing, { pitcherKey, pitcherName, teamName, issues: selectedIssues, customNote }];
+      return [
+        ...existing,
+        {
+          pitcherKey,
+          pitcherName,
+          teamName,
+          issues: selectedIssues,
+          customNote,
+        },
+      ];
     });
   };
 
@@ -291,46 +380,53 @@ export function RosterView() {
     teamId: string,
     teamName: string,
     selectedIssues: string[],
-    customNote?: string
+    customNote?: string,
   ) => {
-    setTeamDataQualityIssues(prev => {
-      const existing = prev.filter(issue => issue.teamId !== teamId);
+    setTeamDataQualityIssues((prev) => {
+      const existing = prev.filter((issue) => issue.teamId !== teamId);
       if (selectedIssues.length === 0) {
         return existing;
       }
-      return [...existing, { teamId, teamName, issues: selectedIssues, customNote }];
+      return [
+        ...existing,
+        { teamId, teamName, issues: selectedIssues, customNote },
+      ];
     });
   };
 
   const handleToggleFavorite = (id: string) => {
-    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id],
+    );
   };
 
   // Copy issues to clipboard
   const handleCopyIssues = async () => {
     const teamIssueReport = teamDataQualityIssues
-      .map(issue => {
-        const issueText = issue.issues.join(', ');
-        const customText = issue.customNote ? ` - ${issue.customNote}` : '';
+      .map((issue) => {
+        const issueText = issue.issues.join(", ");
+        const customText = issue.customNote ? ` - ${issue.customNote}` : "";
         return `TEAM: ${issue.teamName}: ${issueText}${customText}`;
       })
-      .join('\n');
+      .join("\n");
 
     const pitcherIssueReport = pitcherDataQualityIssues
-      .map(issue => {
-        const issueText = issue.issues.join(', ');
-        const customText = issue.customNote ? ` - ${issue.customNote}` : '';
+      .map((issue) => {
+        const issueText = issue.issues.join(", ");
+        const customText = issue.customNote ? ` - ${issue.customNote}` : "";
         return `PITCHER: ${issue.pitcherName} (${issue.teamName}): ${issueText}${customText}`;
       })
-      .join('\n');
+      .join("\n");
 
-    const combinedReport = [teamIssueReport, pitcherIssueReport].filter(Boolean).join('\n\n');
+    const combinedReport = [teamIssueReport, pitcherIssueReport]
+      .filter(Boolean)
+      .join("\n\n");
 
     try {
       await navigator.clipboard.writeText(combinedReport);
-      alert('Issues copied to clipboard!');
+      alert("Issues copied to clipboard!");
     } catch (err) {
-      console.error('Failed to copy:', err);
+      console.error("Failed to copy:", err);
     }
   };
 
@@ -343,7 +439,10 @@ export function RosterView() {
       <div className="flex items-center justify-center py-24">
         <div className="text-center">
           <p className="text-red-500 font-medium mb-2">{error}</p>
-          <button onClick={() => window.location.reload()} className="text-blue-500 hover:underline text-sm">
+          <button
+            onClick={() => window.location.reload()}
+            className="text-blue-500 hover:underline text-sm"
+          >
             Reload page
           </button>
         </div>
@@ -353,18 +452,34 @@ export function RosterView() {
 
   // ── Team drill-down view ──
   if (selectedTeamId) {
-    const selectedTeam = teams.find(t => t.team_id === selectedTeamId);
+    const selectedTeam = teams.find((t) => t.team_id === selectedTeamId);
     const logoSrc = selectedTeam?.logo || getEspnLogoUrl(selectedTeamId);
 
     return (
       <div>
         {/* Back button */}
         <button
-          onClick={() => { setSelectedTeamId(null); setSearchQuery(''); }}
-          className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-800 mb-5 group transition-colors"
+          onClick={() => {
+            setSelectedTeamId(null);
+            setSearchQuery("");
+            requestAnimationFrame(() => {
+              window.scrollTo(0, savedScrollY.current);
+            });
+          }}
+          className="inline-flex items-center gap-2 px-4 py-2.5 mb-5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-slate-300 rounded-xl transition-colors min-h-[44px]"
         >
-          <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
           All Teams
         </button>
@@ -374,24 +489,30 @@ export function RosterView() {
           <div className="w-16 h-16 shrink-0 flex items-center justify-center">
             <Image
               src={logoSrc}
-              alt={selectedTeam?.display_name ?? ''}
+              alt={selectedTeam?.display_name ?? ""}
               width={64}
               height={64}
               className="object-contain"
               unoptimized
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
             />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-800">{selectedTeam?.display_name}</h2>
-            <p className="text-sm text-slate-400">{selectedTeam?.conference}</p>
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">
+              {selectedTeam?.display_name}
+            </h2>
+            <p className="text-sm text-slate-400 dark:text-slate-400">
+              {selectedTeam?.conference}
+            </p>
           </div>
-          <span className="ml-auto text-sm font-semibold text-slate-500 bg-slate-100 px-3 py-1 rounded-full">
+          <span className="ml-auto text-sm font-semibold text-slate-500 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full">
             {(pitchersByTeam[selectedTeamId] || []).length} pitchers
           </span>
           <TeamIssueButton
             teamId={selectedTeamId}
-            teamName={selectedTeam?.display_name ?? 'Unknown'}
+            teamName={selectedTeam?.display_name ?? "Unknown"}
             hasIssue={teamIssuesMap.has(selectedTeamId)}
             issueData={teamIssuesMap.get(selectedTeamId)}
             onIssueToggle={handleTeamIssueToggle}
@@ -403,12 +524,12 @@ export function RosterView() {
           <input
             type="text"
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search pitchers..."
             className={cn(
-              'flex-1 max-w-xs px-4 py-2 rounded-xl text-sm',
-              'bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400',
-              'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 shadow-sm'
+              "flex-1 max-w-xs px-4 py-2 rounded-xl text-sm",
+              "bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500",
+              "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 shadow-sm",
             )}
           />
           <RosterFilterPills
@@ -421,55 +542,90 @@ export function RosterView() {
             favoritesCount={favorites.length}
             onConferenceChange={setConference}
             onHandChange={setHand}
-            onFavoritesToggle={() => setShowFavorites(prev => !prev)}
+            onFavoritesToggle={() => setShowFavorites((prev) => !prev)}
             onClearAll={clearFilters}
             hideConference
           />
 
           {/* Data Quality Buttons */}
-          {(pitcherDataQualityIssues.length > 0 || teamDataQualityIssues.length > 0) && (
+          {(pitcherDataQualityIssues.length > 0 ||
+            teamDataQualityIssues.length > 0) && (
             <>
               <button
                 onClick={() => setShowIssuesOnly(!showIssuesOnly)}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                   showIssuesOnly
-                    ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                    ? "bg-orange-600 text-white shadow-lg shadow-orange-500/30"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
                 )}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
                 </svg>
-                {showIssuesOnly ? 'Show All' : `Show Issues (${pitcherDataQualityIssues.length + teamDataQualityIssues.length})`}
+                {showIssuesOnly
+                  ? "Show All"
+                  : `Show Issues (${pitcherDataQualityIssues.length + teamDataQualityIssues.length})`}
               </button>
               <button
                 onClick={handleCopyIssues}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
-                  'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                  "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
                 )}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                  />
                 </svg>
                 Copy Issues
               </button>
               <button
                 onClick={() => {
-                  const total = pitcherDataQualityIssues.length + teamDataQualityIssues.length;
+                  const total =
+                    pitcherDataQualityIssues.length +
+                    teamDataQualityIssues.length;
                   if (confirm(`Clear all ${total} data quality issues?`)) {
                     setPitcherDataQualityIssues([]);
                     setTeamDataQualityIssues([]);
                   }
                 }}
                 className={cn(
-                  'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
-                  'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+                  "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                  "bg-red-600 text-white hover:bg-red-700 shadow-sm",
                 )}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
                 Clear All
               </button>
@@ -480,8 +636,18 @@ export function RosterView() {
         {teamPitchers.length === 0 ? (
           <EmptyState
             icon={
-              <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <svg
+                className="w-16 h-16"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
               </svg>
             }
             title="No pitchers found"
@@ -489,14 +655,18 @@ export function RosterView() {
               searchQuery.trim()
                 ? "No pitchers match your search. Try a different search term or check your filters."
                 : showFavorites
-                ? "No favorite pitchers on this team yet. Click the star icon on any pitcher to add them to your favorites."
-                : "No pitchers match your current filters. Try adjusting your filter selections."
+                  ? "No favorite pitchers on this team yet. Click the star icon on any pitcher to add them to your favorites."
+                  : "No pitchers match your current filters. Try adjusting your filter selections."
             }
             action={{
-              label: searchQuery.trim() ? "Clear search" : showFavorites ? "Show all pitchers" : "Clear filters",
+              label: searchQuery.trim()
+                ? "Clear search"
+                : showFavorites
+                  ? "Show all pitchers"
+                  : "Clear filters",
               onClick: () => {
                 if (searchQuery.trim()) {
-                  setSearchQuery('');
+                  setSearchQuery("");
                 } else if (showFavorites) {
                   setShowFavorites(false);
                 } else {
@@ -515,18 +685,72 @@ export function RosterView() {
                 onClick={() => setSelectedPitcher(pitcher)}
                 isFavorite={favorites.includes(pitcher.pitcher_id)}
                 onToggleFavorite={handleToggleFavorite}
+                hasIssue={pitcherIssuesMap.has(
+                  `${pitcher.team_id}:${pitcher.pitcher_id}`,
+                )}
+                issueData={pitcherIssuesMap.get(
+                  `${pitcher.team_id}:${pitcher.pitcher_id}`,
+                )}
+                onIssueToggle={handlePitcherIssueToggle}
               />
             ))}
+          </div>
+        )}
+
+        {/* Bottom back button */}
+        {teamPitchers.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-slate-200">
+            <button
+              onClick={() => {
+                setSelectedTeamId(null);
+                setSearchQuery("");
+                requestAnimationFrame(() => {
+                  window.scrollTo(0, savedScrollY.current);
+                });
+              }}
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-slate-300 rounded-xl transition-colors min-h-[44px]"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              All Teams
+            </button>
           </div>
         )}
 
         <PitcherModal
           pitcher={selectedPitcher}
           onClose={() => setSelectedPitcher(null)}
-          isFavorite={selectedPitcher ? favorites.includes(selectedPitcher.pitcher_id) : false}
+          isFavorite={
+            selectedPitcher
+              ? favorites.includes(selectedPitcher.pitcher_id)
+              : false
+          }
           onToggleFavorite={handleToggleFavorite}
-          hasIssue={selectedPitcher ? pitcherIssuesMap.has(`${selectedPitcher.team_id}:${selectedPitcher.pitcher_id}`) : false}
-          issueData={selectedPitcher ? pitcherIssuesMap.get(`${selectedPitcher.team_id}:${selectedPitcher.pitcher_id}`) : undefined}
+          hasIssue={
+            selectedPitcher
+              ? pitcherIssuesMap.has(
+                  `${selectedPitcher.team_id}:${selectedPitcher.pitcher_id}`,
+                )
+              : false
+          }
+          issueData={
+            selectedPitcher
+              ? pitcherIssuesMap.get(
+                  `${selectedPitcher.team_id}:${selectedPitcher.pitcher_id}`,
+                )
+              : undefined
+          }
           onIssueToggle={handlePitcherIssueToggle}
         />
       </div>
@@ -560,55 +784,90 @@ export function RosterView() {
           favoritesCount={favorites.length}
           onConferenceChange={setConference}
           onHandChange={setHand}
-          onFavoritesToggle={() => setShowFavorites(prev => !prev)}
+          onFavoritesToggle={() => setShowFavorites((prev) => !prev)}
           onClearAll={clearFilters}
           hideHand
         />
 
         {/* Data Quality Buttons */}
-        {(pitcherDataQualityIssues.length > 0 || teamDataQualityIssues.length > 0) && (
+        {(pitcherDataQualityIssues.length > 0 ||
+          teamDataQualityIssues.length > 0) && (
           <>
             <button
               onClick={() => setShowIssuesOnly(!showIssuesOnly)}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 showIssuesOnly
-                  ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/30'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                  ? "bg-orange-600 text-white shadow-lg shadow-orange-500/30"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
               )}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
               </svg>
-              {showIssuesOnly ? 'Show All' : `Show Issues (${pitcherDataQualityIssues.length + teamDataQualityIssues.length})`}
+              {showIssuesOnly
+                ? "Show All"
+                : `Show Issues (${pitcherDataQualityIssues.length + teamDataQualityIssues.length})`}
             </button>
             <button
               onClick={handleCopyIssues}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
-                'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                "bg-blue-600 text-white hover:bg-blue-700 shadow-sm",
               )}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
               </svg>
               Copy Issues
             </button>
             <button
               onClick={() => {
-                const total = pitcherDataQualityIssues.length + teamDataQualityIssues.length;
+                const total =
+                  pitcherDataQualityIssues.length +
+                  teamDataQualityIssues.length;
                 if (confirm(`Clear all ${total} data quality issues?`)) {
                   setPitcherDataQualityIssues([]);
                   setTeamDataQualityIssues([]);
                 }
               }}
               className={cn(
-                'flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
-                'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+                "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+                "bg-red-600 text-white hover:bg-red-700 shadow-sm",
               )}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
               </svg>
               Clear All
             </button>
@@ -617,11 +876,19 @@ export function RosterView() {
       </div>
 
       <div className="flex items-center justify-between mb-6 flex-wrap gap-2">
-        <p className="text-sm text-slate-500">
-          <span className="font-semibold text-slate-700">{filteredTeams.length}</span> teams ·{' '}
-          <span className="font-semibold text-slate-700">{pitchers.length.toLocaleString()}</span> pitchers tracked
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          <span className="font-semibold text-slate-700 dark:text-slate-200">
+            {filteredTeams.length}
+          </span>{" "}
+          teams ·{" "}
+          <span className="font-semibold text-slate-700 dark:text-slate-200">
+            {pitchers.length.toLocaleString()}
+          </span>{" "}
+          pitchers tracked
           {favorites.length > 0 && (
-            <span className="ml-2 text-yellow-600">· ★ {favorites.length} favorited</span>
+            <span className="ml-2 text-yellow-600">
+              · ★ {favorites.length} favorited
+            </span>
           )}
         </p>
         {favorites.length === 0 && (
@@ -630,7 +897,7 @@ export function RosterView() {
             disabled={importing}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 transition-colors disabled:opacity-50"
           >
-            {importing ? 'Importing...' : '↑ Import saved favorites'}
+            {importing ? "Importing..." : "↑ Import saved favorites"}
           </button>
         )}
         {importResult && (
@@ -641,8 +908,18 @@ export function RosterView() {
       {filteredTeams.length === 0 ? (
         <EmptyState
           icon={
-            <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            <svg
+              className="w-16 h-16"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
             </svg>
           }
           title="No teams found"
@@ -653,35 +930,46 @@ export function RosterView() {
           }}
         />
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-          {filteredTeams.map(team => {
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {filteredTeams.map((team) => {
             const count = (pitchersByTeam[team.team_id] || []).length;
-            const favCount = (pitchersByTeam[team.team_id] || []).filter(p => favorites.includes(p.pitcher_id)).length;
+            const favCount = (pitchersByTeam[team.team_id] || []).filter((p) =>
+              favorites.includes(p.pitcher_id),
+            ).length;
             const logoSrc = team.logo || getEspnLogoUrl(team.team_id);
             return (
               <button
                 key={team.team_id}
-                onClick={() => setSelectedTeamId(team.team_id)}
-                className="flex flex-col items-center gap-2 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
+                onClick={() => {
+                  savedScrollY.current = window.scrollY;
+                  setSelectedTeamId(team.team_id);
+                }}
+                className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-lg hover:bg-slate-800 hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
               >
-                <div className="w-14 h-14 flex items-center justify-center">
+                <div className="w-20 h-20 flex items-center justify-center">
                   <Image
                     src={logoSrc}
                     alt={team.display_name}
-                    width={56}
-                    height={56}
+                    width={80}
+                    height={80}
                     className="object-contain"
                     unoptimized
-                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = "none";
+                    }}
                   />
                 </div>
                 <div className="min-w-0 w-full">
-                  <p className="text-xs font-semibold text-slate-700 leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors">
+                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight line-clamp-2 group-hover:text-white group-hover:text-base transition-all duration-200">
                     {team.display_name}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{count} pitchers</p>
+                  <p className="text-xs text-slate-500 group-hover:text-slate-300 mt-1">
+                    {count} pitchers
+                  </p>
                   {favCount > 0 && (
-                    <p className="text-[10px] text-yellow-600 mt-0.5">★ {favCount} fav</p>
+                    <p className="text-xs text-yellow-600 group-hover:text-yellow-400 mt-0.5">
+                      ★ {favCount} fav
+                    </p>
                   )}
                 </div>
               </button>
@@ -709,12 +997,12 @@ function TeamIssueButton({
     teamId: string,
     teamName: string,
     selectedIssues: string[],
-    customNote?: string
+    customNote?: string,
   ) => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
-  const [customNote, setCustomNote] = useState('');
+  const [customNote, setCustomNote] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -727,31 +1015,31 @@ function TeamIssueButton({
   useEffect(() => {
     if (showMenu) {
       setSelectedIssues(issueData?.issues || []);
-      setCustomNote(issueData?.customNote || '');
-      setShowCustomInput((issueData?.issues || []).includes('Misc.'));
+      setCustomNote(issueData?.customNote || "");
+      setShowCustomInput((issueData?.issues || []).includes("Misc."));
     }
   }, [showMenu, issueData]);
 
   const issueOptions = [
-    'Missing team logo',
-    'Incomplete roster',
-    'Wrong conference',
-    'Missing pitcher data',
-    'Incorrect team name',
-    'Team missing some players in roster scrape',
-    'Try Rescraping for All Data',
-    'Try Rescraping for Headshot Data',
-    'Misc.',
+    "Missing team logo",
+    "Incomplete roster",
+    "Wrong conference",
+    "Missing pitcher data",
+    "Incorrect team name",
+    "Team missing some players in roster scrape",
+    "Try Rescraping for All Data",
+    "Try Rescraping for Headshot Data",
+    "Misc.",
   ];
 
   const handleIssueSelect = (issue: string) => {
-    if (issue === 'Misc.') {
+    if (issue === "Misc.") {
       setShowCustomInput(!showCustomInput);
     }
 
-    setSelectedIssues(prev => {
+    setSelectedIssues((prev) => {
       if (prev.includes(issue)) {
-        return prev.filter(i => i !== issue);
+        return prev.filter((i) => i !== issue);
       } else {
         return [...prev, issue];
       }
@@ -765,9 +1053,9 @@ function TeamIssueButton({
 
   const handleClear = () => {
     setSelectedIssues([]);
-    setCustomNote('');
+    setCustomNote("");
     setShowCustomInput(false);
-    onIssueToggle(teamId, teamName, [], '');
+    onIssueToggle(teamId, teamName, [], "");
     setShowMenu(false);
   };
 
@@ -780,15 +1068,20 @@ function TeamIssueButton({
           setShowMenu(!showMenu);
         }}
         className={cn(
-          'p-2 rounded-lg transition-all',
+          "p-2 rounded-lg transition-all",
           hasIssue
-            ? 'bg-orange-500 text-white hover:bg-orange-600'
-            : 'bg-slate-200 text-slate-600 hover:bg-slate-300'
+            ? "bg-orange-500 text-white hover:bg-orange-600"
+            : "bg-slate-200 text-slate-600 hover:bg-slate-300",
         )}
         aria-label="Report team data quality issue"
         type="button"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -798,87 +1091,101 @@ function TeamIssueButton({
         </svg>
       </button>
 
-      {showMenu && mounted && createPortal(
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
-          onClick={() => setShowMenu(false)}
-        >
+      {showMenu &&
+        mounted &&
+        createPortal(
           <div
-            className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+            onClick={() => setShowMenu(false)}
           >
-            <div className="p-6 border-b border-slate-200 flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-900">Team Data Quality Issues</h3>
+            <div
+              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <div className="p-6 border-b border-slate-200 flex-shrink-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Team Data Quality Issues
+                  </h3>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setShowMenu(false);
+                    }}
+                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                    aria-label="Close modal"
+                    type="button"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-sm text-slate-600 mt-2">{teamName}</p>
+              </div>
+
+              <div className="p-6 overflow-y-auto flex-1">
+                <div className="space-y-3">
+                  {issueOptions.map((option) => (
+                    <label
+                      key={option}
+                      className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedIssues.includes(option)}
+                        onChange={() => handleIssueSelect(option)}
+                        className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
+                      />
+                      <span className="text-base text-slate-700">{option}</span>
+                    </label>
+                  ))}
+
+                  {showCustomInput && (
+                    <textarea
+                      value={customNote}
+                      onChange={(e) => setCustomNote(e.target.value)}
+                      placeholder="Describe the issue..."
+                      className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows={4}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-slate-200 flex gap-3">
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowMenu(false);
-                  }}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
-                  aria-label="Close modal"
-                  type="button"
+                  onClick={handleClear}
+                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  Clear
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                >
+                  Save
                 </button>
               </div>
-              <p className="text-sm text-slate-600 mt-2">{teamName}</p>
             </div>
-
-            <div className="p-6 overflow-y-auto flex-1">
-              <div className="space-y-3">
-                {issueOptions.map(option => (
-                  <label
-                    key={option}
-                    className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedIssues.includes(option)}
-                      onChange={() => handleIssueSelect(option)}
-                      className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
-                    />
-                    <span className="text-base text-slate-700">{option}</span>
-                  </label>
-                ))}
-
-                {showCustomInput && (
-                  <textarea
-                    value={customNote}
-                    onChange={(e) => setCustomNote(e.target.value)}
-                    placeholder="Describe the issue..."
-                    className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={4}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-slate-200 flex gap-3">
-              <button
-                onClick={handleClear}
-                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
-              >
-                Clear
-              </button>
-              <button
-                onClick={handleSave}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

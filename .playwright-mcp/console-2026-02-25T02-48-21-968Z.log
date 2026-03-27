@@ -1,0 +1,16 @@
+[     150ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.espn.com/college-baseball/team/roster/_/id/68:0
+[     906ms] [WARNING] [GPT] Invalid arguments: SizeMappingBuilder.addSize([0, 0], [[0, 0]]). All zero-area slot sizes were removed.
+https://goo.gle/gpt-message#151 @ https://securepubads.g.doubleclick.net/pagead/managed/js/gpt/m202602180101/pubads_impl.js?cb=31096859:18
+[    1262ms] [WARNING] Google Deploy of the SharedId library has been deprecated. Please select another option in the GAM UI. If you use Prebid, we suggest the Prebid.js UserId option. If you do not, you may configure GAM to allow Google to share a first party user identifier with OB and AB participants, which is either the publisherProvidedId or the __gads value when that is missing. @ https://cdn.jsdelivr.net/gh/prebid/shared-id/pubcid.js/docs/pubcid.min.js:0
+[    1299ms] [WARNING] [GPT] Using deprecated googletag.encryptedSignalProviders. Please use googletag.secureSignalProviders instead.
+https://goo.gle/gpt-message#155 @ https://securepubads.g.doubleclick.net/pagead/managed/js/gpt/m202602180101/pubads_impl.js?cb=31096859:18
+[    1336ms] [WARNING] [GPT] Using deprecated googletag.encryptedSignalProviders. Please use googletag.secureSignalProviders instead.
+https://goo.gle/gpt-message#155 @ https://securepubads.g.doubleclick.net/pagead/managed/js/gpt/m202602180101/pubads_impl.js?cb=31096859:18
+[    1484ms] [ERROR] Failed to load resource: the server responded with a status of 400 () @ https://ups.analytics.yahoo.com/ups/58813/fed?gpp=DBABLA~BVQqAAAAAAJY.QA&gpp_sid=7&us_privacy=1YNY&v=1&url=https%3A%2F%2Fwww.espn.com%2Fcollege-baseball%2Fteam%2Froster%2F_%2Fid%2F68:0
+[    1544ms] [WARNING] [GPT] Using deprecated googletag.encryptedSignalProviders. Please use googletag.secureSignalProviders instead.
+https://goo.gle/gpt-message#155 @ https://securepubads.g.doubleclick.net/pagead/managed/js/gpt/m202602180101/pubads_impl.js?cb=31096859:18
+[    3055ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[    5028ms] [ERROR] [OneID] [%s]:  ERROR Session not established @ https://cdn.registerdisney.go.com/v4/OneID.js:1
+[    5028ms] [ERROR] [OneID] [%s]:  ERROR Session not established @ https://cdn.registerdisney.go.com/v4/OneID.js:1
+[    6166ms] [WARNING] [OneID] [%s]:  WARN `DisneyID` global object is soon to be deprecated. Use `OneID` instead. @ https://cdn.registerdisney.go.com/v4/OneID.js:1
+[    8212ms] [WARNING] The resource https://cdn.registerdisney.go.com/v4/asset/bundler/ESPN/v4/images/v2/espn-red-logo.svg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://cdn.registerdisney.go.com/v4/bundle/web/ESPN-ONESITE.WEB/en-US?cssOverride=https%3A%2F%2Fsecure.espncdn.com%2Fcombiner%2Fc%3Fcss%3Ddisneyid%2Fcorev4.css&logLevel=INFO:0

@@ -1,0 +1,1792 @@
+[dotenv@17.3.1] injecting env (2) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🔍 Starting Bio Data Scraping
+
+================================================================================
+
+Found 1000 pitchers missing bio data
+
+Grouped into 62 teams
+
+================================================================================
+
+================================================================================
+🎯 Scraping: Kentucky (38 missing bio data)
+================================================================================
+
+  Visiting: https://ukathletics.com/sports/baseball/roster
+
+Found 40 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Jack Sams: Updated height, year, hometown
+  ✅ Jackson Soucie: Updated height, year, hometown
+  ✅ Leighton Harris: Updated year
+  ✅ Burkley Bounds: Updated height, year, hometown
+  ⏭️  Chase Alderman: No new bio data to add
+  ✅ Nate Harris: Updated year
+  ✅ Lucas Hail: Updated height, year, hometown
+  ✅ Bryson Treichel: Updated height, year, hometown
+  ✅ Oliver Boone: Updated height, hometown
+  ✅ Ben Cleaver: Updated year
+  ✅ Ryan Mullan: Updated height, year, hometown
+  ✅ Will Coleman: Updated height, year, hometown
+  ⏭️  Tommy Skelding: No new bio data to add
+  ⏭️  Evan - P Byers: No match found
+  ⏭️  Nic - P McCay: No match found
+  ⏭️  James McCoy: No match found
+  ⏭️  Cole Hentschel: No match found
+  ✅ Ben - P Cleaver: Updated height, year, hometown
+  ✅ Tommy Skelding: Updated height, hometown
+  ✅ Leighton - P Harris: Updated height, year, hometown
+  ✅ Tommy - P Skelding: Updated height, hometown
+  ✅ Nate Harris: Updated height, year, hometown
+  ✅ Tristan Hunter: Updated height, year, hometown
+  ✅ Nate - P Harris: Updated height, year, hometown
+  ✅ Jackson Soucie: Updated height, year, hometown
+  ⏭️  Scott - P Rouse: No match found
+  ⏭️  Scott Rouse: No match found
+  ⏭️  Hayden Smith: No match found
+  ✅ Ben Cleaver: Updated height, year, hometown
+  ⏭️  Zak Spurrier: No match found
+  ⏭️  Hayden - P Smith: No match found
+  ⏭️  Ethan - P Walker: No match found
+  ⏭️  Jackson - P Nove: No match found
+  ⏭️  Nic McCay: No match found
+  ⏭️  Simon - P Gregersen: No match found
+  ✅ Chase Alderman: Updated height, hometown
+  ✅ Nile Adcock: Updated height, year, hometown
+  ⏭️  Evan Byers: No match found
+
+📊 Kentucky Summary: 22 updated, 16 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Arkansas (38 missing bio data)
+================================================================================
+
+  Visiting: https://arkansasrazorbacks.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Arkansas Summary: 0 updated, 38 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Auburn (37 missing bio data)
+================================================================================
+
+  Visiting: https://auburntigers.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Auburn Summary: 0 updated, 37 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Kansas State (36 missing bio data)
+================================================================================
+
+  Visiting: https://kstatesports.com/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Jonah Reich: Updated height, weight, year, hometown, bats_throws
+  ✅ Austin Haley: Updated height, weight, year, hometown, bats_throws
+  ✅ Noah Gartner: Updated height, weight, year, hometown, bats_throws
+  ✅ Robert Fortenberry: Updated height, weight, year, hometown, bats_throws
+  ✅ Max Bettis: Updated height, weight, year, hometown, bats_throws
+  ✅ Cooper Jesperson: Updated height, weight, year, hometown, bats_throws
+  ✅ Tanner Duke: Updated year
+  ✅ Aaron Arnold: Updated height, weight, year, hometown, bats_throws
+  ✅ Cole Wisenbaker: Updated height, weight, year, hometown, bats_throws
+  ✅ Lincoln Sheffield: Updated year
+  ✅ James Guyette: Updated year
+  ✅ Sam Bettis: Updated height, weight, year, hometown, bats_throws
+  ✅ Billy Eich: Updated height, weight, year, hometown, bats_throws
+  ✅ Miles Smith: Updated height, weight, year, hometown, bats_throws
+  ✅ Adan Longoria: Updated height, weight, year, hometown, bats_throws
+  ✅ Ethan Giesbrecht: Updated height, weight, year, hometown, bats_throws
+  ✅ Tazwell Butler: Updated year
+  ✅ Adam Arther: Updated year
+  ⏭️  Jacob Frost: No match found
+  ⏭️  Blake - P Dean: No match found
+  ✅ Adam - P Arther: Updated height, weight, year, hometown, bats_throws
+  ✅ Tanner - P Duke: Updated height, weight, year, hometown, bats_throws
+  ✅ Lincoln - P Sheffield: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Michael Quevedo: No match found
+  ✅ James - P Guyette: Updated height, weight, year, hometown, bats_throws
+  ✅ Tanner Duke: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Ty - P Ruhl: No match found
+  ✅ Matt Flores: Updated height, weight, year, hometown, bats_throws
+  ✅ Cohen Feser: Updated height, weight, year, hometown, bats_throws
+  ✅ Carson Liggett: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Ty Ruhl: No match found
+  ✅ Donte - P Lewis: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jacob - P Frost: No match found
+  ⏭️  JJ - P Slack: No match found
+  ✅ Tazwell Butler: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Michael - P Quevedo: No match found
+
+📊 Kansas State Summary: 28 updated, 8 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Oregon (34 missing bio data)
+================================================================================
+
+  Visiting: https://goducks.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Oregon Summary: 0 updated, 34 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Arizona State (34 missing bio data)
+================================================================================
+
+  Visiting: https://thesundevils.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Arizona State Summary: 0 updated, 34 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Nebraska (30 missing bio data)
+================================================================================
+
+  Visiting: https://huskers.com/sports/baseball/roster
+
+Found 41 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Cooper Grace: Updated height, weight, year, hometown, bats_throws
+  ✅ Blake Sebastian: Updated height, weight, year, hometown, bats_throws
+  ✅ Colin Nowaczyk: Updated height, weight, year, hometown, bats_throws
+  ✅ Jalen Worthley: Updated year
+  ✅ Gavin Blachowicz: Updated year
+  ⏭️  TJ - P Coats: No match found
+  ✅ Pryce Bender: Updated year
+  ✅ Pryce - P Bender: Updated height, weight, year, hometown, bats_throws
+  ✅ Ty Horn: Updated year
+  ✅ Tucker - P Timmerman: Updated height, weight, year, hometown, bats_throws
+  ✅ Jalen - P Worthley: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Drew Christo: No match found
+  ⏭️  Luke Broderick: No match found
+  ⏭️  Jackson - P Brockett: No match found
+  ✅ Grant - P Cleavinger: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Drew - P Christo: No match found
+  ✅ Jace Ziola: Updated height, weight, year, hometown, bats_throws
+  ✅ Carter Kutz: Updated height, weight, year, hometown, bats_throws
+  ✅ Ryan Harrahill: Updated height, weight, year, hometown, bats_throws
+  ✅ J'Shawn Unger: Updated height, weight, year, hometown, bats_throws
+  ✅ Lynden Bruegman: Updated height, weight, year, hometown, bats_throws
+  ✅ Carson Jasa: Updated height, weight, year, hometown, bats_throws
+  ✅ Chase Olson: Updated height, weight, year, hometown, bats_throws
+  ✅ Grant Cleavinger: Updated year
+  ⏭️  Will - P Walsh: No match found
+  ⏭️  Casey - P Daiss: No match found
+  ⏭️  Luke - P Broderick: No match found
+  ✅ Gavin - P Blachowicz: Updated height, weight, year, hometown, bats_throws
+  ✅ Tucker Timmerman: Updated height, weight, year, hometown, bats_throws
+  ✅ Caleb - P Clark: Updated height, weight, year, hometown, bats_throws
+
+📊 Nebraska Summary: 22 updated, 8 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Ole Miss (30 missing bio data)
+================================================================================
+
+  Visiting: https://olemisssports.com/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Leo Odom: Updated hometown, bats_throws
+  ✅ Wil Libbert: Updated height, weight, hometown, bats_throws
+  ✅ Owen Kelly: Updated height, weight, hometown, bats_throws
+  ⏭️  Mason Nichols: No match found
+  ✅ Grayson Gibson: Updated height, weight, year, hometown, bats_throws
+  ✅ Terry Hayes Jr.: Updated height, weight, year, hometown, bats_throws
+  ✅ Hudson - P Calhoun: Updated height, weight, year, hometown, bats_throws
+  ✅ Hunter - P Elliott: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Mason Morris: No match found
+  ⏭️  Will - P McCausland: No match found
+  ✅ Wil Libbert: Updated height, weight, year, hometown, bats_throws
+  ✅ Walker - P Hooks: Updated height, weight, year, hometown, bats_throws
+  ✅ Landon Koenig: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Alex - P Canney: No match found
+  ✅ Taylor - P Rabe: Updated height, weight, year, hometown, bats_throws
+  ✅ Noah Allen: Updated height, weight, year, hometown, bats_throws
+  ✅ Landon - P Waters: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Connor - P Spencer: No match found
+  ✅ Cade - P Townsend: Updated height, weight, year, hometown, bats_throws
+  ✅ Walker Hooks: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Gunnar - P Dennis: No match found
+  ⏭️  Mason - P Morris: No match found
+  ⏭️  Patrick Galle: No match found
+  ✅ Patrick Collopy: Updated height, weight, year, hometown, bats_throws
+  ✅ Hunter Elliott: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Riley - P Maddox: No match found
+  ⏭️  Ryne - P Rodriguez: No match found
+  ✅ Owen Kelly: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Will McCausland: No match found
+  ⏭️  Connor Spencer: No match found
+
+📊 Ole Miss Summary: 18 updated, 12 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Duke (29 missing bio data)
+================================================================================
+
+  Visiting: https://goduke.com/sports/baseball/roster
+
+Found 44 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Marcello Mastroianni: No new bio data to add
+  ⏭️  Jack Hedrick: No new bio data to add
+  ⏭️  Aidan Weaver: No new bio data to add
+  ⏭️  Edward Hart: No new bio data to add
+  ⏭️  Will Oschell: No new bio data to add
+  ⏭️  Jordan Regulski: No new bio data to add
+  ⏭️  Matt Nochowitz: No match found
+  ⏭️  Mark - P Hindy: No match found
+  ⏭️  Peter Lemke: No new bio data to add
+  ⏭️  David Boisvert: No new bio data to add
+  ⏭️  Bennett LaPalm: No new bio data to add
+  ⏭️  Aiden O'Connell: No new bio data to add
+  ⏭️  Andy Leon: No new bio data to add
+  ⏭️  Roman DiGiacomo: No new bio data to add
+  ⏭️  Sammy Petrocelli: No new bio data to add
+  ⏭️  Jack Feehery: No new bio data to add
+  ⏭️  Nate Brittain: No new bio data to add
+  ⏭️  Ben Dean: No new bio data to add
+  ⏭️  Drew Bryan: No new bio data to add
+  ⏭️  Bryce Brannon: No new bio data to add
+  ⏭️  Grayson Walker: No new bio data to add
+  ⏭️  Eamon McDermott: No new bio data to add
+  ⏭️  Caleb Anderson: No new bio data to add
+  ⏭️  Reid - P Easterly: No match found
+  ⏭️  Henry - P Zatkowski: No match found
+  ⏭️  Kyle - P Johnson: No match found
+  ⏭️  Gavin - P Brown: No match found
+  ⏭️  Owen - P Proksch: No match found
+  ⏭️  Ryan - P Calvert: No match found
+
+📊 Duke Summary: 0 updated, 29 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Florida (28 missing bio data)
+================================================================================
+
+  Visiting: https://floridagators.com/sports/baseball/roster
+
+Found 41 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Felix Ong: No match found
+  ⏭️  Schuyler Sandford: No new bio data to add
+  ✅ Luke - P McNeillie: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Caden McDonald: No new bio data to add
+  ✅ Billy - P Barlow: Updated height, weight, hometown, bats_throws
+  ✅ Joshua Whritenour: Updated height, weight, hometown, bats_throws
+  ✅ Jackson Hoyt: Updated height, weight, year, hometown, bats_throws
+  ✅ Matthew- P Jenkins: Updated height, weight, year, hometown, bats_throws
+  ✅ Christian - P Rodriguez: Updated height, weight, hometown, bats_throws
+  ✅ Caden - P McDonald: Updated height, weight, hometown, bats_throws
+  ✅ Christian Rodriguez: Updated height, weight, hometown, bats_throws
+  ⏭️  Pierce Coppola: No match found
+  ✅ Liam Peterson: Updated height, weight, year, hometown, bats_throws
+  ✅ Liam - P Peterson: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Alex - P Philpott: No match found
+  ⏭️  Jake - P Clemente: No match found
+  ✅ Ricky Reeth: Updated height, weight, hometown, bats_throws
+  ✅ Caden McDonald: Updated height, weight, hometown, bats_throws
+  ✅ Cooper Walls: Updated height, weight, year, hometown, bats_throws
+  ✅ Schuyler Sandford: Updated height, weight, hometown, bats_throws
+  ✅ Ernesto Lugocanchola: Updated height, weight, hometown, bats_throws
+  ⏭️  Pierce - P Coppola: No match found
+  ✅ Blaine - P Rowland: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jake Clemente: No match found
+  ✅ Luke McNeillie: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Carson - P Montsdeoca: No match found
+  ⏭️  Felix - P Ong: No match found
+  ✅ Jackson - P Barberi: Updated height, weight, year, hometown, bats_throws
+
+📊 Florida Summary: 18 updated, 10 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Georgia Tech Yellow Jackets (28 missing bio data)
+================================================================================
+
+  Visiting: https://ramblinwreck.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Georgia Tech Yellow Jackets Summary: 0 updated, 28 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Stanford Cardinal (26 missing bio data)
+================================================================================
+
+  Visiting: https://gostanford.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Stanford Cardinal Summary: 0 updated, 26 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Penn State Nittany Lions (26 missing bio data)
+================================================================================
+
+  Visiting: https://gopsusports.com/sports/baseball/roster
+
+Found 39 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Ben DeMell: Updated hometown
+  ✅ Logan Olson: Updated hometown
+  ✅ Frankie Sanchez: Updated hometown
+  ✅ Ethan Bauerschmidt: Updated hometown
+  ✅ Ren Devereux: Updated hometown
+  ✅ Robert Brown III: Updated hometown
+  ✅ Matt Morash: Updated hometown
+  ✅ Mason Horwat: Updated hometown
+  ✅ Carson Renner: Updated hometown
+  ✅ Leo Boucher: Updated hometown
+  ✅ Braden Leed: Updated hometown
+  ✅ Peter Thompson: Updated hometown
+  ✅ Colin Fitzgerald: Updated hometown
+  ✅ Dylan Firmstone: Updated hometown
+  ✅ Isaiah Shayter: Updated hometown
+  ✅ Greg Minnick: Updated hometown
+  ✅ Harrison Lollin: Updated hometown
+  ✅ Matthew VanOstenbridge: Updated hometown
+  ✅ Kyle Emmons: Updated hometown
+  ✅ Dimond Loosli: Updated height, weight, hometown, bats_throws
+  ✅ Mason Butash: Updated hometown
+  ✅ Skip Shenosky: Updated hometown
+  ✅ Ben Hudson: Updated hometown
+  ⏭️  Anthony Steele: No match found
+  ⏭️  Matt Vanostenbridge: No match found
+  ✅ Dimond Loosli: Updated height, weight, year, hometown, bats_throws
+
+📊 Penn State Nittany Lions Summary: 24 updated, 2 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: TCU (26 missing bio data)
+================================================================================
+
+  Visiting: https://gofrogs.com/sports/baseball/roster
+
+Found 34 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Mason Brassfield: Updated year
+  ✅ Tanner Sagouspe: Updated height, weight, year, hometown
+  ✅ Nolan Johnson: Updated height, weight, year, hometown
+  ✅ Aiden Barrientes: Updated height, weight, year, hometown
+  ✅ Kade Durnin: Updated height, weight, year, hometown, bats_throws
+  ✅ Cade Nelson: Updated height, weight, year, hometown
+  ✅ Ethan Thomas: Updated height, weight, year, hometown
+  ✅ Uli Fernsler: Updated height, weight, year, hometown
+  ✅ Lance Davis: Updated height, weight, year, hometown
+  ✅ Tommy LaPour: Updated year
+  ✅ Nate Stern: Updated height, weight, year, hometown, bats_throws
+  ✅ Walter Quinn: Updated height, weight, year, hometown
+  ✅ Louis Rodriguez: Updated year
+  ⏭️  Caedmon - P Parker: No match found
+  ✅ Noah Franco: Updated height, weight, year, hometown, bats_throws
+  ✅ Kade - P Eudy: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Braeden Sloan: No match found
+  ✅ Cole Eaton: Updated height, weight, year, hometown, bats_throws
+  ✅ Tyler Phenow: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Austin Davis: No match found
+  ⏭️  Kole Klecker: No match found
+  ⏭️  Mason - P Bixby: No match found
+  ⏭️  Gianluca Shinn: No match found
+  ✅ Trever Baumler: Updated height, weight, year, hometown, bats_throws
+  ✅ Tanner Sagouspe: Updated height, weight, year, hometown
+  ⏭️  Braeden - P Sloan: No match found
+
+📊 TCU Summary: 19 updated, 7 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Oklahoma State (24 missing bio data)
+================================================================================
+
+  Visiting: https://okstate.com/sports/baseball/roster
+
+Found 42 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Noah Wech: Updated year
+  ✅ Drew Blake: Updated year
+  ✅ Brennan Phillips: Updated year
+  ✅ Matthew Brown: Updated year
+  ✅ Lucas Glendinning: Updated height, weight, year, hometown
+  ✅ Josiah Golden: Updated height, weight, year, hometown
+  ✅ Jake Kennedy: Updated height, weight, year, hometown
+  ✅ Hudson Barrett: Updated height, weight, year, hometown
+  ✅ Kyler Zagar: Updated height, weight, year, hometown
+  ✅ Gaige Albright: Updated height, weight, year, hometown
+  ✅ Caden Sramek: Updated height, weight, year, hometown
+  ✅ Parker Jennings: Updated height, weight, year, hometown
+  ✅ Zane Burns: Updated height, weight, year, hometown
+  ✅ Drew Winslow: Updated height, weight, year
+  ✅ Kyle Pearcy: Updated height, weight, year, hometown
+  ✅ Cael Turner: Updated height, weight, year, hometown
+  ✅ Mario Pesca: Updated year
+  ✅ Hunter Watkins: Updated year
+  ⏭️  Sean Youngerman: No match found
+  ⏭️  G. Davis: No match found
+  ✅ Ethan Lund: Updated year
+  ⏭️  Harrison Bodendorf: No match found
+  ⏭️  Gabe - P Davis: No match found
+  ⏭️  Ryan Ure: No match found
+
+📊 Oklahoma State Summary: 19 updated, 5 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Cincinnati Bearcats (24 missing bio data)
+================================================================================
+
+  Visiting: https://gobearcats.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Cincinnati Bearcats Summary: 0 updated, 24 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Mississippi State (23 missing bio data)
+================================================================================
+
+  Visiting: https://hailstate.com/sports/baseball/roster
+
+Found 41 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Luke Dotson: No match found
+  ⏭️  Pico Kohn: No match found
+  ✅ William Kirk: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Noah Sullivan: No new bio data to add
+  ✅ Braden Booth: Updated height, weight, year, hometown, bats_throws
+  ✅ Parker Rhodes: Updated height, weight, year, hometown, bats_throws
+  ✅ Jack Bauer: Updated height, weight, year, hometown, bats_throws
+  ✅ Maddox Miller: Updated height, weight, year, hometown, bats_throws
+  ✅ Chris Billingsley Jr.: Updated height, weight, year, hometown, bats_throws
+  ✅ Ryan McPherson: Updated year
+  ✅ Jack Gleason: Updated year
+  ✅ Duke Stone: Updated year
+  ⏭️  Kevin Mannell: No match found
+  ⏭️  Jacob Pruitt: No match found
+  ✅ Dane Burns: Updated year
+  ⏭️  Basiel Williams: No match found
+  ⏭️  Robert Fortenberry: No match found
+  ⏭️  Jacob Billingsley: No match found
+  ⏭️  Stone Simmons: No match found
+  ⏭️  Karson Ligon: No match found
+  ⏭️  Nate - P Williams: No match found
+  ⏭️  Tyler Davis: No match found
+  ⏭️  Max Miller: No match found
+
+📊 Mississippi State Summary: 10 updated, 13 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Louisville (23 missing bio data)
+================================================================================
+
+  Visiting: https://gocards.com/sports/baseball/roster
+
+Found 43 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Jared Lessman: No match found
+  ✅ Casen Murphy: Updated height, weight, year, hometown, bats_throws
+  ✅ TJ Schlageter: Updated year
+  ⏭️  Alex Gay: No match found
+  ⏭️  Jared Lessman: No match found
+  ⏭️  Tucker Biven: No match found
+  ⏭️  Patrick Forbes: No match found
+  ✅ Ethan Eberle: Updated height, weight, year, hometown, bats_throws
+  ✅ Peter Michael: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Patrick Forbes: No match found
+  ⏭️  Brennyn - P Cutts: No match found
+  ✅ Wyatt - P Danilowicz: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Justin - P West: No match found
+  ✅ Jake - P Schweitzer: Updated height, weight, year, hometown, bats_throws
+  ✅ Ty Starke: Updated height, weight, year, hometown, bats_throws
+  ✅ Jake Gregor: Updated height, weight, year, hometown, bats_throws
+  ✅ TJ Schlageter: Updated height, weight, year, hometown, bats_throws
+  ✅ Colton Hartman: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Tucker - P Biven: No match found
+  ✅ Tague Davis: Updated height, weight, year, hometown, bats_throws
+  ✅ Jake Schweitzer: Updated height, weight, year, hometown, bats_throws
+  ✅ Jack Brown: Updated height, weight, year, hometown, bats_throws
+  ✅ Jake Bean: Updated height, weight, year, hometown, bats_throws
+
+📊 Louisville Summary: 14 updated, 9 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Georgia (23 missing bio data)
+================================================================================
+
+  Visiting: https://georgiadogs.com/sports/baseball/roster
+
+Found 41 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Zach - P Harris: No match found
+  ⏭️  Zach Harris: No match found
+  ⏭️  Nate - P Taylor: No match found
+  ⏭️  Alton Davis II: No match found
+  ✅ Zach - P Brown: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Kolten Smith: No match found
+  ⏭️  Davis Chastain: No match found
+  ⏭️  Alton - P Davis II: No match found
+  ⏭️  Eric Hammond: No match found
+  ⏭️  Leighton - P Finley: No match found
+  ⏭️  Brian Zeldin: No match found
+  ⏭️  Brian - P Zeldin: No match found
+  ✅ Jordan - P Stephens: Updated height, weight, year, hometown, bats_throws
+  ✅ Justin Byrd: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Kolten - P Smith: No match found
+  ⏭️  DJ Radtke: No match found
+  ✅ Paul Farley: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Brian Curley: No match found
+  ⏭️  JT - P Quinn: No match found
+  ⏭️  JT Quinn: No match found
+  ⏭️  Brian - P Curley: No match found
+  ⏭️  Matthew - P Hoskins: No match found
+  ⏭️  Tyler - P McLoughlin: No match found
+
+📊 Georgia Summary: 4 updated, 19 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Florida State (22 missing bio data)
+================================================================================
+
+  Visiting: https://seminoles.com/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Chris - P Knier: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Peyton - P Prescott: No match found
+  ✅ Ben Barrett: Updated height, weight, year, hometown, bats_throws
+  ✅ Jacob Marlowe: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jamie Arnold: No match found
+  ⏭️  Joe Charles: No match found
+  ⏭️  Joey Volini: No match found
+  ⏭️  Maison - P Martinez: No match found
+  ✅ John Abraham: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Peyton Prescott: No match found
+  ✅ Jake Echols: Updated height, weight, year, hometown, bats_throws
+  ✅ Chris Knier: Updated year
+  ✅ Bryson Moore: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Hudson Rowan: No match found
+  ✅ Wes Mendes: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Joe - P Charles: No match found
+  ✅ Cooper Whited: Updated height, weight, year, hometown, bats_throws
+  ✅ Wes - P Mendes: Updated height, weight, year, hometown, bats_throws
+  ✅ Cade O'Leary: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Joey - P Volini: No match found
+  ✅ John - P Abraham: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Connor Hults: No match found
+
+📊 Florida State Summary: 12 updated, 10 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: USC (21 missing bio data)
+================================================================================
+
+  Visiting: https://usctrojans.com/sports/baseball/roster
+
+Found 40 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Andrew - P Johnson: Updated height, weight, year, hometown
+  ✅ Mason - P Edwards: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Ethan Hedges: No match found
+  ✅ Grant Govel: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Tee Southisene: No match found
+  ⏭️  Caden - P Hunter: No match found
+  ⏭️  Jackson - P Baker: No match found
+  ✅ Chase Herrell: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jude - P Favela: No match found
+  ✅ Andrew Johnson: Updated height, weight, year, hometown
+  ✅ Grant - P Govel: Updated height, weight, year, hometown, bats_throws
+  ✅ Sax - P Matson: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jude Favela: No match found
+  ⏭️  Caden - P Aoki: No match found
+  ✅ Mason Edwards: Updated height, weight, year, hometown, bats_throws
+  ✅ Diego Velazquez: Updated height, weight, year, hometown, bats_throws
+  ✅ Sax Matson: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Tee - P Southisene: No match found
+  ✅ Rohan Kasanagottu: Updated height, weight, year, hometown, bats_throws
+  ✅ Ben Cushnie: Updated height, weight, year, hometown, bats_throws
+  ✅ Ben - P Cushnie: Updated height, weight, year, hometown, bats_throws
+
+📊 USC Summary: 13 updated, 8 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: NC State (21 missing bio data)
+================================================================================
+
+  Visiting: https://gopack.com/sports/baseball/roster
+
+Found 35 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Anderson Nance: Updated height, weight, year, bats_throws
+  ⏭️  Derrick Smith: No match found
+  ✅ Jacob - P Dudan: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Andrew - P Shaffner: No match found
+  ✅ Ryan - P Marohn: Updated height, weight, year, hometown, bats_throws
+  ✅ Tristan - P Potts: Updated height, weight, year, bats_throws
+  ✅ Heath - P Andrews: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Shane - P Van Dam: No match found
+  ⏭️  Shane Van Dam: No match found
+  ⏭️  Camden Wimbish: No match found
+  ⏭️  Derrick - P Smith: No match found
+  ⏭️  Dominic - P Fritton: No match found
+  ⏭️  Camden - P Wimbish: No match found
+  ✅ Cooper - P Consiglio: Updated height, weight, year, hometown, bats_throws
+  ✅ Cooper Consiglio: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Dominic Fritton: No match found
+  ⏭️  Carson - P Kelly: No match found
+  ⏭️  Andrew Shaffner: No match found
+  ✅ Ryan Marohn: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Carson Kelly: No match found
+  ✅ Heath Andrews: Updated height, weight, year, hometown, bats_throws
+
+📊 NC State Summary: 9 updated, 12 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Tennessee (21 missing bio data)
+================================================================================
+
+  Visiting: https://utsports.com/sports/baseball/roster
+
+Found 39 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Brayden - P Krenzel: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Austin Breedlove: No match found
+  ✅ Brandon - P Arvidson: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Marcus Phillips: No match found
+  ⏭️  Michael - P Sharman: No match found
+  ⏭️  AJ Russell: No match found
+  ⏭️  Dylan - P Loy: No match found
+  ⏭️  Thomas Crabtree: No match found
+  ⏭️  Andrew - P Behnke: No match found
+  ✅ Landon Mack: Updated height, weight, year, hometown
+  ✅ Bo Rhudy: Updated height, weight, year, hometown, bats_throws
+  ✅ Mark Hindy: Updated height, weight, hometown, bats_throws
+  ⏭️  Anson Seibert: No match found
+  ✅ Brandon Arvidson: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Liam Doyle: No match found
+  ⏭️  Nate - P Snead: No match found
+  ⏭️  AJ Russell: No match found
+  ⏭️  Marcus Phillips: No match found
+  ⏭️  Austin - P Breedlove: No match found
+  ⏭️  Tanner Franklin: No match found
+  ✅ Tegan Kuhns: Updated height, weight, year, hometown
+
+📊 Tennessee Summary: 7 updated, 14 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Arizona Wildcats (21 missing bio data)
+================================================================================
+
+  Visiting: https://arizonawildcats.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Arizona Wildcats Summary: 0 updated, 21 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Washington State (20 missing bio data)
+================================================================================
+
+  Visiting: https://wsucougars.com/sports/baseball/roster
+
+Found 39 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Jake Robinson: Updated height, weight, hometown, bats_throws
+  ✅ Ryan Falke: Updated height, weight, hometown, bats_throws
+  ✅ Luke Meyers: Updated height, weight, hometown, bats_throws
+  ✅ Brock Blatter: Updated height, weight, hometown, bats_throws
+  ✅ Kaden Wickersham: Updated height, weight, hometown, bats_throws
+  ⏭️  Ingmar Hutzezon: No match found
+  ✅ August Richie: Updated height, weight, hometown, bats_throws
+  ✅ Nick Lewis: Updated height, weight, hometown, bats_throws
+  ✅ Taber Fast: Updated height, weight, hometown, bats_throws
+  ✅ Scott Rienguette: Updated height, weight, hometown, bats_throws
+  ✅ Griffin Smith: Updated height, weight, hometown, bats_throws
+  ✅ Owen Harper: Updated height, weight, hometown, bats_throws
+  ✅ Lleyton Daily: Updated height, weight, hometown, bats_throws
+  ✅ Gabe Schneider: Updated height, weight, hometown, bats_throws
+  ✅ Bryce Chambers: Updated height, weight, hometown, bats_throws
+  ✅ Trevor Stowe: Updated height, weight, hometown, bats_throws
+  ✅ Gavin Derr: Updated height, weight, hometown, bats_throws
+  ⏭️  Miles Chandler: No match found
+  ✅ Rylan Haider: Updated height, weight, hometown, bats_throws
+  ✅ Austin Sheldon: Updated height, weight, hometown, bats_throws
+
+📊 Washington State Summary: 18 updated, 2 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Virginia Tech (20 missing bio data)
+================================================================================
+
+  Visiting: https://hokiesports.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Virginia Tech Summary: 0 updated, 20 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: UCLA (20 missing bio data)
+================================================================================
+
+  Visiting: https://uclabruins.com/sports/baseball/roster
+
+Found 40 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Jack O'Connor: Updated height, weight, year, hometown, bats_throws
+  ✅ Logan Reddemann: Updated height, weight, year, hometown, bats_throws
+  ✅ CJ Bott: Updated height, weight, year, hometown, bats_throws
+  ✅ Michael Barnett: Updated height, weight, year, hometown, bats_throws
+  ✅ Wylan Moss: Updated height, weight, year, hometown, bats_throws
+  ✅ Jake Swenson: Updated height, weight, year, hometown, bats_throws
+  ✅ Ian May: Updated height, weight, year, hometown, bats_throws
+  ✅ Jack - P O'Connor: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Ryan Rissas: No match found
+  ✅ Cal Randall: Updated height, weight, year, hometown, bats_throws
+  ✅ Landon Stump: Updated height, weight, year, hometown, bats_throws
+  ✅ Easton Hawk: Updated height, weight, year, hometown, bats_throws
+  ⏭️  August Souza: No match found
+  ✅ Michael - P Barnett: Updated height, weight, year, hometown, bats_throws
+  ⏭️  August - P Souza: No match found
+  ✅ Chris - P Grothues: Updated height, weight, year, hometown, bats_throws
+  ✅ Easton - P Hawk: Updated height, weight, year, hometown, bats_throws
+  ✅ Zach Strickland: Updated height, weight, year, hometown
+  ✅ Chris Grothues: Updated height, weight, year, hometown, bats_throws
+  ✅ Cal - P Randall: Updated height, weight, year, hometown, bats_throws
+
+📊 UCLA Summary: 17 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: BYU (20 missing bio data)
+================================================================================
+
+  Visiting: https://byucougars.com/sports/baseball/roster
+
+Found 36 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Brett Hansen: No match found
+  ⏭️  Jake Porter: No match found
+  ✅ Brock Snow: Updated height, hometown
+  ✅ Ethan Zufall: Updated height, hometown
+  ✅ Rockwell Lybbert: Updated height, hometown
+  ✅ Bryant Ball: Updated height, hometown
+  ✅ Tyler Ball: Updated height, hometown
+  ✅ Cayson Bell: Updated height, hometown
+  ✅ Ashton Johnson: Updated height, hometown
+  ✅ Dan Brousseau: Updated height, hometown
+  ✅ Garrison Sumner: Updated height, hometown
+  ✅ Blade Paragas: Updated height, hometown
+  ✅ Nate Wochner: Updated height, hometown
+  ✅ Payton Gubler: Updated height, hometown
+  ✅ Sam Hart: Updated height, hometown
+  ✅ Wayland Crane: Updated height, hometown
+  ✅ Nate Gray: Updated height, hometown
+  ✅ Jaxon Clayton: Updated height, hometown
+  ✅ Brayden Marx: Updated height, hometown
+  ✅ Luke Sterner: Updated height, hometown
+
+📊 BYU Summary: 18 updated, 2 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Wake Forest (18 missing bio data)
+================================================================================
+
+  Visiting: https://godemon.com/sports/baseball/roster
+
+  ❌ Error scraping Wake Forest: page.goto: net::ERR_NAME_NOT_RESOLVED at https://godemon.com/sports/baseball/roster
+Call log:
+[2m  - navigating to "https://godemon.com/sports/baseball/roster", waiting until "domcontentloaded"[22m
+
+
+📊 Wake Forest Summary: 0 updated, 0 skipped, 18 failed
+
+================================================================================
+🎯 Scraping: Iowa (18 missing bio data)
+================================================================================
+
+  Visiting: https://hawkeyesports.com/sports/baseball/roster
+
+Found 37 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️   Wheatley: No match found
+  ✅ Kyle Alivo: Updated height, weight, hometown, bats_throws
+  ✅ Joe Husak: Updated height, weight, hometown, bats_throws
+  ✅ Logan Runde: Updated height, weight, hometown, bats_throws
+  ✅ Carter Wilcox: Updated height, weight, year, hometown, bats_throws
+  ✅ Carter Geffre: Updated height, weight, bats_throws
+  ✅ Brady Ferguson: Updated height, weight, year, hometown, bats_throws
+  ✅ Brolan Frost: Updated height, weight, year, hometown, bats_throws
+  ✅ Nick Terhaar: Updated height, weight, year, hometown, bats_throws
+  ✅ John Henry Kohorst: Updated height, weight, year, hometown, bats_throws
+  ✅ Brody Irlbeck: Updated height, weight, year, hometown, bats_throws
+  ✅ Tate Slagle: Updated height, weight, year, hometown, bats_throws
+  ✅ Ty Mikkelsen: Updated height, weight, hometown, bats_throws
+  ✅ Justin Hackett: Updated year
+  ⏭️  Aaron Savary: No match found
+  ⏭️  Daniel Wright: No match found
+  ⏭️  Brant Hogue: No match found
+  ⏭️  Cade Obermueller: No match found
+
+📊 Iowa Summary: 13 updated, 5 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: North Carolina (16 missing bio data)
+================================================================================
+
+  Visiting: https://goheels.com/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Folger - P Boaz: Updated height, weight, year, hometown, bats_throws
+  ✅ Ryan - P Lynch: Updated height, weight, year, hometown, bats_throws
+  ✅ Ryan Lynch: Updated year
+  ✅ Walker McDuffie: Updated height, weight, year, hometown, bats_throws
+  ✅ Olin - P Johnson: Updated height, weight, year, hometown, bats_throws
+  ⏭️   Decaro: No match found
+  ⏭️  Aidan Haugh: No match found
+  ✅ Jason - P DeCaro: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Cale - P Bolton: No match found
+  ✅ Cameron - P Padgett: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jake Knapp: No match found
+  ✅ Camron Seagraves: Updated height, weight, year, hometown, bats_throws
+  ✅ Walker - P McDuffie: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Aidan - P Haugh: No match found
+  ⏭️  Jake - P Knapp: No match found
+  ✅ Ryan Lynch: Updated height, weight, year, hometown, bats_throws
+
+📊 North Carolina Summary: 10 updated, 6 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Kansas (15 missing bio data)
+================================================================================
+
+  Visiting: https://kuathletics.com/sports/baseball/roster
+
+Found 37 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Daniel Lopez: Updated height, weight, year, hometown, bats_throws
+  ✅ Toby Scheidt: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Joshua Dykhoff: No match found
+  ✅ Carter Fink: Updated height, weight, hometown, bats_throws
+  ✅ Dalton Smith: Updated year
+  ✅ Dominic Voegele: Updated year
+  ✅ Madden Seidl: Updated height, weight, year, hometown, bats_throws
+  ✅ Dane Ebel: Updated height, weight, year, hometown, bats_throws
+  ✅ Kannon Carr: Updated year
+  ⏭️  Cooper - P Moore: No match found
+  ⏭️  Eric Lin: No match found
+  ⏭️  Malakai Vetock: No match found
+  ⏭️  Thaniel Trumper: No match found
+  ⏭️  Robbie Knowles: No match found
+  ⏭️  Alex Breckheimer: No match found
+
+📊 Kansas Summary: 8 updated, 7 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: LSU (14 missing bio data)
+================================================================================
+
+  Visiting: https://lsusports.net/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Kade Anderson: No match found
+  ✅ DJ Primeaux: Updated height, weight, hometown, bats_throws
+  ⏭️  Conner Ware: No match found
+  ⏭️  Jacob - P Mayers: No match found
+  ✅ William - P Schmidt: Updated height, weight, year, hometown, bats_throws
+  ✅ Cooper Williams: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jacob Mayers: No match found
+  ✅ Zac Cowan: Updated height, weight, year, hometown
+  ✅ DJ - P Primeaux: Updated height, weight, hometown, bats_throws
+  ⏭️  Jacob - P Mayers: No match found
+  ⏭️  Kade Anderson: No match found
+  ⏭️  Anthony Eyanson: No match found
+  ✅ William Schmidt: Updated height, weight, year, hometown, bats_throws
+  ✅ Jaden Noot: Updated height, weight, hometown, bats_throws
+
+📊 LSU Summary: 7 updated, 7 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Notre Dame (12 missing bio data)
+================================================================================
+
+  Visiting: https://und.com/sports/baseball/roster
+
+Found 36 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Justin Mayes: No match found
+  ✅ Jack Radel: Updated height, weight, year, hometown, bats_throws
+  ✅ Oisin Lee: Updated height, weight, year, bats_throws
+  ⏭️  Ricky Reeth: No match found
+  ⏭️  Dylan Heine: No match found
+  ⏭️  Rory Fox: No match found
+  ✅ Chase Van Ameyde: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Sammy Cooper: No match found
+  ⏭️  Clark Gilmore: No match found
+  ⏭️  Tobey Mcdonough: No match found
+  ⏭️  Jack Walker: No match found
+  ⏭️  Keenan Mork: No match found
+
+📊 Notre Dame Summary: 3 updated, 9 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: California Golden Bears (10 missing bio data)
+================================================================================
+
+  Visiting: https://calbears.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 California Golden Bears Summary: 0 updated, 10 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Maryland (10 missing bio data)
+================================================================================
+
+  Visiting: https://umterps.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Maryland Summary: 0 updated, 10 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Missouri (10 missing bio data)
+================================================================================
+
+  Visiting: https://mutigers.com/sports/baseball/roster
+
+Found 46 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Josh Kirchhoff: No match found
+  ✅ Ian Lohse: Updated height, weight, hometown, bats_throws
+  ⏭️  Sam Horn: No match found
+  ⏭️  Xavier Lovett: No match found
+  ✅ Ben Smith: Updated height, weight, year, hometown, bats_throws
+  ✅ Josh Mcdevitt: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Brock Lucas: No match found
+  ⏭️  Victor Christal: No match found
+  ⏭️  Wil Libbert: No match found
+  ⏭️  Kaden Jacobi: No match found
+
+📊 Missouri Summary: 3 updated, 7 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Utah (9 missing bio data)
+================================================================================
+
+  Visiting: https://utahutes.com/sports/baseball/roster
+
+Found 34 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Colter McAnelly: Updated height, weight, hometown, bats_throws
+  ✅ Cameron Nielson: Updated hometown, bats_throws
+  ⏭️  Lucas Boesen: No match found
+  ✅ David Galindo: Updated hometown, bats_throws
+  ✅ Ryan Kittredge: Updated hometown, bats_throws
+  ✅ Justin Abercrombie: Updated hometown, bats_throws
+  ✅ Demitri Diamant: Updated hometown, bats_throws
+  ⏭️  Carter Wall: No match found
+  ⏭️  Mateus Conaway: No match found
+
+📊 Utah Summary: 6 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Michigan State (9 missing bio data)
+================================================================================
+
+  Visiting: https://msuspartans.com/sports/baseball/roster
+
+Found 32 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Carter Monke: Updated height, weight, hometown, bats_throws
+  ⏭️  Joseph Dzierwa: No match found
+  ✅ Nolan Higgins: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Tyler Horvath: No match found
+  ✅ Davis Weeks: Updated height, weight, year, hometown, bats_throws
+  ✅ Carter Monke: Updated height, weight, hometown, bats_throws
+  ✅ Aidan Donovan: Updated height, weight, year, hometown, bats_throws
+  ✅ Logan Pikur: Updated height, weight, year, hometown, bats_throws
+  ⏭️  George Viebrock Iii: No match found
+
+📊 Michigan State Summary: 6 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Vanderbilt (8 missing bio data)
+================================================================================
+
+  Visiting: https://vucommodores.com/sports/baseball/roster
+
+Found 39 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Ryan Ginther: No match found
+  ⏭️  Cody Bowker: No match found
+  ⏭️  Sawyer Hawks: No match found
+  ⏭️  Roman Petricca: No match found
+  ⏭️  Tommy O'Rourke: No match found
+  ⏭️  Ethan McElvain: No match found
+  ⏭️  Levi Huesman: No match found
+  ⏭️  Tyler Green: No match found
+
+📊 Vanderbilt Summary: 0 updated, 8 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Alabama (8 missing bio data)
+================================================================================
+
+  Visiting: https://rolltide.com/sports/baseball/roster
+
+Found 43 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Anthony Pesci: Updated hometown
+  ✅ Zane Adams: Updated hometown
+  ✅ Jack Ketchum: Updated hometown
+  ✅ Austin Morris: Updated hometown
+  ⏭️  Riley Quick: No match found
+  ✅ Sam Mitchell: Updated hometown
+  ⏭️  Beau Bryans: No match found
+  ⏭️  Braylon Myers: No match found
+
+📊 Alabama Summary: 5 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Ohio State (8 missing bio data)
+================================================================================
+
+  Visiting: https://ohiostatebuckeyes.com/sports/baseball/roster
+
+Found 37 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Jackson Peavy: No match found
+  ⏭️  Paul Farley: No match found
+  ⏭️  Joey Volchko: No match found
+  ⏭️  Luke Wiltrakis: No match found
+  ⏭️  Logan Spivey: No match found
+  ⏭️  Thomas Ellisen: No match found
+  ⏭️  Lucas Morici: No match found
+  ⏭️  Mason Kosowick: No match found
+
+📊 Ohio State Summary: 0 updated, 8 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: South Carolina (8 missing bio data)
+================================================================================
+
+  Visiting: https://gamecocksonline.com/sports/baseball/roster
+
+Found 37 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Roman Kimball: No match found
+  ⏭️  Caleb Jones: No match found
+  ⏭️  Tyler Pitzer: No match found
+  ⏭️  Jackson Soucie: No match found
+  ⏭️  Colby Lee: No match found
+  ⏭️  Jarvis Evans Jr.: No match found
+  ⏭️  Aydin Palmer: No match found
+  ⏭️  Matthew Becker: No match found
+
+📊 South Carolina Summary: 0 updated, 8 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Pittsburgh (7 missing bio data)
+================================================================================
+
+  Visiting: https://pittsburghpanthers.com/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Antonio "TJ" Socarras: No match found
+  ✅ Sam Bryan: Updated year, hometown, bats_throws
+  ✅ Gavin Chillot: Updated year, hometown, bats_throws
+  ✅ Eddie Smink: Updated year, hometown, bats_throws
+  ✅ Freddy Beruvides Jr.: Updated year, hometown, bats_throws
+  ✅ Drew Lafferty: Updated year, hometown, bats_throws
+  ✅ Chase Kriebel: Updated year, hometown, bats_throws
+
+📊 Pittsburgh Summary: 6 updated, 1 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Michigan (7 missing bio data)
+================================================================================
+
+  Visiting: https://mgoblue.com/sports/baseball/roster
+
+Found 41 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ David Lally Jr.: Updated height, weight, year, hometown, bats_throws
+  ✅ Max Debiec: Updated height, weight, year, hometown, bats_throws
+  ✅ Preston Barr: Updated height, weight, year, hometown, bats_throws
+  ✅ Brennan Hill: Updated height, weight, year, hometown, bats_throws
+  ✅ Erik Puodziunas: Updated height, weight, year, hometown, bats_throws
+  ✅ David Lally Jr.: Updated height, weight, year, hometown, bats_throws
+  ✅ Tate Carey: Updated height, weight, year, hometown, bats_throws
+
+📊 Michigan Summary: 7 updated, 0 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Texas Tech (7 missing bio data)
+================================================================================
+
+  Visiting: https://texastech.com/sports/baseball/roster
+
+Found 36 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Mason Kinchen: No match found
+  ⏭️  Drake Gower: No match found
+  ⏭️  Wolfgang Braasch: No match found
+  ⏭️  Carter Williams: No match found
+  ✅ Lukas Pirko: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Jack Cebert: No match found
+  ⏭️  Mac Heuer: No match found
+
+📊 Texas Tech Summary: 1 updated, 6 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Miami (7 missing bio data)
+================================================================================
+
+  Visiting: https://hurricanesports.com/sports/baseball/roster
+
+Found 38 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Tate DeRias: Updated year
+  ⏭️  Carson Fischer: No match found
+  ✅ Michael Taylor: Updated height, year, hometown
+  ✅ Rob Evans: Updated year
+  ✅ Lyndon Glidewell: Updated height, year, hometown
+  ✅ TJ Coats: Updated height, year, hometown
+  ⏭️  Will Smith: No match found
+
+📊 Miami Summary: 5 updated, 2 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Oklahoma (7 missing bio data)
+================================================================================
+
+  Visiting: https://soonersports.com/sports/baseball/roster
+
+Found 37 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Gavyn Jones: Updated year
+  ⏭️  Reid Hensley: No new bio data to add
+  ⏭️  Cade Crossland: No match found
+  ⏭️  Kyson Witherspoon: No match found
+  ⏭️  Jackson - P Kircher: No match found
+  ⏭️  Dylan Crooks: No match found
+  ⏭️  Malachi Witherspoon: No match found
+
+📊 Oklahoma Summary: 1 updated, 6 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Texas A&M (7 missing bio data)
+================================================================================
+
+  Visiting: https://12thman.com/sports/baseball/roster
+
+Found 36 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Thomas Vincent: No match found
+  ⏭️  Luke Jackson: No match found
+  ⏭️  Myles Patton: No match found
+  ⏭️  Kaiden Wilson: No match found
+  ⏭️  Austin Vargas: No match found
+  ⏭️  Ryan Prager: No match found
+  ⏭️  Brad Rudis: No match found
+
+📊 Texas A&M Summary: 0 updated, 7 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Baylor (6 missing bio data)
+================================================================================
+
+  Visiting: https://baylorbears.com/sports/baseball/roster
+
+Found 37 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Ethan Calder: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Patrick Hail: No match found
+  ⏭️   Stasio: No match found
+  ✅ Lucas Davenport: Updated height, weight, year, hometown, bats_throws
+  ✅ Grayson Murry: Updated height, weight, year, hometown
+  ⏭️  Hunter Teplanszky: No match found
+
+📊 Baylor Summary: 3 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Virginia (5 missing bio data)
+================================================================================
+
+  Visiting: https://virginiasports.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Virginia Summary: 0 updated, 5 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Minnesota (5 missing bio data)
+================================================================================
+
+  Visiting: https://gophersports.com/sports/baseball/roster
+
+Found 36 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Nathan O'Donnell: Updated height, weight, year, hometown
+  ✅ Easton Richter: Updated height, weight, year, hometown, bats_throws
+  ✅ Cole Selvig: Updated height, weight, year, hometown, bats_throws
+  ✅ Marcus Kruzan: Updated height, weight, year, hometown
+  ✅ Luke Ryerse: Updated height, weight, year, hometown, bats_throws
+
+📊 Minnesota Summary: 5 updated, 0 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Houston (4 missing bio data)
+================================================================================
+
+  Visiting: https://uhcougars.com/sports/baseball/roster
+
+Found 40 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Andres Perez: No match found
+  ⏭️  Michael Benzor: No match found
+  ⏭️  Malachi Lott: No match found
+  ⏭️  Brady Fuller: No match found
+
+📊 Houston Summary: 0 updated, 4 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Illinois (4 missing bio data)
+================================================================================
+
+  Visiting: https://fightingillini.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Illinois Summary: 0 updated, 4 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Oregon State (4 missing bio data)
+================================================================================
+
+  Visiting: https://osubeavers.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Oregon State Summary: 0 updated, 4 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Indiana (3 missing bio data)
+================================================================================
+
+  Visiting: https://iuhoosiers.com/sports/baseball/roster
+
+Found 44 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Gavin Seebold: Updated height, weight, hometown, bats_throws
+  ✅ Jackson Yarberry: Updated height, weight, year, hometown, bats_throws
+  ⏭️  Ryan Kraft: No match found
+
+📊 Indiana Summary: 2 updated, 1 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Rutgers (3 missing bio data)
+================================================================================
+
+  Visiting: https://scarletknights.com/sports/baseball/roster
+
+Found 39 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Landon Mack: No match found
+  ⏭️  Justin Shadek: No match found
+  ⏭️  Quinn Berglin: No match found
+
+📊 Rutgers Summary: 0 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Washington (3 missing bio data)
+================================================================================
+
+  Visiting: https://gohuskies.com/sports/baseball/roster
+
+Found 0 players with bio data on roster page
+
+⚠️  No bio data found on roster page
+
+
+📊 Washington Summary: 0 updated, 3 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Northwestern (2 missing bio data)
+================================================================================
+
+  Visiting: https://nusports.com/sports/baseball/roster
+
+Found 36 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ✅ Drew Dickson: Updated height, year, hometown
+  ✅ Sam Hliboki: Updated height, hometown
+
+📊 Northwestern Summary: 2 updated, 0 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Clemson (1 missing bio data)
+================================================================================
+
+  Visiting: https://clemsontigers.com/sports/baseball/roster
+
+Found 40 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Reed - P Garris: No match found
+
+📊 Clemson Summary: 0 updated, 1 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: West Virginia (1 missing bio data)
+================================================================================
+
+  Visiting: https://wvusports.com/sports/baseball/roster
+
+Found 44 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Benjamin - P Hudson: No match found
+
+📊 West Virginia Summary: 0 updated, 1 skipped, 0 failed
+
+================================================================================
+🎯 Scraping: Texas (1 missing bio data)
+================================================================================
+
+  Visiting: https://texassports.com/sports/baseball/roster
+
+Found 41 players with bio data on roster page
+
+Matching pitchers and updating database:
+
+  ⏭️  Grayson Saunier: No match found
+
+📊 Texas Summary: 0 updated, 1 skipped, 0 failed
+
+================================================================================
+📈 FINAL RESULTS
+================================================================================
+
+Total bio fields updated: 385
+Total skipped (no match): 597
+Total failed: 18
+Success rate: 38.5%
+
+💾 Saved results to: bio-scrape-results.json
+
+📊 Running updated audit...
+
+[dotenv@17.3.1] injecting env (0) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+🔍 Starting Comprehensive Team Data Audit
+
+================================================================================
+
+📊 Total Pitchers: 1000
+
+📋 Total Teams: 37
+
+================================================================================
+
+📈 OVERALL DATA COMPLETENESS
+
+Profile Data:
+  Headshots:      73.5% (735/1000)
+  Display Name:   75.4% (754/1000)
+  Jersey Number:  37.3% (373/1000)
+  ESPN Link:      0.0% (0/1000)
+
+Bio Data:
+  Height:         49.6% (496/1000)
+  Weight:         47.3% (473/1000)
+  Year:           51.7% (517/1000)
+  Hometown:       48.4% (484/1000)
+  Bats/Throws:    41.6% (416/1000)
+  Position:       75.4% (754/1000)
+
+================================================================================
+
+📋 TEAM-BY-TEAM BREAKDOWN
+
+🚨 CRITICAL - Low Data Coverage (16 teams)
+
+Auburn
+  Pitchers: 47
+  Headshots: 48.9% (23/47)
+  Profile: 48.9% | Bio: 30.6%
+  Missing: 24 headshots, 38 heights, 24 years, 25 hometowns
+
+Baylor
+  Pitchers: 22
+  Headshots: 90.9% (20/22)
+  Profile: 60.6% | Bio: 12.7%
+  Missing: 2 headshots, 19 heights, 19 years, 19 hometowns
+
+Indiana
+  Pitchers: 12
+  Headshots: 83.3% (10/12)
+  Profile: 55.5% | Bio: 15.0%
+  Missing: 2 headshots, 10 heights, 11 years, 10 hometowns
+
+Kansas
+  Pitchers: 32
+  Headshots: 75.0% (24/32)
+  Profile: 50.0% | Bio: 26.9%
+  Missing: 8 headshots, 23 heights, 25 years, 23 hometowns
+
+Miami
+  Pitchers: 27
+  Headshots: 70.4% (19/27)
+  Profile: 70.4% | Bio: 22.9%
+  Missing: 8 headshots, 19 heights, 22 years, 19 hometowns
+
+Mississippi State
+  Pitchers: 35
+  Headshots: 62.9% (22/35)
+  Profile: 41.9% | Bio: 35.4%
+  Missing: 13 headshots, 22 heights, 25 years, 22 hometowns
+
+Northwestern
+  Pitchers: 17
+  Headshots: 100.0% (17/17)
+  Profile: 66.7% | Bio: 5.9%
+  Missing: 0 headshots, 15 heights, 16 years, 15 hometowns
+
+Ohio State
+  Pitchers: 16
+  Headshots: 100.0% (16/16)
+  Profile: 66.7% | Bio: 0.0%
+  Missing: 0 headshots, 16 heights, 16 years, 16 hometowns
+
+Oklahoma
+  Pitchers: 28
+  Headshots: 71.4% (20/28)
+  Profile: 47.6% | Bio: 17.8%
+  Missing: 8 headshots, 22 heights, 27 years, 22 hometowns
+
+Oregon
+  Pitchers: 46
+  Headshots: 50.0% (23/46)
+  Profile: 50.0% | Bio: 32.6%
+  Missing: 23 headshots, 26 heights, 23 years, 40 hometowns
+
+Oregon State
+  Pitchers: 25
+  Headshots: 80.0% (20/25)
+  Profile: 53.3% | Bio: 19.2%
+  Missing: 5 headshots, 19 heights, 25 years, 19 hometowns
+
+Pittsburgh
+  Pitchers: 20
+  Headshots: 100.0% (20/20)
+  Profile: 66.7% | Bio: 18.0%
+  Missing: 0 headshots, 20 heights, 14 years, 14 hometowns
+
+TCU
+  Pitchers: 37
+  Headshots: 48.6% (18/37)
+  Profile: 32.4% | Bio: 50.8%
+  Missing: 19 headshots, 16 heights, 18 years, 16 hometowns
+
+Tennessee
+  Pitchers: 38
+  Headshots: 26.3% (10/38)
+  Profile: 26.3% | Bio: 27.9%
+  Missing: 28 headshots, 28 heights, 23 years, 28 hometowns
+
+Virginia Tech
+  Pitchers: 20
+  Headshots: 100.0% (20/20)
+  Profile: 98.3% | Bio: 0.0%
+  Missing: 0 headshots, 20 heights, 20 years, 20 hometowns
+
+Washington
+  Pitchers: 21
+  Headshots: 85.7% (18/21)
+  Profile: 57.1% | Bio: 0.0%
+  Missing: 3 headshots, 21 heights, 21 years, 21 hometowns
+
+⚠️  NEEDS IMPROVEMENT - Moderate Coverage (15 teams)
+
+Alabama
+  Pitchers: 30
+  Headshots: 76.7% | Profile: 76.7% | Bio: 72.7%
+
+BYU
+  Pitchers: 22
+  Headshots: 0.0% | Profile: 57.6% | Bio: 53.6%
+
+Cincinnati Bearcats
+  Pitchers: 30
+  Headshots: 73.3% | Profile: 73.3% | Bio: 56.0%
+
+Houston
+  Pitchers: 27
+  Headshots: 77.8% | Profile: 51.9% | Bio: 66.7%
+
+Illinois
+  Pitchers: 22
+  Headshots: 95.5% | Profile: 95.5% | Bio: 7.3%
+
+Iowa
+  Pitchers: 25
+  Headshots: 80.0% | Profile: 53.3% | Bio: 47.2%
+
+Kansas State
+  Pitchers: 41
+  Headshots: 51.2% | Profile: 34.1% | Bio: 68.3%
+
+Oklahoma State
+  Pitchers: 29
+  Headshots: 79.3% | Profile: 52.9% | Bio: 59.3%
+
+South Carolina
+  Pitchers: 30
+  Headshots: 66.7% | Profile: 66.7% | Bio: 66.7%
+
+Texas A&M
+  Pitchers: 27
+  Headshots: 70.4% | Profile: 46.9% | Bio: 70.4%
+
+Texas Tech
+  Pitchers: 31
+  Headshots: 90.3% | Profile: 60.2% | Bio: 64.5%
+
+Utah
+  Pitchers: 24
+  Headshots: 79.2% | Profile: 79.2% | Bio: 50.8%
+
+Vanderbilt
+  Pitchers: 24
+  Headshots: 91.7% | Profile: 91.7% | Bio: 67.5%
+
+Virginia
+  Pitchers: 23
+  Headshots: 100.0% | Profile: 100.0% | Bio: 20.0%
+
+West Virginia
+  Pitchers: 30
+  Headshots: 83.3% | Profile: 55.5% | Bio: 83.3%
+
+✅ GOOD - High Data Coverage (6 teams)
+
+Teams with 80%+ average coverage:
+  • Clemson (27 pitchers) - 88.9% headshots, 88.9% bio
+  • Penn State Nittany Lions (27 pitchers) - 85.2% headshots, 88.9% bio
+  • Purdue Boilermakers (18 pitchers) - 100.0% headshots, 100.0% bio
+  • Rutgers (24 pitchers) - 87.5% headshots, 87.5% bio
+  • Texas (25 pitchers) - 92.0% headshots, 92.0% bio
+  • Washington State (21 pitchers) - 90.5% headshots, 86.7% bio
+
+
+================================================================================
+🎯 PRIORITY DATA GAPS
+
+📸 Teams with NO headshots (1):
+  • BYU (22 pitchers)
+
+📝 Teams with <30% bio data (14):
+  • Baylor - 12.7% complete
+  • Illinois - 7.3% complete
+  • Indiana - 15.0% complete
+  • Kansas - 26.9% complete
+  • Miami - 22.9% complete
+  • Northwestern - 5.9% complete
+  • Ohio State - 0.0% complete
+  • Oklahoma - 17.8% complete
+  • Oregon State - 19.2% complete
+  • Pittsburgh - 18.0% complete
+  • Tennessee - 27.9% complete
+  • Virginia - 20.0% complete
+  • Virginia Tech - 0.0% complete
+  • Washington - 0.0% complete
+
+👤 Teams with <50% profile data (7):
+  • Auburn - 48.9% complete
+  • Kansas State - 34.1% complete
+  • Mississippi State - 41.9% complete
+  • Oklahoma - 47.6% complete
+  • TCU - 32.4% complete
+  • Tennessee - 26.3% complete
+  • Texas A&M - 46.9% complete
+
+🔗 Teams with NO ESPN links (37):
+  • Alabama (30 pitchers)
+  • Auburn (47 pitchers)
+  • Baylor (22 pitchers)
+  • BYU (22 pitchers)
+  • Cincinnati Bearcats (30 pitchers)
+  • Clemson (27 pitchers)
+  • Houston (27 pitchers)
+  • Illinois (22 pitchers)
+  • Indiana (12 pitchers)
+  • Iowa (25 pitchers)
+  • Kansas (32 pitchers)
+  • Kansas State (41 pitchers)
+  • Miami (27 pitchers)
+  • Mississippi State (35 pitchers)
+  • Northwestern (17 pitchers)
+  • Ohio State (16 pitchers)
+  • Oklahoma (28 pitchers)
+  • Oklahoma State (29 pitchers)
+  • Oregon (46 pitchers)
+  • Oregon State (25 pitchers)
+  • Penn State Nittany Lions (27 pitchers)
+  • Pittsburgh (20 pitchers)
+  • Purdue Boilermakers (18 pitchers)
+  • Rutgers (24 pitchers)
+  • South Carolina (30 pitchers)
+  • TCU (37 pitchers)
+  • Tennessee (38 pitchers)
+  • Texas (25 pitchers)
+  • Texas A&M (27 pitchers)
+  • Texas Tech (31 pitchers)
+  • Utah (24 pitchers)
+  • Vanderbilt (24 pitchers)
+  • Virginia (23 pitchers)
+  • Virginia Tech (20 pitchers)
+  • Washington (21 pitchers)
+  • Washington State (21 pitchers)
+  • West Virginia (30 pitchers)
+
+
+💾 Detailed results saved to: team-audit-results.json
+
+================================================================================
+✅ Audit Complete
+

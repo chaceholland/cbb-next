@@ -1,0 +1,22 @@
+[    1809ms] [WARNING] Failed to load prebid-load.js, loading fallback script. @ https://htlbid.com/v3/rolltide.com/htlbid.js:0
+[    1809ms] [WARNING] Loading bridge-htlbid.js. @ https://htlbid.com/v3/rolltide.com/htlbid.js:0
+[    2007ms] Uncaught Error: LiveValidation::initialize - No element reference or element id has been provided!
+    at initialize (https://img.rolltide.com/i/livevalidation_standalone.compressed.js:4:647)
+    at LiveValidation (https://img.rolltide.com/i/livevalidation_standalone.compressed.js:4:38)
+    at <anonymous> (https://app.rolltide.com/simpleSignUp?sport=BB:1778:20)
+[    3431ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://rolltide.com/api/v2/promotions/counter?adIds=4507,22,24,4362,4560:0
+[    3432ms] [ERROR] [PromoRepo] registerAdsImpressions() catch() fetch failed FetchError: [GET] "https://rolltide.com/api/v2/promotions/counter?adIds=4507,22,24,4362,4560": 403 
+    at async Object.En (https://rolltide.com/_nuxt/Ds2QNL6R.js:2:15288) @ https://rolltide.com/_nuxt/Ds2QNL6R.js:27
+[    3662ms] [WARNING] [GPT] Using deprecated googletag.encryptedSignalProviders. Please use googletag.secureSignalProviders instead.
+https://goo.gle/gpt-message#155 @ https://securepubads.g.doubleclick.net/pagead/managed/js/gpt/m202602190101/pubads_impl.js:18
+[    5584ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[    5588ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[    5589ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[   14816ms] [WARNING] The resource https://dn0qt3r0xannq.cloudfront.net/Learfield/rolltide.com/prebid-wrapper.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://rolltide.com/sports/baseball/roster:0
+[    5584ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[    5588ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[    5589ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[   33791ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[   33890ms] [ERROR] Attestation check for Attribution Reporting on https://ad.doubleclick.net failed. @ https://rolltide.com/sports/baseball/roster:0
+[   37913ms] [WARNING] The resource https://dn0qt3r0xannq.cloudfront.net/Learfield/rolltide.com/prebid-wrapper.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://rolltide.com/sports/baseball/roster:0
+[   41911ms] [WARNING] The resource https://dn0qt3r0xannq.cloudfront.net/Learfield/rolltide.com/prebid-wrapper.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://rolltide.com/sports/baseball/roster:0

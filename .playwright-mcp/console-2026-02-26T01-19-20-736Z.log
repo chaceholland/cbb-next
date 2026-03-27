@@ -1,0 +1,15 @@
+[     112ms] [WARNING] The resource https://dn0qt3r0xannq.cloudfront.net/Learfield/rolltide.com/prebid-wrapper.js was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ https://rolltide.com/sports/baseball/roster:0
+[    1818ms] [WARNING] Unable to get WebChoices Preferences TIME OUT @ https://s.ntv.io/serve/load.js:1
+[    1945ms] [WARNING] AdSense head tag doesn't support data-sidearm-tag-id attribute. @ https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js:225
+[    1945ms] [WARNING] AdSense head tag doesn't support data-hid attribute. @ https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js:225
+[    1945ms] [WARNING] AdSense head tag doesn't support data-airgap-id attribute. @ https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js:225
+[    2929ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://su.addthis.com/red/usync?pid=11124&puid=2eb30995-d3b2-4ded-85a5-bd0d6ac02625&url=https%3a%2f%2fmatch.adsrvr.org%2ftrack%2fcmf%2fgeneric%3fttd_pid%3daddthis:0
+[    2949ms] [ERROR] SyntaxError: "[object Object]" is not valid JSON
+    at JSON.parse (<anonymous>)
+    at https://alive5.com/chat_window_wrap.html?wid=fb89e39f-8af3-4fc0-9866-1a59cd621f52&thread_crm_id=5f949827-1a10-3094-bdc3-3fe168ae1c8b|f8e367fb-82cf-b6cf-40f1-0ad8e31a2f97:111:32 MessageEvent @ https://alive5.com/chat_window_wrap.html?wid=fb89e39f-8af3-4fc0-9866-1a59cd621f52&thread_crm_id=5f949827-1a10-3094-bdc3-3fe168ae1c8b|f8e367fb-82cf-b6cf-40f1-0ad8e31a2f97:151
+[    3285ms] [ERROR] Attestation check for Shared Storage on https://www.googleadservices.com failed. @ https://www.googleadservices.com/pagead/managed/js/activeview/current/reach_worklet.html:0
+[    3444ms] [ERROR] Failed to load resource: net::ERR_NAME_NOT_RESOLVED @ https://su.addthis.com/red/usync?pid=11124&puid=2eb30995-d3b2-4ded-85a5-bd0d6ac02625&url=https%3a%2f%2fmatch.adsrvr.org%2ftrack%2fcmf%2fgeneric%3fttd_pid%3daddthis:0
+[    3831ms] [ERROR] Failed to load resource: the server responded with a status of 403 () @ https://georgiadogs.com/api/v2/promotions/counter?adIds=1,2,3,4,6,8,105:0
+[    3831ms] [ERROR] [PromoRepo] registerAdsImpressions() catch() fetch failed FetchError: [GET] "https://georgiadogs.com/api/v2/promotions/counter?adIds=1,2,3,4,6,8,105": 403 
+    at async Object.En (https://georgiadogs.com/_nuxt/46LtM-Mj.js:2:15288) @ https://georgiadogs.com/_nuxt/46LtM-Mj.js:27
+[   24557ms] [ERROR] Failed to load resource: net::ERR_TOO_MANY_REDIRECTS @ https://ad.360yield.com/server_match?gdpr=&gdpr_consent=&r=https%3A%2F%2Fsyncv4.intentiq.com%2Fprofiles_engine%2FProfilesEngineServlet%3Fat%3D20%26dpi%3D1207058874%26mi%3D10%26csh%3D793790479%3B1486637409%3B259151345%3B1709765917%3B1868283820%3B1881119486%3B396218182%26rnd%3D-1924607154%26pcid%3D%7BPUB_USER_ID%7D%0A:0

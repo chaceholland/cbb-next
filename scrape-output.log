@@ -1,0 +1,86 @@
+[dotenv@17.3.1] injecting env (2) from .env.local -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+🏈 SCRAPING 2026 COLLEGE BASEBALL ROSTERS
+============================================================
+
+📋 Found 64 teams to scrape
+
+Processing teams...
+
+✅ Alabama (20 pitchers)
+⚠️  Arizona State - 0 pitchers found
+⚠️  Arizona Wildcats - 0 pitchers found
+⚠️  Arkansas - 0 pitchers found
+⚠️  Auburn - 0 pitchers found
+✅ Baylor (17 pitchers)
+✅ Boston College (21 pitchers)
+⚠️  BYU - 0 pitchers found
+⚠️  California Golden Bears - 0 pitchers found
+⚠️  Cincinnati Bearcats - 0 pitchers found
+✅ Clemson (23 pitchers)
+✅ Duke (22 pitchers)
+✅ Florida (20 pitchers)
+✅ Florida State (18 pitchers)
+✅ Georgia (22 pitchers)
+⚠️  Georgia Tech Yellow Jackets - 0 pitchers found
+✅ Houston (18 pitchers)
+⚠️  Illinois - 0 pitchers found
+✅ Indiana (23 pitchers)
+✅ Iowa (15 pitchers)
+✅ Kansas (22 pitchers)
+✅ Kansas State (20 pitchers)
+✅ Kentucky (20 pitchers)
+✅ Louisville (24 pitchers)
+⚠️  LSU - 0 pitchers found
+⚠️  Maryland - 0 pitchers found
+⚠️  Miami - 0 pitchers found
+✅ Michigan (21 pitchers)
+✅ Michigan State (16 pitchers)
+✅ Minnesota (16 pitchers)
+✅ Mississippi State (20 pitchers)
+✅ Missouri (26 pitchers)
+✅ NC State (18 pitchers)
+✅ Nebraska (22 pitchers)
+✅ North Carolina (21 pitchers)
+✅ Northwestern (16 pitchers)
+✅ Notre Dame (17 pitchers)
+⚠️  Ohio State - 0 pitchers found
+✅ Oklahoma (18 pitchers)
+✅ Oklahoma State (22 pitchers)
+✅ Ole Miss (21 pitchers)
+✅ Oregon (20 pitchers)
+✅ Oregon State (18 pitchers)
+✅ Penn State Nittany Lions (23 pitchers)
+✅ Pittsburgh (19 pitchers)
+✅ Purdue Boilermakers (18 pitchers)
+✅ Rutgers (21 pitchers)
+⚠️  South Carolina - 0 pitchers found
+⚠️  Stanford Cardinal - 0 pitchers found
+✅ TCU (16 pitchers)
+✅ Tennessee (18 pitchers)
+✅ Texas (23 pitchers)
+✅ Texas A&M (17 pitchers)
+✅ Texas Tech (18 pitchers)
+✅ UCLA (21 pitchers)
+✅ USC (19 pitchers)
+✅ Utah (17 pitchers)
+✅ Vanderbilt (21 pitchers)
+⚠️  Virginia - 0 pitchers found
+⚠️  Virginia Tech - 0 pitchers found
+❌ Wake Forest - page.goto: net::ERR_NAME_NOT_RESOLVED at https://godemon.com/sports/baseball/roster
+Call log:
+[2m  - navigating to "https://godemon.com/sports/baseball/roster", waiting until "domcontentloaded"[22m
+
+✅ Washington (18 pitchers)
+✅ Washington State (19 pitchers)
+✅ West Virginia (25 pitchers)
+
+============================================================
+📊 SCRAPING COMPLETE
+============================================================
+
+Total Teams:     64
+Successful:      63 (98.4%)
+Failed:          1 (1.6%)
+Total Pitchers:  910
+
+💾 Results saved to: /Users/chace/Desktop/cbb-next/2026-rosters.json
