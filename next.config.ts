@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
         hostname: "dtnozcqkuzhjmjvsfjqk.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "images.sidearmdev.com",
+      },
+      {
+        protocol: "https",
+        hostname: "dxbhsrqyrr690.cloudfront.net",
+      },
     ],
   },
 };
