@@ -170,14 +170,14 @@ function PitcherRow({
   return (
     <div className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100 mb-2 last:mb-0 shadow-sm">
       {/* Headshot */}
-      <div className="w-24 h-24 rounded-full overflow-hidden bg-white shrink-0 border-2 border-yellow-200 shadow-md transition-transform duration-200 hover:scale-125 hover:shadow-xl hover:z-10 relative">
+      <div className="w-28 h-32 rounded-lg overflow-hidden bg-white shrink-0 border-2 border-yellow-200 shadow-md transition-transform duration-200 hover:scale-[1.35] hover:shadow-xl hover:z-10 relative">
         {imgSrc && (
           <Image
             src={imgSrc}
             alt={row.pitcher_name}
-            width={96}
-            height={96}
-            className="object-cover w-full h-full"
+            width={112}
+            height={128}
+            className="object-cover object-top w-full h-full"
             unoptimized
             onError={(e) => {
               const img = e.target as HTMLImageElement;

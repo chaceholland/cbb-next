@@ -86,14 +86,123 @@ async function scrapePitcherData(
 }
 
 /**
+ * Checks ESPN for game completion status and updates scores.
+ * Returns the number of games newly marked as completed.
+ */
+async function updateGameCompletionStatus(
+  supabase: ReturnType<typeof getSupabaseAdmin>,
+  trackedTeamIds: Set<string>,
+  daysBack: number,
+  delayMs: number,
+): Promise<{ checked: number; completed: number; errors: number }> {
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - daysBack);
+
+  // Find games that are NOT completed but whose date is in the past
+  const { data: incompleteGames, error: incErr } = await supabase
+    .from("cbb_games")
+    .select("*")
+    .eq("completed", false)
+    .gte("date", cutoffDate.toISOString())
+    .lte("date", new Date().toISOString())
+    .order("date", { ascending: false });
+
+  if (incErr) {
+    console.error(
+      `[api/update] Failed to fetch incomplete games: ${incErr.message}`,
+    );
+    return { checked: 0, completed: 0, errors: 0 };
+  }
+
+  const trackedIncomplete = (incompleteGames || []).filter(
+    (g: { home_team_id: string; away_team_id: string }) =>
+      trackedTeamIds.has(g.home_team_id) ||
+      trackedTeamIds.has(g.away_team_id),
+  );
+
+  if (trackedIncomplete.length === 0) {
+    return { checked: 0, completed: 0, errors: 0 };
+  }
+
+  console.log(
+    `[api/update] Checking ${trackedIncomplete.length} incomplete past games for completion status`,
+  );
+
+  let completed = 0;
+  let errors = 0;
+
+  for (let i = 0; i < trackedIncomplete.length; i++) {
+    const game = trackedIncomplete[i];
+    try {
+      const url = `https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/summary?event=${game.game_id}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      const comp = data?.header?.competitions?.[0];
+      const isComplete = comp?.status?.type?.completed === true;
+
+      if (isComplete) {
+        const homeScore = comp?.competitors?.find(
+          (t: { homeAway: string }) => t.homeAway === "home",
+        )?.score;
+        const awayScore = comp?.competitors?.find(
+          (t: { homeAway: string }) => t.homeAway === "away",
+        )?.score;
+        const homeName = comp?.competitors?.find(
+          (t: { homeAway: string }) => t.homeAway === "home",
+        )?.team?.displayName;
+        const awayName = comp?.competitors?.find(
+          (t: { homeAway: string }) => t.homeAway === "away",
+        )?.team?.displayName;
+        const venue = comp?.venue?.fullName;
+
+        await supabase
+          .from("cbb_games")
+          .update({
+            completed: true,
+            status: "final",
+            home_score: homeScore,
+            away_score: awayScore,
+            ...(homeName && { home_name: homeName }),
+            ...(awayName && { away_name: awayName }),
+            ...(venue && { venue }),
+          })
+          .eq("game_id", game.game_id);
+
+        completed++;
+        console.log(
+          `[api/update] Marked complete: ${awayName || game.away_name} @ ${homeName || game.home_name} (${awayScore}-${homeScore})`,
+        );
+      }
+    } catch (err) {
+      errors++;
+      console.error(
+        `[api/update] Error checking game ${game.game_id}: ${(err as Error).message}`,
+      );
+    }
+
+    if (i < trackedIncomplete.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+
+  console.log(
+    `[api/update] Completion check done: ${completed} newly completed, ${errors} errors out of ${trackedIncomplete.length} checked`,
+  );
+
+  return { checked: trackedIncomplete.length, completed, errors };
+}
+
+/**
  * GET /api/update
  *
- * Called by Vercel Cron every 6 hours. Replicates the logic from
- * auto-scrape-participation.mjs:
- *   1. Find completed games from the last 7 days that are missing pitcher data
- *   2. Scrape ESPN box scores for each
- *   3. Upsert to cbb_pitcher_participation
- *   4. Log to cbb_sync_log
+ * Called by Vercel Cron every 6 hours:
+ *   1. Update game completion status from ESPN (scores, final status)
+ *   2. Find completed games from the last 7 days that are missing pitcher data
+ *   3. Scrape ESPN box scores for each
+ *   4. Upsert to cbb_pitcher_participation
+ *   5. Log to cbb_sync_log
  */
 export async function GET(request: Request) {
   // Verify cron secret in production (Vercel sends this header)
@@ -115,6 +224,7 @@ export async function GET(request: Request) {
     noData: 0,
     errors: 0,
     totalPitchers: 0,
+    completionUpdate: { checked: 0, completed: 0, errors: 0 },
     games: [] as Array<{
       game_id: string;
       matchup: string;
@@ -135,7 +245,15 @@ export async function GET(request: Request) {
       (trackedTeams || []).map((t: { team_id: string }) => t.team_id),
     );
 
-    // 2. Get completed games from last N days
+    // 2. Update game completion status first (marks finished games as completed)
+    results.completionUpdate = await updateGameCompletionStatus(
+      supabase,
+      trackedTeamIds,
+      DAYS_BACK,
+      DELAY_MS,
+    );
+
+    // 3. Get completed games from last N days (now includes newly completed ones)
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - DAYS_BACK);
 
@@ -148,14 +266,14 @@ export async function GET(request: Request) {
 
     if (gamesErr) throw new Error(`Failed to fetch games: ${gamesErr.message}`);
 
-    // 3. Filter to games involving tracked teams
+    // 4. Filter to games involving tracked teams
     const trackedGames = (games || []).filter(
       (g: { home_team_id: string; away_team_id: string }) =>
         trackedTeamIds.has(g.home_team_id) ||
         trackedTeamIds.has(g.away_team_id),
     );
 
-    // 4. Find which games already have participation data
+    // 5. Find which games already have participation data
     const gameIds = trackedGames.map((g: { game_id: string }) => g.game_id);
 
     if (gameIds.length === 0) {
@@ -182,7 +300,7 @@ export async function GET(request: Request) {
       (existingParticipation || []).map((p: { game_id: string }) => p.game_id),
     );
 
-    // 5. Games that still need scraping
+    // 6. Games that still need scraping
     const gamesToScrape = trackedGames.filter(
       (g: { game_id: string }) => !gamesWithData.has(g.game_id),
     );

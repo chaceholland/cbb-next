@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
-import { ncaaFallback } from "./ncaa-fallback-scraper.mjs";
-import { d1BaseballFallback } from "./d1baseball-scraper.mjs";
+import { ncaaFallback } from "./archive/scripts/ncaa-fallback-scraper.mjs";
+import { d1BaseballFallback } from "./archive/scripts/d1baseball-scraper.mjs";
 
 const envContent = fs.readFileSync(".env.local", "utf8");
 const env = {};
