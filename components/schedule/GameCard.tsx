@@ -37,6 +37,7 @@ interface Props {
   isWatched?: boolean;
   onToggleFavorite?: () => void;
   onToggleWatched?: () => void;
+  favoritePitcherIds?: Set<string>;
 }
 
 function TeamLogo({
@@ -136,6 +137,7 @@ function PitcherRow({
   gameDate,
   pitcherIssuesMap,
   onPitcherIssueToggle,
+  isFavoritePitcher = false,
 }: {
   row: ParticipationRow;
   teamId: string;
@@ -153,6 +155,7 @@ function PitcherRow({
     selectedIssues: string[],
     customNote?: string,
   ) => void;
+  isFavoritePitcher?: boolean;
 }) {
   const team = teams[teamId];
   const fallbackSrc = team?.logo || getEspnLogoUrl(teamId);
@@ -194,6 +197,15 @@ function PitcherRow({
       {/* Name + stats */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap mb-1">
+          {isFavoritePitcher && (
+            <svg
+              className="w-4 h-4 text-yellow-500 shrink-0"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+          )}
           <span className="text-sm font-bold text-slate-800 truncate">
             {row.pitcher_name.replace(/ - P /g, " ").trim()}
           </span>
@@ -244,6 +256,7 @@ function TeamColumn({
   teams,
   headshotsMap,
   gameId,
+  favoritePitcherIds,
   gameDate,
   pitcherIssuesMap,
   onPitcherIssueToggle,
@@ -272,6 +285,7 @@ function TeamColumn({
     customNote?: string,
   ) => void;
   teamRecord?: TeamRecord;
+  favoritePitcherIds?: Set<string>;
 }) {
   const displayName = team?.display_name ?? name ?? "Unknown";
 
@@ -345,6 +359,9 @@ function TeamColumn({
                 gameDate={gameDate}
                 pitcherIssuesMap={pitcherIssuesMap}
                 onPitcherIssueToggle={onPitcherIssueToggle}
+                isFavoritePitcher={
+                  favoritePitcherIds?.has(row.pitcher_id || "") ?? false
+                }
               />
             ))}
             {rows.length > 4 && (
@@ -375,6 +392,7 @@ export function GameCard({
   isWatched = false,
   onToggleFavorite,
   onToggleWatched,
+  favoritePitcherIds,
 }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
@@ -581,6 +599,7 @@ export function GameCard({
             pitcherIssuesMap={pitcherIssuesMap}
             onPitcherIssueToggle={onPitcherIssueToggle}
             teamRecord={teamRecords?.[game.away_team_id]}
+            favoritePitcherIds={favoritePitcherIds}
           />
           <div className="w-px bg-slate-100 shrink-0" />
           <TeamColumn
@@ -599,6 +618,7 @@ export function GameCard({
             pitcherIssuesMap={pitcherIssuesMap}
             onPitcherIssueToggle={onPitcherIssueToggle}
             teamRecord={teamRecords?.[game.home_team_id]}
+            favoritePitcherIds={favoritePitcherIds}
           />
         </div>
       ) : (
