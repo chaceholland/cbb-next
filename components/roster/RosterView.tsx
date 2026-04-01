@@ -66,6 +66,7 @@ export function RosterView({
   const [importResult, setImportResult] = useState<string | null>(null);
   const [focusedPitcherIdx, setFocusedPitcherIdx] = useState<number>(-1);
   const pitcherCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const pitcherGridRef = useRef<HTMLDivElement>(null);
 
   // Filter memory hook - persists filter state across sessions
   const { filters, setFilters, clearFilters, isRestored, dismissRestored } =
@@ -410,6 +411,23 @@ export function RosterView({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [selectedTeamId, teamPitchers, focusedPitcherIdx]);
 
+  // Block mouse wheel from scrolling the pitcher grid — only arrow keys navigate cards
+  useEffect(() => {
+    const grid = pitcherGridRef.current;
+    if (!grid || !selectedTeamId) return;
+
+    const blockWheel = (e: WheelEvent) => {
+      // If the grid is scrollable, prevent wheel from scrolling it
+      // and let the event propagate to scroll the page instead
+      if (grid.scrollHeight > grid.clientHeight) {
+        e.preventDefault();
+      }
+    };
+
+    grid.addEventListener("wheel", blockWheel, { passive: false });
+    return () => grid.removeEventListener("wheel", blockWheel);
+  }, [selectedTeamId]);
+
   // Handler for pitcher data quality issues
   const handlePitcherIssueToggle = (
     pitcherId: string,
@@ -740,7 +758,10 @@ export function RosterView({
             }}
           />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+          <div
+            ref={pitcherGridRef}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 max-h-[75vh] overflow-y-auto"
+          >
             {teamPitchers.map((pitcher, i) => (
               <div
                 key={pitcher.pitcher_id}
