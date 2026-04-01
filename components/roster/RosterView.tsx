@@ -64,6 +64,8 @@ export function RosterView({
   );
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<string | null>(null);
+  const [focusedPitcherIdx, setFocusedPitcherIdx] = useState<number>(-1);
+  const pitcherCardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // Filter memory hook - persists filter state across sessions
   const { filters, setFilters, clearFilters, isRestored, dismissRestored } =
@@ -345,6 +347,68 @@ export function RosterView({
     showIssuesOnly,
     pitcherIssuesMap,
   ]);
+
+  // Reset focused pitcher when team changes
+  useEffect(() => {
+    setFocusedPitcherIdx(-1);
+  }, [selectedTeamId]);
+
+  // Arrow key navigation for pitcher cards
+  useEffect(() => {
+    if (!selectedTeamId || teamPitchers.length === 0) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      )
+        return;
+
+      const cols = window.innerWidth >= 640 ? 2 : 1;
+      const total = teamPitchers.length;
+      let next = focusedPitcherIdx;
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        next =
+          focusedPitcherIdx === -1
+            ? 0
+            : Math.min(focusedPitcherIdx + cols, total - 1);
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        next =
+          focusedPitcherIdx === -1 ? 0 : Math.max(focusedPitcherIdx - cols, 0);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        next =
+          focusedPitcherIdx === -1
+            ? 0
+            : Math.min(focusedPitcherIdx + 1, total - 1);
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        next =
+          focusedPitcherIdx === -1 ? 0 : Math.max(focusedPitcherIdx - 1, 0);
+      } else if (e.key === "Enter" && focusedPitcherIdx >= 0) {
+        e.preventDefault();
+        setSelectedPitcher(teamPitchers[focusedPitcherIdx]);
+        return;
+      } else if (e.key === "Escape" && focusedPitcherIdx >= 0) {
+        setFocusedPitcherIdx(-1);
+        return;
+      } else {
+        return;
+      }
+
+      setFocusedPitcherIdx(next);
+      pitcherCardRefs.current[next]?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedTeamId, teamPitchers, focusedPitcherIdx]);
 
   // Handler for pitcher data quality issues
   const handlePitcherIssueToggle = (
@@ -678,21 +742,32 @@ export function RosterView({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
             {teamPitchers.map((pitcher, i) => (
-              <PitcherCard
+              <div
                 key={pitcher.pitcher_id}
-                pitcher={pitcher}
-                index={i}
-                onClick={() => setSelectedPitcher(pitcher)}
-                isFavorite={favorites.includes(pitcher.pitcher_id)}
-                onToggleFavorite={handleToggleFavorite}
-                hasIssue={pitcherIssuesMap.has(
-                  `${pitcher.team_id}:${pitcher.pitcher_id}`,
+                ref={(el) => {
+                  pitcherCardRefs.current[i] = el;
+                }}
+                className={cn(
+                  "rounded-2xl transition-all duration-150",
+                  focusedPitcherIdx === i &&
+                    "ring-3 ring-blue-500 ring-offset-2 ring-offset-slate-50 dark:ring-offset-slate-900",
                 )}
-                issueData={pitcherIssuesMap.get(
-                  `${pitcher.team_id}:${pitcher.pitcher_id}`,
-                )}
-                onIssueToggle={handlePitcherIssueToggle}
-              />
+              >
+                <PitcherCard
+                  pitcher={pitcher}
+                  index={i}
+                  onClick={() => setSelectedPitcher(pitcher)}
+                  isFavorite={favorites.includes(pitcher.pitcher_id)}
+                  onToggleFavorite={handleToggleFavorite}
+                  hasIssue={pitcherIssuesMap.has(
+                    `${pitcher.team_id}:${pitcher.pitcher_id}`,
+                  )}
+                  issueData={pitcherIssuesMap.get(
+                    `${pitcher.team_id}:${pitcher.pitcher_id}`,
+                  )}
+                  onIssueToggle={handlePitcherIssueToggle}
+                />
+              </div>
             ))}
           </div>
         )}
