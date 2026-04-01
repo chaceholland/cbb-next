@@ -279,7 +279,7 @@ export function PitcherCard({
                 setImgError(true);
                 setImgLoading(false);
               }}
-              sizes="(max-width: 640px) 100vw, 50vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               priority={index < 4}
               loading={index < 8 ? "eager" : "lazy"}
               quality={75}
