@@ -10,6 +10,7 @@ import { FiltersModal } from "./FiltersModal";
 import { ScheduleSkeleton } from "./ScheduleSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useFavorites } from "@/lib/hooks/useFavorites";
 import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
 import { cn } from "@/lib/utils";
 import { getTeamRecord } from "@/lib/stats/team-records";
@@ -40,7 +41,7 @@ export function ScheduleView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
-  const [favorites] = useLocalStorage<string[]>("cbb-favorites", []);
+  const { favorites, toggleFavorite: toggleFavoritePitcher } = useFavorites();
   const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(
     new Set(),
@@ -1341,6 +1342,7 @@ export function ScheduleView() {
                               toggleWatchedGame(game.game_id)
                             }
                             favoritePitcherIds={favoritePitcherIds}
+                            onToggleFavoritePitcher={toggleFavoritePitcher}
                           />
                         </motion.div>
                       ))
@@ -1397,6 +1399,7 @@ export function ScheduleView() {
                                 toggleWatchedGame(game.game_id)
                               }
                               favoritePitcherIds={favoritePitcherIds}
+                              onToggleFavoritePitcher={toggleFavoritePitcher}
                             />
                           ))}
                         </motion.div>

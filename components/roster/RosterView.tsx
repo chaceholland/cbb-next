@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabase/client";
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from "@/lib/supabase/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useFavorites } from "@/lib/hooks/useFavorites";
 import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
 import { PitcherCard } from "./PitcherCard";
 import { PitcherModal } from "./PitcherModal";
@@ -58,10 +59,7 @@ export function RosterView({
   const savedScrollY = useRef(0);
   const [selectedPitcher, setSelectedPitcher] =
     useState<EnrichedPitcher | null>(null);
-  const [favorites, setFavorites] = useLocalStorage<string[]>(
-    "cbb-favorites",
-    [],
-  );
+  const { favorites, toggleFavorite } = useFavorites();
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<string | null>(null);
   const [focusedPitcherIdx, setFocusedPitcherIdx] = useState<number>(-1);
@@ -164,7 +162,9 @@ export function RosterView({
         setImportResult("All matching favorites already imported.");
         return;
       }
-      setFavorites((prev) => [...prev, ...toAdd]);
+      for (const id of toAdd) {
+        await toggleFavorite(id);
+      }
       setImportResult(
         `Imported ${toAdd.length} favorites (${data.pitchers.length - matched.length} unmatched from old tracker).`,
       );
@@ -475,9 +475,7 @@ export function RosterView({
   };
 
   const handleToggleFavorite = (id: string) => {
-    setFavorites((prev) =>
-      prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id],
-    );
+    toggleFavorite(id);
   };
 
   // Copy issues to clipboard

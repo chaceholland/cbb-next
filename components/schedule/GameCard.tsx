@@ -38,6 +38,7 @@ interface Props {
   onToggleFavorite?: () => void;
   onToggleWatched?: () => void;
   favoritePitcherIds?: Set<string>;
+  onToggleFavoritePitcher?: (pitcherId: string) => void;
 }
 
 function TeamLogo({
@@ -138,6 +139,7 @@ function PitcherRow({
   pitcherIssuesMap,
   onPitcherIssueToggle,
   isFavoritePitcher = false,
+  onToggleFavoritePitcher,
 }: {
   row: ParticipationRow;
   teamId: string;
@@ -156,6 +158,7 @@ function PitcherRow({
     customNote?: string,
   ) => void;
   isFavoritePitcher?: boolean;
+  onToggleFavoritePitcher?: (pitcherId: string) => void;
 }) {
   const team = teams[teamId];
   const fallbackSrc = team?.logo || getEspnLogoUrl(teamId);
@@ -191,6 +194,37 @@ function PitcherRow({
               }
             }}
           />
+        )}
+        {onToggleFavoritePitcher && row.pitcher_id && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavoritePitcher(row.pitcher_id!);
+            }}
+            className={cn(
+              "absolute top-1 right-1 p-1 rounded-full backdrop-blur-sm transition-colors z-10",
+              isFavoritePitcher
+                ? "bg-yellow-400/90 text-white"
+                : "bg-black/30 text-white/70 hover:bg-black/50 hover:text-white",
+            )}
+            title={
+              isFavoritePitcher ? "Remove from favorites" : "Add to favorites"
+            }
+          >
+            <svg
+              className="w-4 h-4"
+              fill={isFavoritePitcher ? "currentColor" : "none"}
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+              />
+            </svg>
+          </button>
         )}
       </div>
 
@@ -261,6 +295,7 @@ function TeamColumn({
   pitcherIssuesMap,
   onPitcherIssueToggle,
   teamRecord,
+  onToggleFavoritePitcher,
 }: {
   team: CbbTeam | undefined;
   teamId: string;
@@ -286,6 +321,7 @@ function TeamColumn({
   ) => void;
   teamRecord?: TeamRecord;
   favoritePitcherIds?: Set<string>;
+  onToggleFavoritePitcher?: (pitcherId: string) => void;
 }) {
   const displayName = team?.display_name ?? name ?? "Unknown";
 
@@ -362,6 +398,7 @@ function TeamColumn({
                 isFavoritePitcher={
                   favoritePitcherIds?.has(row.pitcher_id || "") ?? false
                 }
+                onToggleFavoritePitcher={onToggleFavoritePitcher}
               />
             ))}
             {rows.length > 4 && (
@@ -393,6 +430,7 @@ export function GameCard({
   onToggleFavorite,
   onToggleWatched,
   favoritePitcherIds,
+  onToggleFavoritePitcher,
 }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
@@ -600,6 +638,7 @@ export function GameCard({
             onPitcherIssueToggle={onPitcherIssueToggle}
             teamRecord={teamRecords?.[game.away_team_id]}
             favoritePitcherIds={favoritePitcherIds}
+            onToggleFavoritePitcher={onToggleFavoritePitcher}
           />
           <div className="w-px bg-slate-100 shrink-0" />
           <TeamColumn
@@ -619,6 +658,7 @@ export function GameCard({
             onPitcherIssueToggle={onPitcherIssueToggle}
             teamRecord={teamRecords?.[game.home_team_id]}
             favoritePitcherIds={favoritePitcherIds}
+            onToggleFavoritePitcher={onToggleFavoritePitcher}
           />
         </div>
       ) : (
