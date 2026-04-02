@@ -66,6 +66,7 @@ export function RosterView({
   const [importResult, setImportResult] = useState<string | null>(null);
   const [focusedPitcherIdx, setFocusedPitcherIdx] = useState<number>(-1);
   const pitcherCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const pitcherGridRef = useRef<HTMLDivElement>(null);
 
   // Filter memory hook - persists filter state across sessions
   const { filters, setFilters, clearFilters, isRestored, dismissRestored } =
@@ -400,10 +401,25 @@ export function RosterView({
       }
 
       setFocusedPitcherIdx(next);
-      pitcherCardRefs.current[next]?.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+
+      // Programmatically scroll the overflow-hidden grid container
+      const card = pitcherCardRefs.current[next];
+      const grid = pitcherGridRef.current;
+      if (card && grid) {
+        const cardTop = card.offsetTop - grid.offsetTop;
+        const cardBottom = cardTop + card.offsetHeight;
+        const viewTop = grid.scrollTop;
+        const viewBottom = viewTop + grid.clientHeight;
+
+        if (cardBottom > viewBottom) {
+          grid.scrollTo({
+            top: cardBottom - grid.clientHeight,
+            behavior: "smooth",
+          });
+        } else if (cardTop < viewTop) {
+          grid.scrollTo({ top: cardTop, behavior: "smooth" });
+        }
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -740,7 +756,10 @@ export function RosterView({
             }}
           />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+          <div
+            ref={pitcherGridRef}
+            className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 h-[70vh] overflow-hidden"
+          >
             {teamPitchers.map((pitcher, i) => (
               <div
                 key={pitcher.pitcher_id}
