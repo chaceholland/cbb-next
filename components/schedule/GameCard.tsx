@@ -39,6 +39,15 @@ interface Props {
   onToggleWatched?: () => void;
   favoritePitcherIds?: Set<string>;
   onToggleFavoritePitcher?: (pitcherId: string) => void;
+  favsByTeam?: Record<
+    string,
+    Array<{
+      pitcher_id: string;
+      pitcher_name: string;
+      team_id: string;
+      headshot: string | null;
+    }>
+  >;
 }
 
 function TeamLogo({
@@ -165,6 +174,7 @@ function PitcherRow({
   // Use actual headshot if available, otherwise fall back to team logo
   const imgSrc = headshotSrc || fallbackSrc;
 
+  const isDnp = row.stats?.source === "dnp";
   const ip = row.stats?.IP;
   const k = row.stats?.K;
   const er = row.stats?.ER;
@@ -174,7 +184,14 @@ function PitcherRow({
   const issueData = pitcherIssuesMap?.get(pitcherKey);
 
   return (
-    <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-900 border border-slate-700 mb-2 last:mb-0 shadow-sm">
+    <div
+      className={cn(
+        "flex items-center gap-3 p-2 rounded-lg border mb-2 last:mb-0 shadow-sm",
+        isDnp
+          ? "bg-slate-900/50 border-slate-700/50 opacity-60"
+          : "bg-slate-900 border-slate-700",
+      )}
+    >
       {/* Headshot */}
       <div className="w-28 h-32 rounded-lg overflow-hidden bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 transition-transform duration-200 hover:scale-[1.35] hover:shadow-xl hover:z-10 relative">
         {imgSrc && (
@@ -240,13 +257,24 @@ function PitcherRow({
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
           )}
-          <span className="text-sm font-bold text-slate-100 truncate">
+          <span
+            className={cn(
+              "text-sm font-bold truncate",
+              isDnp ? "text-slate-400" : "text-slate-100",
+            )}
+          >
             {row.pitcher_name.replace(/ - P /g, " ").trim()}
           </span>
-          <span
-            className="w-2 h-2 rounded-full bg-green-500 shrink-0"
-            title="Pitched in this game"
-          />
+          {isDnp ? (
+            <span className="text-xs font-bold text-slate-500 bg-slate-700 px-1.5 py-0.5 rounded">
+              DNP
+            </span>
+          ) : (
+            <span
+              className="w-2 h-2 rounded-full bg-green-500 shrink-0"
+              title="Pitched in this game"
+            />
+          )}
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {ip && (
@@ -431,6 +459,7 @@ export function GameCard({
   onToggleWatched,
   favoritePitcherIds,
   onToggleFavoritePitcher,
+  favsByTeam,
 }: Props) {
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
@@ -471,30 +500,57 @@ export function GameCard({
     }
   }
 
-  const homeRows = participation.filter((r) => r.team_id === game.home_team_id);
-  const awayRows = participation.filter((r) => r.team_id === game.away_team_id);
+  const homeParticipation = participation.filter(
+    (r) => r.team_id === game.home_team_id,
+  );
+  const awayParticipation = participation.filter(
+    (r) => r.team_id === game.away_team_id,
+  );
 
-  // Check if any favorited pitcher played in this game
+  // Merge favorites + participation for each team
+  function buildMergedRows(
+    teamId: string,
+    participationRows: ParticipationRow[],
+  ) {
+    const playedIds = new Set(
+      participationRows.map((r) => r.pitcher_id).filter(Boolean),
+    );
+
+    // Favorited pitchers who DIDN'T play (DNP)
+    const favDnp: ParticipationRow[] = (favsByTeam?.[teamId] || [])
+      .filter((f) => !playedIds.has(f.pitcher_id))
+      .map((f) => ({
+        id: -f.pitcher_id
+          .split("")
+          .reduce((a: number, c: string) => a + c.charCodeAt(0), 0),
+        game_id: game.game_id,
+        team_id: teamId,
+        pitcher_id: f.pitcher_id,
+        pitcher_name: f.pitcher_name,
+        stats: { source: "dnp" } as Record<string, string>,
+      }));
+
+    // Sort: fav+played, fav+DNP, non-fav played
+    const favPlayed = participationRows.filter(
+      (r) => r.pitcher_id && favoritePitcherIds?.has(r.pitcher_id),
+    );
+    const nonFavPlayed = participationRows.filter(
+      (r) => !r.pitcher_id || !favoritePitcherIds?.has(r.pitcher_id),
+    );
+    return [...favPlayed, ...favDnp, ...nonFavPlayed];
+  }
+
+  const sortedHomeRows = buildMergedRows(game.home_team_id, homeParticipation);
+  const sortedAwayRows = buildMergedRows(game.away_team_id, awayParticipation);
+
+  // Check if any favorited pitcher played in this game (for green border)
   const hasFavoritePitcher = favoritePitcherIds
-    ? [...homeRows, ...awayRows].some(
+    ? [...homeParticipation, ...awayParticipation].some(
         (r) => r.pitcher_id && favoritePitcherIds.has(r.pitcher_id),
       )
     : false;
 
-  // Sort favorited pitchers to the top within each team's list
-  const sortFavoritesFirst = (rows: ParticipationRow[]) => {
-    if (!favoritePitcherIds || favoritePitcherIds.size === 0) return rows;
-    return [...rows].sort((a, b) => {
-      const aFav = a.pitcher_id && favoritePitcherIds.has(a.pitcher_id) ? 1 : 0;
-      const bFav = b.pitcher_id && favoritePitcherIds.has(b.pitcher_id) ? 1 : 0;
-      return bFav - aFav;
-    });
-  };
-
-  const sortedHomeRows = sortFavoritesFirst(homeRows);
-  const sortedAwayRows = sortFavoritesFirst(awayRows);
-
-  const hasPitching = homeRows.length > 0 || awayRows.length > 0;
+  const hasPitching = sortedHomeRows.length > 0 || sortedAwayRows.length > 0;
   const dataSource =
     participation[0]?.stats?.source ?? (hasPitching ? "espn" : null);
 

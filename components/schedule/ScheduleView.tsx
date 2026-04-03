@@ -184,6 +184,34 @@ export function ScheduleView({
   const [headshotsMap, setHeadshotsMap] = useState<
     Record<string, string | null>
   >({});
+  const [pitcherById, setPitcherById] = useState<
+    Record<string, { team_id: string; name: string; headshot: string | null }>
+  >({});
+  // Map team_id → list of favorited pitcher info for that team
+  const favsByTeam = useMemo(() => {
+    const map: Record<
+      string,
+      Array<{
+        pitcher_id: string;
+        pitcher_name: string;
+        team_id: string;
+        headshot: string | null;
+      }>
+    > = {};
+    for (const pid of favorites) {
+      const info = pitcherById[pid];
+      if (info) {
+        if (!map[info.team_id]) map[info.team_id] = [];
+        map[info.team_id].push({
+          pitcher_id: pid,
+          pitcher_name: info.name,
+          team_id: info.team_id,
+          headshot: info.headshot,
+        });
+      }
+    }
+    return map;
+  }, [favorites, pitcherById]);
   // team_id → TeamRecord map for showing records on game cards
   const [teamRecords, setTeamRecords] = useState<Record<string, TeamRecord>>(
     {},
@@ -210,6 +238,7 @@ export function ScheduleView({
 
         // Load pitcher headshots (map by normalized name for participation lookup)
         const allPitchers: {
+          pitcher_id: string;
           team_id: string;
           name: string;
           headshot: string | null;
@@ -218,7 +247,7 @@ export function ScheduleView({
         while (true) {
           const { data: pd } = await supabase
             .from("cbb_pitchers")
-            .select("team_id, name, headshot")
+            .select("pitcher_id, team_id, name, headshot")
             .range(pitcherPage * 1000, (pitcherPage + 1) * 1000 - 1);
           if (!pd || pd.length === 0) break;
           allPitchers.push(...pd);
@@ -252,6 +281,21 @@ export function ScheduleView({
           }
         });
         setHeadshotsMap(hMap);
+
+        // Build pitcher_id → info map for favorites lookup
+        const pMap: Record<
+          string,
+          { team_id: string; name: string; headshot: string | null }
+        > = {};
+        allPitchers.forEach((p) => {
+          if (p.pitcher_id)
+            pMap[p.pitcher_id] = {
+              team_id: p.team_id,
+              name: p.name,
+              headshot: p.headshot,
+            };
+        });
+        setPitcherById(pMap);
 
         // Server-side filter: only games involving our 64 tracked teams
         const teamIdList = [...teamIds];
@@ -1347,6 +1391,7 @@ export function ScheduleView({
                               toggleWatchedGame(game.game_id)
                             }
                             favoritePitcherIds={favoritePitcherIds}
+                            favsByTeam={favsByTeam}
                             onToggleFavoritePitcher={toggleFavoritePitcher}
                           />
                         </motion.div>
@@ -1404,6 +1449,7 @@ export function ScheduleView({
                                 toggleWatchedGame(game.game_id)
                               }
                               favoritePitcherIds={favoritePitcherIds}
+                              favsByTeam={favsByTeam}
                               onToggleFavoritePitcher={toggleFavoritePitcher}
                             />
                           ))}
