@@ -149,16 +149,16 @@ export function FiltersModal({
             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
             <div
-              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col pointer-events-auto"
+              className="relative bg-slate-800 rounded-3xl shadow-2xl shadow-black/30 w-full max-w-2xl max-h-[85vh] flex flex-col pointer-events-auto"
               onClick={e => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="px-6 pt-6 pb-4 border-b border-slate-100 shrink-0">
+              <div className="px-6 pt-6 pb-4 border-b border-slate-700 shrink-0">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-slate-800">Filters & Display Options</h2>
+                  <h2 className="text-xl font-bold text-slate-100">Filters & Display Options</h2>
                   <button
                     onClick={onClose}
-                    className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors"
+                    className="p-2 rounded-full bg-slate-700 hover:bg-slate-600 text-slate-300 transition-colors"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -170,9 +170,9 @@ export function FiltersModal({
               {/* Content */}
               <div className="flex-1 overflow-y-auto px-6 py-4">
                 {/* Filter Presets */}
-                <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl border border-emerald-200">
+                <div className="mb-6 p-4 bg-slate-900 rounded-2xl border border-slate-700">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold text-emerald-700 flex items-center gap-2">
+                    <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                       </svg>
@@ -193,7 +193,7 @@ export function FiltersModal({
                         value={presetName}
                         onChange={e => setPresetName(e.target.value)}
                         placeholder="Preset name..."
-                        className="flex-1 px-3 py-2 border border-emerald-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        className="flex-1 px-3 py-2 border border-slate-600 rounded-lg bg-slate-800 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         onKeyDown={e => e.key === 'Enter' && handleSavePreset()}
                         autoFocus
                       />
@@ -205,7 +205,7 @@ export function FiltersModal({
                       </button>
                       <button
                         onClick={() => { setShowSaveInput(false); setPresetName(''); }}
-                        className="px-4 py-2 bg-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-300 transition-colors"
+                        className="px-4 py-2 bg-slate-700 text-slate-200 text-sm font-medium rounded-lg hover:bg-slate-600 transition-colors"
                       >
                         Cancel
                       </button>
@@ -215,10 +215,10 @@ export function FiltersModal({
                   {presets.length > 0 ? (
                     <div className="space-y-2">
                       {presets.map(preset => (
-                        <div key={preset.id} className="flex items-center justify-between p-2 bg-white rounded-lg border border-slate-200">
+                        <div key={preset.id} className="flex items-center justify-between p-2 bg-slate-800 rounded-lg border border-slate-600">
                           <button
                             onClick={() => handleLoadPreset(preset.id)}
-                            className="flex-1 text-left text-sm font-medium text-slate-700 hover:text-emerald-600 transition-colors"
+                            className="flex-1 text-left text-sm font-medium text-slate-200 hover:text-emerald-400 transition-colors"
                           >
                             {preset.name}
                           </button>
@@ -235,7 +235,7 @@ export function FiltersModal({
                       ))}
                     </div>
                   ) : (
-                    <p className="text-sm text-emerald-600 italic text-center py-2">
+                    <p className="text-sm text-emerald-400 italic text-center py-2">
                       No saved presets yet. Save your favorite filter combinations for quick access.
                     </p>
                   )}
@@ -243,11 +243,11 @@ export function FiltersModal({
 
                 {/* Watch Order */}
                 <div className="mb-6">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Watch Order</h3>
+                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Watch Order</h3>
                   <select
                     value={watchOrder}
                     onChange={e => onWatchOrderChange(e.target.value as WatchOrder)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-600 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-900"
                   >
                     <option value="all">All games</option>
                     <option value="unwatched">Unwatched</option>
@@ -260,11 +260,11 @@ export function FiltersModal({
 
                 {/* Pitcher Filter */}
                 <div className="mb-6">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Pitchers</h3>
+                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Pitchers</h3>
                   <select
                     value={pitcherFilter}
                     onChange={e => onPitcherFilterChange(e.target.value as PitcherFilter)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+                    className="w-full px-4 py-2.5 border border-slate-600 rounded-xl text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-900"
                   >
                     <option value="favorites-or-played">Favorites or Played (Default)</option>
                     <option value="favorites-only">Favorites only</option>
@@ -276,7 +276,7 @@ export function FiltersModal({
                 {/* Week Filter */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Weeks</h3>
+                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Weeks</h3>
                     <button
                       onClick={() => onSelectedWeeksChange(new Set())}
                       className="text-xs text-blue-600 hover:text-blue-700 font-medium"
@@ -301,7 +301,7 @@ export function FiltersModal({
                           'px-3 py-2 rounded-lg text-sm font-medium transition-all',
                           selectedWeeks.has(week)
                             ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
-                            : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                            : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'
                         )}
                       >
                         Week {week}
@@ -312,45 +312,45 @@ export function FiltersModal({
 
                 {/* Quick Filters */}
                 <div className="mb-6">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Quick Filters</h3>
+                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Quick Filters</h3>
                   <div className="space-y-3">
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={showFavorites}
                         onChange={e => onShowFavoritesChange(e.target.checked)}
-                        className="w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                        className="w-5 h-5 rounded border-slate-600 bg-slate-900 text-blue-600 focus:ring-blue-500"
                       />
-                      <span className="text-sm text-slate-700 font-medium">Show Favorites Only</span>
+                      <span className="text-sm text-slate-200 font-medium">Show Favorites Only</span>
                     </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={showIssuesOnly}
                         onChange={e => onShowIssuesOnlyChange(e.target.checked)}
-                        className="w-5 h-5 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                        className="w-5 h-5 rounded border-slate-600 bg-slate-900 text-orange-600 focus:ring-orange-500"
                       />
-                      <span className="text-sm text-slate-700 font-medium">Show Issues Only</span>
+                      <span className="text-sm text-slate-200 font-medium">Show Issues Only</span>
                     </label>
                   </div>
                 </div>
 
                 {/* Team Search */}
                 <div className="mb-6">
-                  <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">Search Teams</h3>
+                  <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Search Teams</h3>
                   <input
                     type="text"
                     value={teamSearch}
                     onChange={e => onTeamSearchChange(e.target.value)}
                     placeholder="Search teams..."
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 border border-slate-600 rounded-xl bg-slate-900 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
 
                 {/* Conference Filter - Multi-Select */}
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Conferences</h3>
+                    <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wide">Conferences</h3>
                     <div className="flex gap-2">
                       <button
                         onClick={() => onConferencesChange(new Set())}
@@ -389,7 +389,7 @@ export function FiltersModal({
                             'px-3 py-2 rounded-lg text-sm font-medium transition-all text-left',
                             conferences.has(conf)
                               ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg'
-                              : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                              : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'
                           )}
                         >
                           <div className="flex items-center justify-between gap-2">
@@ -399,7 +399,7 @@ export function FiltersModal({
                                 'text-xs px-1.5 py-0.5 rounded-full shrink-0',
                                 conferences.has(conf)
                                   ? 'bg-white/20 text-white'
-                                  : 'bg-slate-200 text-slate-600'
+                                  : 'bg-slate-600 text-slate-300'
                               )}>
                                 {count}
                               </span>
@@ -413,11 +413,11 @@ export function FiltersModal({
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 border-t border-slate-100 shrink-0">
+              <div className="px-6 py-4 border-t border-slate-700 shrink-0">
                 <div className="flex gap-3">
                   <button
                     onClick={handleClearAllFilters}
-                    className="flex-1 px-4 py-2.5 bg-slate-100 text-slate-700 font-medium rounded-xl hover:bg-slate-200 transition-colors"
+                    className="flex-1 px-4 py-2.5 bg-slate-700 text-slate-200 font-medium rounded-xl hover:bg-slate-600 transition-colors"
                   >
                     Clear All Filters
                   </button>

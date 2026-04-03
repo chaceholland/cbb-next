@@ -25,7 +25,7 @@ export function ScheduleSkeleton() {
             {[1, 2, 3, 4].map((game) => (
               <div
                 key={game}
-                className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
+                className="rounded-lg border border-slate-700 bg-slate-800 p-4"
               >
                 <div className="space-y-3">
                   {/* Date/status */}

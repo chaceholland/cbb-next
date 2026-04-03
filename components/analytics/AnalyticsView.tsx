@@ -41,9 +41,9 @@ function getConfLabel(conf: string): string {
 
 function StatCard({ label, value, sub, color }: { label: string; value: string | number; sub?: string; color: string }) {
   return (
-    <div className={cn('rounded-2xl p-5 border-2 bg-white', color)}>
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">{label}</p>
-      <p className="text-3xl font-bold text-slate-800">{value}</p>
+    <div className={cn('rounded-2xl p-5 border-2 bg-slate-800', color)}>
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-1">{label}</p>
+      <p className="text-3xl font-bold text-slate-100">{value}</p>
       {sub && <p className="text-xs text-slate-400 mt-1">{sub}</p>}
     </div>
   );
@@ -61,14 +61,14 @@ function HorizontalBar({ label, value, max, color, logo }: {
             unoptimized onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         </div>
       )}
-      <div className="w-28 shrink-0 text-xs text-slate-600 truncate text-right">{label}</div>
-      <div className="flex-1 bg-slate-100 rounded-full h-4 overflow-hidden">
+      <div className="w-28 shrink-0 text-xs text-slate-300 truncate text-right">{label}</div>
+      <div className="flex-1 bg-slate-700 rounded-full h-4 overflow-hidden">
         <div
           className={cn('h-full rounded-full transition-all duration-500', color)}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="w-6 shrink-0 text-xs font-bold text-slate-700 text-right">{value}</div>
+      <div className="w-6 shrink-0 text-xs font-bold text-slate-200 text-right">{value}</div>
     </div>
   );
 }
@@ -279,8 +279,8 @@ export function AnalyticsView() {
   return (
     <div className="space-y-8">
       {/* Conference filter */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-        <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-2">Conference</label>
+      <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-sm shadow-black/30 p-4">
+        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wide block mb-2">Conference</label>
         <div className="flex gap-2 flex-wrap">
           {['All', ...CONFERENCES].map(conf => (
             <button
@@ -290,7 +290,7 @@ export function AnalyticsView() {
                 'px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200',
                 conference === conf
                   ? 'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white shadow-md'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                  : 'bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600'
               )}
             >
               {conf}
@@ -315,8 +315,8 @@ export function AnalyticsView() {
       {/* Charts row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Roster Sizes by Team */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-          <h3 className="text-sm font-bold text-slate-700 mb-4">📊 Roster Sizes by Team (Top 25)</h3>
+        <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-sm shadow-black/30 p-6">
+          <h3 className="text-sm font-bold text-slate-200 mb-4">📊 Roster Sizes by Team (Top 25)</h3>
           <div className="space-y-1.5">
             {rosterByTeam.map(({ team, count }) => (
               <HorizontalBar
@@ -334,8 +334,8 @@ export function AnalyticsView() {
         {/* Right column */}
         <div className="space-y-6">
           {/* Position Distribution */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-            <h3 className="text-sm font-bold text-slate-700 mb-4">⚾ Position Distribution</h3>
+          <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-sm shadow-black/30 p-6">
+            <h3 className="text-sm font-bold text-slate-200 mb-4">⚾ Position Distribution</h3>
             <div className="space-y-3">
               {[
                 { label: 'RHP', count: positionDist.RHP, color: 'bg-blue-500' },
@@ -345,11 +345,11 @@ export function AnalyticsView() {
                 const pct = filteredPitchers.length > 0 ? ((count / filteredPitchers.length) * 100).toFixed(1) : '0';
                 return (
                   <div key={label}>
-                    <div className="flex justify-between text-xs text-slate-600 mb-1">
+                    <div className="flex justify-between text-xs text-slate-300 mb-1">
                       <span className="font-medium">{label}</span>
                       <span>{count.toLocaleString()} ({pct}%)</span>
                     </div>
-                    <div className="bg-slate-100 rounded-full h-3 overflow-hidden">
+                    <div className="bg-slate-700 rounded-full h-3 overflow-hidden">
                       <div
                         className={cn('h-full rounded-full transition-all duration-500', color)}
                         style={{ width: `${pct}%` }}
@@ -362,8 +362,8 @@ export function AnalyticsView() {
           </div>
 
           {/* Class Year Breakdown */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-            <h3 className="text-sm font-bold text-slate-700 mb-4">🎓 Class Year Breakdown</h3>
+          <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-sm shadow-black/30 p-6">
+            <h3 className="text-sm font-bold text-slate-200 mb-4">🎓 Class Year Breakdown</h3>
             <div className="space-y-3">
               {[
                 { label: 'Freshman', key: 'Fr', color: 'bg-sky-400' },
@@ -377,11 +377,11 @@ export function AnalyticsView() {
                 const pct = filteredPitchers.length > 0 ? ((count / filteredPitchers.length) * 100).toFixed(1) : '0';
                 return (
                   <div key={key}>
-                    <div className="flex justify-between text-xs text-slate-600 mb-1">
+                    <div className="flex justify-between text-xs text-slate-300 mb-1">
                       <span className="font-medium">{label}</span>
                       <span>{count.toLocaleString()} ({pct}%)</span>
                     </div>
-                    <div className="bg-slate-100 rounded-full h-3 overflow-hidden">
+                    <div className="bg-slate-700 rounded-full h-3 overflow-hidden">
                       <div
                         className={cn('h-full rounded-full transition-all duration-500', color)}
                         style={{ width: `${pct}%` }}
@@ -396,12 +396,12 @@ export function AnalyticsView() {
       </div>
 
       {/* Conference Roster Depth */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <h3 className="text-sm font-bold text-slate-700 mb-4">🏆 Conference Roster Depth</h3>
+      <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-sm shadow-black/30 p-6">
+        <h3 className="text-sm font-bold text-slate-200 mb-4">🏆 Conference Roster Depth</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-100">
+              <tr className="border-b border-slate-700">
                 <th className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wide pb-2">Conference</th>
                 <th className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wide pb-2">Teams</th>
                 <th className="text-right text-xs font-semibold text-slate-400 uppercase tracking-wide pb-2">Pitchers</th>
@@ -410,16 +410,16 @@ export function AnalyticsView() {
             </thead>
             <tbody>
               {confDepth.sort((a, b) => b.pitchers - a.pitchers).map(({ conf, teams: t, pitchers: p, avg }) => (
-                <tr key={conf} className="border-b border-slate-50 hover:bg-slate-50 transition-colors">
+                <tr key={conf} className="border-b border-slate-700/50 hover:bg-slate-700/50 transition-colors">
                   <td className="py-2.5">
                     <div className="flex items-center gap-2">
                       <div className={cn('w-2.5 h-2.5 rounded-full shrink-0', CONF_COLORS[conf] || 'bg-slate-300')} />
-                      <span className="font-medium text-slate-700">{conf}</span>
+                      <span className="font-medium text-slate-200">{conf}</span>
                     </div>
                   </td>
-                  <td className="py-2.5 text-right text-slate-600 tabular-nums">{t}</td>
-                  <td className="py-2.5 text-right font-bold text-slate-800 tabular-nums">{p}</td>
-                  <td className="py-2.5 text-right text-slate-600 tabular-nums">{avg}</td>
+                  <td className="py-2.5 text-right text-slate-300 tabular-nums">{t}</td>
+                  <td className="py-2.5 text-right font-bold text-slate-100 tabular-nums">{p}</td>
+                  <td className="py-2.5 text-right text-slate-300 tabular-nums">{avg}</td>
                 </tr>
               ))}
             </tbody>
@@ -428,8 +428,8 @@ export function AnalyticsView() {
       </div>
 
       {/* Pitcher Performance Leaderboards */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-        <h3 className="text-sm font-bold text-slate-700 mb-4">🏆 Pitcher Performance Leaders</h3>
+      <div className="bg-slate-800 rounded-2xl border border-slate-700 shadow-sm shadow-black/30 p-6">
+        <h3 className="text-sm font-bold text-slate-200 mb-4">🏆 Pitcher Performance Leaders</h3>
         {statsLoading ? (
           <div className="text-center py-8 text-slate-400">Loading stats...</div>
         ) : (

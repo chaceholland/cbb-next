@@ -34,7 +34,7 @@ function PitcherAvatar({ name, headshot, teamId, teamLogo, size = 28 }: { name: 
 
   return (
     <div
-      className="rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200"
+      className="rounded-full overflow-hidden bg-slate-700 shrink-0 border border-slate-600"
       style={{ width: size, height: size }}
     >
       {imgSrc ? (
@@ -93,7 +93,7 @@ function TeamPitching({
             onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
         </div>
         <div className="min-w-0">
-          <div className="text-sm font-bold text-slate-800 truncate">{displayName}</div>
+          <div className="text-sm font-bold text-slate-100 truncate">{displayName}</div>
           <div className="text-[10px] text-slate-400">{label}</div>
         </div>
       </div>
@@ -124,7 +124,7 @@ function TeamPitching({
                 key={row.id}
                 className={cn(
                   'grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto_auto] gap-x-2 items-center px-2 py-1.5 rounded-lg',
-                  isFav ? 'bg-yellow-50 border border-yellow-200' : 'bg-slate-50'
+                  isFav ? 'bg-yellow-900/30 border border-yellow-700' : 'bg-slate-900'
                 )}
               >
                 <div className="flex items-center gap-2 min-w-0">
@@ -140,13 +140,13 @@ function TeamPitching({
                       <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                     </svg>
                   )}
-                  <span className="text-xs font-medium text-slate-700 truncate">{row.pitcher_name}</span>
+                  <span className="text-xs font-medium text-slate-200 truncate">{row.pitcher_name}</span>
                 </div>
-                <span className="text-xs font-bold text-slate-800 tabular-nums">{row.stats.IP ?? '—'}</span>
-                <span className="text-xs text-slate-600 tabular-nums">{row.stats.K ?? '—'}</span>
-                <span className="text-xs text-slate-600 tabular-nums">{row.stats.H ?? '—'}</span>
-                <span className="text-xs text-slate-600 tabular-nums">{row.stats.BB ?? '—'}</span>
-                <span className="text-xs text-slate-600 tabular-nums">{row.stats.ER ?? '—'}</span>
+                <span className="text-xs font-bold text-slate-100 tabular-nums">{row.stats.IP ?? '—'}</span>
+                <span className="text-xs text-slate-300 tabular-nums">{row.stats.K ?? '—'}</span>
+                <span className="text-xs text-slate-300 tabular-nums">{row.stats.H ?? '—'}</span>
+                <span className="text-xs text-slate-300 tabular-nums">{row.stats.BB ?? '—'}</span>
+                <span className="text-xs text-slate-300 tabular-nums">{row.stats.ER ?? '—'}</span>
                 <span className="text-xs text-slate-400 tabular-nums">{row.stats.PC ?? '—'}</span>
                 <ParticipationIssueButton
                   gameId={gameId}
@@ -293,13 +293,13 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
           >
             <div
-              className="relative bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col pointer-events-auto"
+              className="relative bg-slate-800 rounded-3xl shadow-2xl shadow-black/30 w-full max-w-2xl max-h-[90vh] flex flex-col pointer-events-auto"
               onClick={e => e.stopPropagation()}
             >
               {/* Close */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/10 hover:bg-black/20 text-slate-700 transition-colors"
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-black/30 hover:bg-black/50 text-slate-300 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -307,7 +307,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
               </button>
 
               {/* Score header */}
-              <div className="px-6 pt-6 pb-4 border-b border-slate-100 shrink-0">
+              <div className="px-6 pt-6 pb-4 border-b border-slate-700 shrink-0">
                 <div className="flex items-center gap-3">
                   {/* Away */}
                   <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -321,7 +321,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                       onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                     />
                     <div className="min-w-0">
-                      <div className={cn('text-sm font-bold truncate', awayWon ? 'text-slate-900' : 'text-slate-500')}>
+                      <div className={cn('text-sm font-bold truncate', awayWon ? 'text-slate-100' : 'text-slate-400')}>
                         {awayTeam?.display_name ?? game.away_name}
                       </div>
                       <div className="text-[10px] text-slate-400">Away</div>
@@ -332,7 +332,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                   <div className="text-center shrink-0 px-2">
                     {game.completed && awayScore !== null && homeScore !== null ? (
                       <>
-                        <div className="text-2xl font-bold text-slate-800 tabular-nums">
+                        <div className="text-2xl font-bold text-slate-100 tabular-nums">
                           {awayScore} – {homeScore}
                         </div>
                         <div className="text-xs text-slate-400">Final</div>
@@ -345,7 +345,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                   {/* Home */}
                   <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
                     <div className="min-w-0 text-right">
-                      <div className={cn('text-sm font-bold truncate', homeWon ? 'text-slate-900' : 'text-slate-500')}>
+                      <div className={cn('text-sm font-bold truncate', homeWon ? 'text-slate-100' : 'text-slate-400')}>
                         {homeTeam?.display_name ?? game.home_name}
                       </div>
                       <div className="text-[10px] text-slate-400">Home</div>
@@ -373,7 +373,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                 <div className="flex items-center gap-2 mb-4">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Pitching</h3>
                   {favoriteNames.size > 0 && (
-                    <span className="text-[10px] text-yellow-600 bg-yellow-50 border border-yellow-200 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] text-yellow-400 bg-yellow-900/30 border border-yellow-700 px-2 py-0.5 rounded-full">
                       ★ = your favorites
                     </span>
                   )}
@@ -399,7 +399,7 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
                       issueMap={issueMap}
                       onIssueToggle={handleIssueToggle}
                     />
-                    <div className="w-px bg-slate-200 shrink-0" />
+                    <div className="w-px bg-slate-700 shrink-0" />
                     <TeamPitching
                       team={homeTeam}
                       teamId={game.home_team_id}
@@ -494,11 +494,11 @@ function ParticipationIssueButton({
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
-        className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 z-10"
+        className="relative bg-slate-800 rounded-2xl shadow-2xl shadow-black/30 w-full max-w-md p-6 z-10"
         onClick={e => e.stopPropagation()}
       >
-        <h3 className="text-lg font-bold text-slate-800 mb-1">Report Participation Data Issue</h3>
-        <p className="text-sm text-slate-500 mb-4">{pitcherName} • {teamName}</p>
+        <h3 className="text-lg font-bold text-slate-100 mb-1">Report Participation Data Issue</h3>
+        <p className="text-sm text-slate-400 mb-4">{pitcherName} • {teamName}</p>
 
         <div className="space-y-2 mb-4">
           {issueOptions.map(issue => (
@@ -507,15 +507,15 @@ function ParticipationIssueButton({
                 type="checkbox"
                 checked={selectedIssues.includes(issue)}
                 onChange={() => toggleIssue(issue)}
-                className="mt-0.5 w-4 h-4 rounded border-slate-300 text-orange-500 focus:ring-orange-500 cursor-pointer"
+                className="mt-0.5 w-4 h-4 rounded border-slate-600 bg-slate-900 text-orange-500 focus:ring-orange-500 cursor-pointer"
               />
-              <span className="text-sm text-slate-700 group-hover:text-slate-900">{issue}</span>
+              <span className="text-sm text-slate-200 group-hover:text-slate-100">{issue}</span>
             </label>
           ))}
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-slate-200 mb-2">
             Additional notes (optional)
           </label>
           <textarea
@@ -523,7 +523,7 @@ function ParticipationIssueButton({
             onChange={e => setCustomNote(e.target.value)}
             placeholder="Describe the issue..."
             rows={3}
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
+            className="w-full px-3 py-2 border border-slate-600 rounded-lg bg-slate-900 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none"
           />
         </div>
 
@@ -531,21 +531,21 @@ function ParticipationIssueButton({
           <button
             onClick={handleSave}
             disabled={selectedIssues.length === 0}
-            className="flex-1 px-4 py-2 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-2 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:bg-slate-700 disabled:cursor-not-allowed"
           >
             Save
           </button>
           {hasIssue && (
             <button
               onClick={handleClear}
-              className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-colors"
+              className="px-4 py-2 bg-slate-700 text-slate-200 font-medium rounded-lg hover:bg-slate-600 transition-colors"
             >
               Clear
             </button>
           )}
           <button
             onClick={() => setShowModal(false)}
-            className="px-4 py-2 bg-slate-100 text-slate-700 font-medium rounded-lg hover:bg-slate-200 transition-colors"
+            className="px-4 py-2 bg-slate-700 text-slate-200 font-medium rounded-lg hover:bg-slate-600 transition-colors"
           >
             Cancel
           </button>
@@ -562,8 +562,8 @@ function ParticipationIssueButton({
         className={cn(
           'w-6 h-6 rounded-full flex items-center justify-center transition-all shrink-0',
           hasIssue
-            ? 'bg-orange-100 text-orange-600 hover:bg-orange-200 border border-orange-300'
-            : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+            ? 'bg-orange-900/50 text-orange-400 hover:bg-orange-900/70 border border-orange-700'
+            : 'bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-slate-300'
         )}
         title={hasIssue ? 'Has data quality issues' : 'Report data quality issue'}
       >

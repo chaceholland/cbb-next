@@ -43,27 +43,28 @@ export function PerformanceChart({ games, metric }: PerformanceChartProps) {
   }[metric];
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
-      <h3 className="mb-4 font-semibold text-gray-900 dark:text-slate-100">{metricLabel} Trend</h3>
+    <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+      <h3 className="mb-4 font-semibold text-slate-100">{metricLabel} Trend</h3>
 
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
           <XAxis
             dataKey="date"
-            stroke="#6b7280"
-            tick={{ fill: '#6b7280', fontSize: 12 }}
+            stroke="#94a3b8"
+            tick={{ fill: '#94a3b8', fontSize: 12 }}
           />
           <YAxis
-            stroke="#6b7280"
-            tick={{ fill: '#6b7280', fontSize: 12 }}
+            stroke="#94a3b8"
+            tick={{ fill: '#94a3b8', fontSize: 12 }}
             domain={metric === 'innings' ? [0, 'auto'] : ['auto', 'auto']}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
+              backgroundColor: '#1e293b',
+              border: '1px solid #334155',
               borderRadius: '8px',
+              color: '#e2e8f0',
             }}
             formatter={(value: number | undefined) => value !== undefined ? formatStat(value) : 'N/A'}
             labelFormatter={(label, payload) => {
