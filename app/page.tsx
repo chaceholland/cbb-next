@@ -66,8 +66,8 @@ export default function Home() {
       />
       <HeroSection />
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
-      <main className="min-h-screen bg-slate-50 dark:bg-slate-900">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+      <main className="min-h-screen bg-slate-900">
+        <div className={`mx-auto px-4 py-8 ${activeTab === "schedule" ? "max-w-[1600px]" : "max-w-7xl"}`}>
           {activeTab === "schedule" && <ScheduleView />}
           {activeTab === "rosters" && (
             <RosterView
