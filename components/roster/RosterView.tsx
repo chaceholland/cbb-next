@@ -6,7 +6,6 @@ import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabase/client";
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from "@/lib/supabase/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { useFavorites } from "@/lib/hooks/useFavorites";
 import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
 import { PitcherCard } from "./PitcherCard";
 import { PitcherModal } from "./PitcherModal";
@@ -47,10 +46,14 @@ function getConfLabel(conf: string): string {
 export function RosterView({
   activateFavorites,
   onFavoritesActivated,
+  favorites,
+  toggleFavorite,
 }: {
   activateFavorites?: boolean;
   onFavoritesActivated?: () => void;
-} = {}) {
+  favorites: string[];
+  toggleFavorite: (id: string) => void;
+}) {
   const [pitchers, setPitchers] = useState<EnrichedPitcher[]>([]);
   const [teams, setTeams] = useState<CbbTeam[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,7 +62,7 @@ export function RosterView({
   const savedScrollY = useRef(0);
   const [selectedPitcher, setSelectedPitcher] =
     useState<EnrichedPitcher | null>(null);
-  const { favorites, toggleFavorite } = useFavorites();
+  // favorites and toggleFavorite received as props from parent
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<string | null>(null);
   const [focusedPitcherIdx, setFocusedPitcherIdx] = useState<number>(-1);

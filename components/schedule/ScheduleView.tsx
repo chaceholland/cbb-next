@@ -10,7 +10,6 @@ import { FiltersModal } from "./FiltersModal";
 import { ScheduleSkeleton } from "./ScheduleSkeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
-import { useFavorites } from "@/lib/hooks/useFavorites";
 import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
 import { cn } from "@/lib/utils";
 import { getTeamRecord } from "@/lib/stats/team-records";
@@ -34,14 +33,20 @@ export type GameDataQualityIssue = {
   customNote?: string;
 };
 
-export function ScheduleView() {
+export function ScheduleView({
+  favorites,
+  toggleFavorite: toggleFavoriteProp,
+}: {
+  favorites: string[];
+  toggleFavorite: (id: string) => void;
+}) {
   const [games, setGames] = useState<CbbGame[]>([]);
   const [teams, setTeams] = useState<Record<string, CbbTeam>>({});
   const [trackedTeamIds, setTrackedTeamIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
-  const { favorites, toggleFavorite: toggleFavoritePitcher } = useFavorites();
+  const toggleFavoritePitcher = toggleFavoriteProp;
   const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(
     new Set(),

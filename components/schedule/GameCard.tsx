@@ -454,26 +454,56 @@ export function GameCard({
             label: "W",
             className: "bg-green-900/50 text-green-400 border-green-700",
           }
-        : { label: "L", className: "bg-red-900/50 text-red-400 border-red-700" };
+        : {
+            label: "L",
+            className: "bg-red-900/50 text-red-400 border-red-700",
+          };
     } else if (trackedTeamIds.has(game.away_team_id)) {
       resultBadge = awayWon
         ? {
             label: "W",
             className: "bg-green-900/50 text-green-400 border-green-700",
           }
-        : { label: "L", className: "bg-red-900/50 text-red-400 border-red-700" };
+        : {
+            label: "L",
+            className: "bg-red-900/50 text-red-400 border-red-700",
+          };
     }
   }
 
   const homeRows = participation.filter((r) => r.team_id === game.home_team_id);
   const awayRows = participation.filter((r) => r.team_id === game.away_team_id);
+
+  // Check if any favorited pitcher played in this game
+  const hasFavoritePitcher = favoritePitcherIds
+    ? [...homeRows, ...awayRows].some(
+        (r) => r.pitcher_id && favoritePitcherIds.has(r.pitcher_id),
+      )
+    : false;
+
+  // Sort favorited pitchers to the top within each team's list
+  const sortFavoritesFirst = (rows: ParticipationRow[]) => {
+    if (!favoritePitcherIds || favoritePitcherIds.size === 0) return rows;
+    return [...rows].sort((a, b) => {
+      const aFav = a.pitcher_id && favoritePitcherIds.has(a.pitcher_id) ? 1 : 0;
+      const bFav = b.pitcher_id && favoritePitcherIds.has(b.pitcher_id) ? 1 : 0;
+      return bFav - aFav;
+    });
+  };
+
+  const sortedHomeRows = sortFavoritesFirst(homeRows);
+  const sortedAwayRows = sortFavoritesFirst(awayRows);
+
   const hasPitching = homeRows.length > 0 || awayRows.length > 0;
   const dataSource =
     participation[0]?.stats?.source ?? (hasPitching ? "espn" : null);
 
   return (
     <div
-      className="rounded-2xl bg-slate-800 shadow-md shadow-black/30 hover:shadow-xl transition-all duration-200 border border-slate-700 cursor-pointer active:scale-[0.98] overflow-hidden"
+      className={cn(
+        "rounded-2xl bg-slate-800 shadow-md shadow-black/30 hover:shadow-xl transition-all duration-200 border border-slate-700 cursor-pointer active:scale-[0.98] overflow-hidden",
+        hasFavoritePitcher && "border-l-4 border-l-green-500",
+      )}
       onClick={onClick}
     >
       {/* Header row */}
@@ -482,6 +512,14 @@ export function GameCard({
           <span className="text-xs text-slate-400">
             {formatGameDate(game.date)}
           </span>
+          {hasFavoritePitcher && (
+            <span className="text-[10px] font-semibold text-green-400 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+              Favorite pitched
+            </span>
+          )}
           {onGameIssueToggle && (
             <div onClick={(e) => e.stopPropagation()}>
               <GameIssueButton
@@ -629,7 +667,7 @@ export function GameCard({
             isWinner={awayWon}
             isTracked={trackedTeamIds.has(game.away_team_id)}
             label="Away"
-            rows={awayRows}
+            rows={sortedAwayRows}
             teams={teams}
             headshotsMap={headshotsMap}
             gameId={game.game_id}
@@ -649,7 +687,7 @@ export function GameCard({
             isWinner={homeWon}
             isTracked={trackedTeamIds.has(game.home_team_id)}
             label="Home"
-            rows={homeRows}
+            rows={sortedHomeRows}
             teams={teams}
             headshotsMap={headshotsMap}
             gameId={game.game_id}

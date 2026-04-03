@@ -11,13 +11,13 @@ import { KeyboardHints } from "@/components/KeyboardHints";
 import { registerNavigationCommands } from "@/lib/commands/navigation";
 import { registerHelpCommands } from "@/lib/commands/help";
 import { useKeyboard } from "@/lib/hooks/useKeyboard";
-import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useFavorites } from "@/lib/hooks/useFavorites";
 
 type Tab = "schedule" | "rosters" | "analytics";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
-  const [favorites] = useLocalStorage<string[]>("cbb-favorites", []);
+  const { favorites, toggleFavorite } = useFavorites();
   const [activateFavorites, setActivateFavorites] = useState(false);
 
   // Sync tab with URL hash
@@ -68,11 +68,13 @@ export default function Home() {
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="min-h-screen bg-slate-900">
         <div className={`mx-auto px-4 py-8 ${activeTab === "schedule" ? "max-w-[1600px]" : "max-w-7xl"}`}>
-          {activeTab === "schedule" && <ScheduleView />}
+          {activeTab === "schedule" && <ScheduleView favorites={favorites} toggleFavorite={toggleFavorite} />}
           {activeTab === "rosters" && (
             <RosterView
               activateFavorites={activateFavorites}
               onFavoritesActivated={() => setActivateFavorites(false)}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
             />
           )}
           {activeTab === "analytics" && <AnalyticsView />}
