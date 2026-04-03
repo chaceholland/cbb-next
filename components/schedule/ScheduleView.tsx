@@ -964,11 +964,11 @@ export function ScheduleView() {
     <div>
       {/* Filter restoration notification */}
       {isRestored && (
-        <div className="mb-4 flex items-center justify-between rounded-lg bg-blue-50 px-4 py-2 text-sm text-blue-700 dark:bg-blue-900/20 dark:text-blue-300">
+        <div className="mb-4 flex items-center justify-between rounded-lg bg-blue-900/20 px-4 py-2 text-sm text-blue-300">
           <span>Filters restored from last visit</span>
           <button
             onClick={dismissRestored}
-            className="text-blue-500 hover:text-blue-700 dark:text-blue-400"
+            className="text-blue-400 hover:text-blue-300"
           >
             Dismiss
           </button>
@@ -1006,8 +1006,8 @@ export function ScheduleView() {
           placeholder="Search teams..."
           className={cn(
             "px-4 py-2 rounded-xl text-sm w-56",
-            "bg-white border border-slate-300 text-slate-900 placeholder:text-slate-400",
-            "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 shadow-sm",
+            "bg-slate-800 border border-slate-600 text-slate-100 placeholder:text-slate-400",
+            "focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 shadow-md shadow-black/30",
           )}
         />
         <button
@@ -1016,7 +1016,7 @@ export function ScheduleView() {
             "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
             showFavorites
               ? "bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white shadow-lg shadow-blue-500/30"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
+              : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
           )}
         >
           <svg
@@ -1039,7 +1039,7 @@ export function ScheduleView() {
                 "text-xs px-2 py-0.5 rounded-full border",
                 showFavorites
                   ? "bg-white/20 text-white border-white/30"
-                  : "bg-slate-200 text-slate-600 border-slate-300",
+                  : "bg-slate-600 text-slate-300 border-slate-500",
               )}
             >
               {favoriteTeamIds.size} teams
@@ -1048,14 +1048,14 @@ export function ScheduleView() {
         </button>
 
         {/* View Mode Toggle */}
-        <div className="flex items-center bg-slate-100 rounded-full p-1 border border-slate-300">
+        <div className="flex items-center bg-slate-700 rounded-full p-1 border border-slate-600">
           <button
             onClick={() => setViewMode("games")}
             className={cn(
               "px-4 py-1.5 rounded-full text-sm font-medium transition-all",
               viewMode === "games"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-600 hover:text-slate-900",
+                ? "bg-slate-800 text-slate-100 shadow-sm"
+                : "text-slate-300 hover:text-slate-100",
             )}
           >
             Games
@@ -1065,8 +1065,8 @@ export function ScheduleView() {
             className={cn(
               "px-4 py-1.5 rounded-full text-sm font-medium transition-all",
               viewMode === "series"
-                ? "bg-white text-slate-900 shadow-sm"
-                : "text-slate-600 hover:text-slate-900",
+                ? "bg-slate-800 text-slate-100 shadow-sm"
+                : "text-slate-300 hover:text-slate-100",
             )}
           >
             Series
@@ -1080,7 +1080,7 @@ export function ScheduleView() {
             "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
             showLiveDataOnly
               ? "bg-green-600 text-white shadow-lg shadow-green-500/30"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
+              : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
           )}
         >
           <svg
@@ -1113,7 +1113,7 @@ export function ScheduleView() {
               setExpandAll(true);
             }
           }}
-          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600 transition-colors"
         >
           <svg
             className="w-4 h-4"
@@ -1136,8 +1136,8 @@ export function ScheduleView() {
           className={cn(
             "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-colors",
             virtualScroll
-              ? "bg-slate-600 text-white hover:bg-slate-700"
-              : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
+              ? "bg-slate-500 text-white hover:bg-slate-400"
+              : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
           )}
         >
           Virtual Scroll: {virtualScroll ? "ON" : "OFF"}
@@ -1153,7 +1153,7 @@ export function ScheduleView() {
                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 showIssuesOnly
                   ? "bg-orange-600 text-white shadow-lg shadow-orange-500/30"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
+                  : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
               )}
             >
               <svg
@@ -1251,13 +1251,13 @@ export function ScheduleView() {
         )}
       </div>
 
-      <p className="text-sm text-slate-500 mb-6">
+      <p className="text-sm text-slate-400 mb-6">
         Showing{" "}
-        <span className="font-semibold text-slate-700">
+        <span className="font-semibold text-slate-200">
           {filteredGames.length.toLocaleString()}
         </span>{" "}
         of{" "}
-        <span className="font-semibold text-slate-700">
+        <span className="font-semibold text-slate-200">
           {games.length.toLocaleString()}
         </span>{" "}
         tracked games
@@ -1269,23 +1269,23 @@ export function ScheduleView() {
           .filter((week) => selectedWeeks.size === 0 || selectedWeeks.has(week))
           .map((week) => (
             <div key={week} className="space-y-3">
-              <div className="sticky top-32 z-30 bg-slate-50 dark:bg-slate-900 py-2 -mx-4 px-4">
+              <div className="sticky top-32 z-30 bg-slate-900 py-2 -mx-4 px-4">
                 <button
                   onClick={() => toggleWeek(week)}
                   className="flex items-center gap-3 w-full text-left group"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-600 dark:text-slate-400 bg-gradient-to-r from-[#1a73e8]/10 to-[#ea4335]/10 border border-blue-200 dark:border-blue-800 px-3 py-1 rounded-full">
+                    <span className="text-sm font-bold text-slate-300 bg-gradient-to-r from-[#1a73e8]/10 to-[#ea4335]/10 border border-blue-800 px-3 py-1 rounded-full">
                       Week {week}
                     </span>
-                    <span className="text-xs text-slate-400 dark:text-slate-500">
+                    <span className="text-xs text-slate-400">
                       {gamesByWeek[week].length} games
                     </span>
                     {loadingWeeks.has(week) && (
                       <span className="w-3 h-3 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
                     )}
                   </div>
-                  <div className="flex-1 h-px bg-slate-200 dark:bg-slate-700" />
+                  <div className="flex-1 h-px bg-slate-700" />
                   <svg
                     className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${expandedWeeks.has(week) ? "rotate-180" : ""}`}
                     fill="none"
@@ -1357,11 +1357,11 @@ export function ScheduleView() {
                         >
                           {/* Series header */}
                           {seriesGames.length > 1 && (
-                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
-                              <span className="text-xs font-bold text-blue-700">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-800">
+                              <span className="text-xs font-bold text-blue-300">
                                 {seriesGames.length}-Game Series
                               </span>
-                              <span className="text-xs text-slate-500">
+                              <span className="text-xs text-slate-400">
                                 {teams[seriesGames[0].away_team_id]
                                   ?.display_name ||
                                   seriesGames[0].away_name}{" "}
