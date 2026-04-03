@@ -421,9 +421,9 @@ export function PitcherCard({
           ease: "easeOut",
           scale: { duration: 0.25, ease: "easeOut", delay: 0 },
         }}
-        whileHover={{ scale: 1.3 }}
+        whileHover={{ scale: 2.2 }}
         onClick={onClick}
-        className="cursor-pointer relative z-0 hover:z-10"
+        className="cursor-pointer relative z-0 hover:z-[100] hover:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
       >
         {cardContent}
       </motion.div>
@@ -433,9 +433,9 @@ export function PitcherCard({
   return (
     <motion.div
       onClick={onClick}
-      whileHover={{ scale: 1.3 }}
+      whileHover={{ scale: 2.2 }}
       transition={{ scale: { duration: 0.25, ease: "easeOut" } }}
-      className="cursor-pointer relative z-0 hover:z-10"
+      className="cursor-pointer relative z-0 hover:z-[100] hover:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
     >
       {cardContent}
     </motion.div>
