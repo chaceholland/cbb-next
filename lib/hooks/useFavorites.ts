@@ -9,22 +9,32 @@ export function useFavorites() {
   // Load from Supabase on mount, fall back to localStorage
   useEffect(() => {
     async function load() {
+      // Always load localStorage first as baseline
+      let localFavs: string[] = [];
+      try {
+        const stored = window.localStorage.getItem("cbb-favorites");
+        if (stored) localFavs = JSON.parse(stored);
+      } catch {}
+
       try {
         const res = await fetch("/api/favorites");
         if (res.ok) {
           const data = await res.json();
-          if (Array.isArray(data)) {
-            setFavorites(data);
-            // Sync localStorage for offline compat
-            window.localStorage.setItem("cbb-favorites", JSON.stringify(data));
+          if (Array.isArray(data) && data.length > 0) {
+            // Merge: keep anything in localStorage that's not in API, plus API data
+            const merged = [...new Set([...data, ...localFavs])];
+            setFavorites(merged);
+            window.localStorage.setItem("cbb-favorites", JSON.stringify(merged));
+          } else {
+            // API returned empty — keep localStorage data, don't wipe it
+            setFavorites(localFavs);
           }
+        } else {
+          setFavorites(localFavs);
         }
       } catch {
         // Fallback to localStorage
-        try {
-          const stored = window.localStorage.getItem("cbb-favorites");
-          if (stored) setFavorites(JSON.parse(stored));
-        } catch {}
+        setFavorites(localFavs);
       }
       setLoaded(true);
     }
