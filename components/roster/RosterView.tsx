@@ -635,7 +635,7 @@ export function RosterView({
                   "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                   showIssuesOnly
                     ? "bg-orange-600 text-white shadow-lg shadow-orange-500/30"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
+                    : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
                 )}
               >
                 <svg
@@ -791,7 +791,7 @@ export function RosterView({
 
         {/* Bottom back button */}
         {teamPitchers.length > 0 && (
-          <div className="mt-8 pt-6 border-t border-slate-200">
+          <div className="mt-8 pt-6 border-t border-slate-700">
             <button
               onClick={() => {
                 setSelectedTeamId(null);
@@ -891,7 +891,7 @@ export function RosterView({
                 "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
                 showIssuesOnly
                   ? "bg-orange-600 text-white shadow-lg shadow-orange-500/30"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300",
+                  : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
               )}
             >
               <svg
@@ -987,7 +987,7 @@ export function RosterView({
           <button
             onClick={handleImportFavorites}
             disabled={importing}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-yellow-900/30 text-yellow-400 border border-yellow-700 hover:bg-yellow-900/50 transition-colors disabled:opacity-50"
           >
             {importing ? "Importing..." : "↑ Import saved favorites"}
           </button>
@@ -1036,7 +1036,7 @@ export function RosterView({
                   savedScrollY.current = window.scrollY;
                   setSelectedTeamId(team.team_id);
                 }}
-                className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-lg hover:bg-slate-800 hover:border-slate-700 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
+                className="flex flex-col items-center gap-3 p-5 rounded-2xl bg-slate-800 border border-slate-700 shadow-sm shadow-black/30 hover:shadow-lg hover:bg-slate-700 hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer text-center group"
               >
                 <div className="w-20 h-20 flex items-center justify-center">
                   <Image
@@ -1052,7 +1052,7 @@ export function RosterView({
                   />
                 </div>
                 <div className="min-w-0 w-full">
-                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-tight line-clamp-2 group-hover:text-white group-hover:text-base transition-all duration-200">
+                  <p className="text-sm font-bold text-slate-100 leading-tight line-clamp-2 group-hover:text-white group-hover:text-base transition-all duration-200">
                     {team.display_name}
                   </p>
                   <p className="text-xs text-slate-500 group-hover:text-slate-300 mt-1">
@@ -1163,7 +1163,7 @@ function TeamIssueButton({
           "p-2 rounded-lg transition-all",
           hasIssue
             ? "bg-orange-500 text-white hover:bg-orange-600"
-            : "bg-slate-200 text-slate-600 hover:bg-slate-300",
+            : "bg-slate-700 text-slate-300 hover:bg-slate-600",
         )}
         aria-label="Report team data quality issue"
         type="button"
@@ -1191,15 +1191,15 @@ function TeamIssueButton({
             onClick={() => setShowMenu(false)}
           >
             <div
-              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-slate-800 rounded-xl shadow-2xl shadow-black/30 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
               }}
             >
-              <div className="p-6 border-b border-slate-200 flex-shrink-0">
+              <div className="p-6 border-b border-slate-700 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-lg font-semibold text-slate-100">
                     Team Data Quality Issues
                   </h3>
                   <button
@@ -1208,7 +1208,7 @@ function TeamIssueButton({
                       e.stopPropagation();
                       setShowMenu(false);
                     }}
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-300 hover:text-slate-100 flex-shrink-0"
                     aria-label="Close modal"
                     type="button"
                   >
@@ -1227,7 +1227,7 @@ function TeamIssueButton({
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-slate-600 mt-2">{teamName}</p>
+                <p className="text-sm text-slate-300 mt-2">{teamName}</p>
               </div>
 
               <div className="p-6 overflow-y-auto flex-1">
@@ -1235,15 +1235,15 @@ function TeamIssueButton({
                   {issueOptions.map((option) => (
                     <label
                       key={option}
-                      className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-3 rounded-lg transition-colors"
+                      className="flex items-center gap-3 cursor-pointer hover:bg-slate-700 p-3 rounded-lg transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={selectedIssues.includes(option)}
                         onChange={() => handleIssueSelect(option)}
-                        className="w-5 h-5 text-blue-600 bg-white border-2 border-slate-300 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
+                        className="w-5 h-5 text-blue-600 bg-slate-900 border-2 border-slate-600 rounded cursor-pointer focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 checked:bg-blue-600 checked:border-blue-600 accent-blue-600"
                       />
-                      <span className="text-base text-slate-700">{option}</span>
+                      <span className="text-base text-slate-200">{option}</span>
                     </label>
                   ))}
 
@@ -1252,7 +1252,7 @@ function TeamIssueButton({
                       value={customNote}
                       onChange={(e) => setCustomNote(e.target.value)}
                       placeholder="Describe the issue..."
-                      className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full mt-3 p-3 border border-slate-600 rounded-lg bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       rows={4}
                       onClick={(e) => e.stopPropagation()}
                     />
@@ -1260,10 +1260,10 @@ function TeamIssueButton({
                 </div>
               </div>
 
-              <div className="p-6 border-t border-slate-200 flex gap-3">
+              <div className="p-6 border-t border-slate-700 flex gap-3">
                 <button
                   onClick={handleClear}
-                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                  className="flex-1 px-4 py-3 bg-slate-700 text-slate-200 rounded-lg font-medium hover:bg-slate-600 transition-colors"
                 >
                   Clear
                 </button>

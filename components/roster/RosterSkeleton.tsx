@@ -18,7 +18,7 @@ export function RosterSkeleton() {
         {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((team) => (
           <div
             key={team}
-            className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+            className="rounded-2xl border border-slate-700 bg-slate-800 p-4 shadow-sm"
           >
             <div className="flex flex-col items-center gap-2">
               {/* Team logo skeleton */}

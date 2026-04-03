@@ -34,18 +34,18 @@ function getHandBadge(
   if (pos.includes("LHP") || pos.includes("LEFT")) {
     return {
       label: "LHP",
-      className: "bg-emerald-100 text-emerald-700 border-emerald-200",
+      className: "bg-emerald-900/50 text-emerald-400 border-emerald-700",
     };
   }
   if (pos.includes("RHP") || pos.includes("RIGHT")) {
     return {
       label: "RHP",
-      className: "bg-blue-100 text-blue-700 border-blue-200",
+      className: "bg-blue-900/50 text-blue-400 border-blue-700",
     };
   }
   return {
     label: pos.slice(0, 3),
-    className: "bg-slate-100 text-slate-600 border-slate-200",
+    className: "bg-slate-700 text-slate-300 border-slate-600",
   };
 }
 
@@ -130,17 +130,17 @@ function IssueModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-slate-800 rounded-xl shadow-2xl shadow-black/30 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-6 border-b border-slate-200 flex-shrink-0">
+        <div className="p-6 border-b border-slate-700 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-slate-100">
               Data Quality Issues
             </h3>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900"
+              className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-300 hover:text-slate-100"
               type="button"
             >
               <svg
@@ -158,7 +158,7 @@ function IssueModal({
               </svg>
             </button>
           </div>
-          <p className="text-sm text-slate-600 mt-2">
+          <p className="text-sm text-slate-300 mt-2">
             {pitcher.display_name || pitcher.name} · {pitcher.team.display_name}
           </p>
         </div>
@@ -174,7 +174,7 @@ function IssueModal({
                   "w-full text-left px-4 py-3 rounded-xl border-2 font-medium text-sm transition-all duration-150",
                   selectedIssues.includes(option)
                     ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                    : "bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50",
+                    : "bg-slate-900 border-slate-600 text-slate-200 hover:border-blue-400 hover:bg-slate-700",
                 )}
               >
                 {option}
@@ -185,7 +185,7 @@ function IssueModal({
                 value={customNote}
                 onChange={(e) => setCustomNote(e.target.value)}
                 placeholder="Describe the issue..."
-                className="w-full mt-3 p-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full mt-3 p-3 border border-slate-600 rounded-lg bg-slate-900 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 rows={4}
                 onClick={(e) => e.stopPropagation()}
               />
@@ -193,10 +193,10 @@ function IssueModal({
           </div>
         </div>
 
-        <div className="p-6 border-t border-slate-200 flex gap-3">
+        <div className="p-6 border-t border-slate-700 flex gap-3">
           <button
             onClick={handleClear}
-            className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+            className="flex-1 px-4 py-3 bg-slate-700 text-slate-200 rounded-lg font-medium hover:bg-slate-600 transition-colors"
           >
             Clear
           </button>
@@ -255,13 +255,13 @@ export function PitcherCard({
 
   // Shared card content
   const cardContent = (
-    <div className="rounded-2xl bg-white dark:bg-slate-800 shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden border border-slate-100 dark:border-slate-700">
+    <div className="rounded-2xl bg-slate-800 shadow-md shadow-black/30 hover:shadow-xl transition-shadow duration-200 overflow-hidden border border-slate-700">
       {/* Headshot / Team logo area */}
-      <div className="relative aspect-square bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center overflow-hidden">
+      <div className="relative aspect-square bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center overflow-hidden">
         {showHeadshot ? (
           <>
             {imgLoading && (
-              <div className="absolute inset-0 bg-slate-200 animate-pulse" />
+              <div className="absolute inset-0 bg-slate-700 animate-pulse" />
             )}
             <Image
               src={pitcher.headshot!}
@@ -343,10 +343,10 @@ export function PitcherCard({
 
       {/* Info section */}
       <div className="p-3">
-        <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm leading-tight truncate">
+        <h3 className="font-bold text-slate-100 text-sm leading-tight truncate">
           {pitcher.display_name || pitcher.name}
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+        <p className="text-xs text-slate-400 truncate mt-0.5">
           {pitcher.team.display_name}
         </p>
         <div className="flex items-center justify-between gap-1.5 mt-2">
@@ -362,7 +362,7 @@ export function PitcherCard({
               </span>
             )}
             {pitcher.team.conference && (
-              <span className="text-[10px] text-slate-400 dark:text-slate-400 bg-slate-50 dark:bg-slate-700 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-600 truncate">
+              <span className="text-[10px] text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full border border-slate-600 truncate">
                 {pitcher.team.conference.split(" ").slice(0, 2).join(" ")}
               </span>
             )}
@@ -375,7 +375,7 @@ export function PitcherCard({
                 "p-2 rounded-lg transition-all shrink-0",
                 hasIssue
                   ? "bg-orange-500 text-white hover:bg-orange-600"
-                  : "bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-300 dark:hover:bg-slate-600",
+                  : "bg-slate-700 text-slate-400 hover:bg-slate-600",
               )}
               title="Report data quality issue"
               type="button"
