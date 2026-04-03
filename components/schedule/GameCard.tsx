@@ -54,7 +54,7 @@ function TeamLogo({
   const logoSrc = team?.logo || getEspnLogoUrl(teamId);
   return (
     <div
-      className="relative rounded-full overflow-hidden bg-slate-50 shadow-md shrink-0 transition-transform duration-200 hover:scale-125 hover:shadow-xl hover:z-10"
+      className="relative rounded-full overflow-hidden bg-slate-900 shadow-md shadow-black/30 shrink-0 transition-transform duration-200 hover:scale-125 hover:shadow-xl hover:z-10"
       style={{ width: size, height: size }}
     >
       {logoSrc && (
@@ -174,9 +174,9 @@ function PitcherRow({
   const issueData = pitcherIssuesMap?.get(pitcherKey);
 
   return (
-    <div className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-100 mb-2 last:mb-0 shadow-sm">
+    <div className="flex items-center gap-3 p-2 rounded-lg bg-slate-900 border border-slate-700 mb-2 last:mb-0 shadow-sm">
       {/* Headshot */}
-      <div className="w-28 h-32 rounded-lg overflow-hidden bg-white shrink-0 border-2 border-yellow-200 shadow-md transition-transform duration-200 hover:scale-[1.35] hover:shadow-xl hover:z-10 relative">
+      <div className="w-28 h-32 rounded-lg overflow-hidden bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 transition-transform duration-200 hover:scale-[1.35] hover:shadow-xl hover:z-10 relative">
         {imgSrc && (
           <Image
             src={imgSrc}
@@ -240,7 +240,7 @@ function PitcherRow({
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
           )}
-          <span className="text-sm font-bold text-slate-800 truncate">
+          <span className="text-sm font-bold text-slate-100 truncate">
             {row.pitcher_name.replace(/ - P /g, " ").trim()}
           </span>
           <span
@@ -250,11 +250,11 @@ function PitcherRow({
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {ip && (
-            <span className="text-xs font-bold text-slate-700">{ip} IP</span>
+            <span className="text-xs font-bold text-slate-200">{ip} IP</span>
           )}
-          {k && <span className="text-xs text-slate-600">{k}K</span>}
+          {k && <span className="text-xs text-slate-300">{k}K</span>}
           {er !== undefined && er !== null && er !== "" && (
-            <span className="text-xs text-slate-600">{er}ER</span>
+            <span className="text-xs text-slate-300">{er}ER</span>
           )}
         </div>
       </div>
@@ -334,7 +334,7 @@ function TeamColumn({
           <p
             className={cn(
               "text-sm font-bold leading-tight line-clamp-2",
-              isWinner ? "text-slate-900" : "text-slate-600",
+              isWinner ? "text-slate-100" : "text-slate-300",
             )}
           >
             {displayName}
@@ -356,7 +356,7 @@ function TeamColumn({
               )}
             </div>
           )}
-          <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full mt-1">
+          <span className="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full mt-1">
             {label}
           </span>
         </div>
@@ -364,7 +364,7 @@ function TeamColumn({
           <span
             className={cn(
               "text-xl font-black tabular-nums",
-              isWinner ? "text-slate-900" : "text-slate-400",
+              isWinner ? "text-slate-100" : "text-slate-400",
             )}
           >
             {score}
@@ -452,16 +452,16 @@ export function GameCard({
       resultBadge = homeWon
         ? {
             label: "W",
-            className: "bg-green-100 text-green-700 border-green-200",
+            className: "bg-green-900/50 text-green-400 border-green-700",
           }
-        : { label: "L", className: "bg-red-100 text-red-700 border-red-200" };
+        : { label: "L", className: "bg-red-900/50 text-red-400 border-red-700" };
     } else if (trackedTeamIds.has(game.away_team_id)) {
       resultBadge = awayWon
         ? {
             label: "W",
-            className: "bg-green-100 text-green-700 border-green-200",
+            className: "bg-green-900/50 text-green-400 border-green-700",
           }
-        : { label: "L", className: "bg-red-100 text-red-700 border-red-200" };
+        : { label: "L", className: "bg-red-900/50 text-red-400 border-red-700" };
     }
   }
 
@@ -473,11 +473,11 @@ export function GameCard({
 
   return (
     <div
-      className="rounded-2xl bg-white shadow-md hover:shadow-xl transition-all duration-200 border border-slate-100 cursor-pointer active:scale-[0.98] overflow-hidden"
+      className="rounded-2xl bg-slate-800 shadow-md shadow-black/30 hover:shadow-xl transition-all duration-200 border border-slate-700 cursor-pointer active:scale-[0.98] overflow-hidden"
       onClick={onClick}
     >
       {/* Header row */}
-      <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-slate-50">
+      <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-slate-700 bg-slate-900">
         <div className="flex items-center gap-2">
           <span className="text-xs text-slate-400">
             {formatGameDate(game.date)}
@@ -508,7 +508,7 @@ export function GameCard({
                 "p-1.5 rounded-lg transition-all",
                 isFavorite
                   ? "bg-red-500 text-white hover:bg-red-600"
-                  : "bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-red-500",
+                  : "bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-red-500",
               )}
               title={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
@@ -538,7 +538,7 @@ export function GameCard({
                 "p-1.5 rounded-lg transition-all",
                 isWatched
                   ? "bg-green-500 text-white hover:bg-green-600"
-                  : "bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-green-500",
+                  : "bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-green-500",
               )}
               title={isWatched ? "Mark as unwatched" : "Mark as watched"}
             >
@@ -562,7 +562,7 @@ export function GameCard({
             </button>
           )}
           {isCompleted && hasPitching && dataSource === "d1baseball" && (
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-purple-50 text-purple-700 border-purple-200">
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full border bg-purple-900/50 text-purple-300 border-purple-700">
               ⚾ D1Baseball
             </span>
           )}
@@ -572,7 +572,7 @@ export function GameCard({
             </span>
           )}
           {isCompleted && !hasPitching && (
-            <span className="text-[10px] text-amber-600 font-medium bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+            <span className="text-[10px] text-amber-400 font-medium bg-amber-900/30 px-2 py-0.5 rounded-full border border-amber-700">
               No Data
             </span>
           )}
@@ -586,7 +586,7 @@ export function GameCard({
               {resultBadge.label}
             </span>
           ) : !isCompleted ? (
-            <span className="text-xs font-medium text-slate-400 bg-slate-50 px-2.5 py-0.5 rounded-full border border-slate-200">
+            <span className="text-xs font-medium text-slate-400 bg-slate-900 px-2.5 py-0.5 rounded-full border border-slate-600">
               Upcoming
             </span>
           ) : null}
@@ -595,22 +595,22 @@ export function GameCard({
 
       {/* Score bar (completed games) */}
       {isCompleted && homeScore !== null && awayScore !== null && (
-        <div className="flex items-center justify-center gap-3 py-2 bg-slate-50 border-b border-slate-100">
+        <div className="flex items-center justify-center gap-3 py-2 bg-slate-900 border-b border-slate-700">
           <span
             className={cn(
               "text-sm font-bold truncate max-w-[100px] text-right",
-              awayWon ? "text-slate-900" : "text-slate-400",
+              awayWon ? "text-slate-100" : "text-slate-400",
             )}
           >
             {awayTeam?.display_name ?? game.away_name}
           </span>
-          <span className="text-lg font-black tabular-nums text-slate-800 shrink-0">
+          <span className="text-lg font-black tabular-nums text-slate-100 shrink-0">
             {awayScore} – {homeScore}
           </span>
           <span
             className={cn(
               "text-sm font-bold truncate max-w-[100px]",
-              homeWon ? "text-slate-900" : "text-slate-400",
+              homeWon ? "text-slate-100" : "text-slate-400",
             )}
           >
             {homeTeam?.display_name ?? game.home_name}
@@ -640,7 +640,7 @@ export function GameCard({
             favoritePitcherIds={favoritePitcherIds}
             onToggleFavoritePitcher={onToggleFavoritePitcher}
           />
-          <div className="w-px bg-slate-100 shrink-0" />
+          <div className="w-px bg-slate-700 shrink-0" />
           <TeamColumn
             team={homeTeam}
             teamId={game.home_team_id}
@@ -667,7 +667,7 @@ export function GameCard({
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-col items-center gap-2 flex-1">
               <TeamLogo team={awayTeam} teamId={game.away_team_id} size={56} />
-              <span className="text-sm font-medium text-slate-700 text-center leading-tight line-clamp-2">
+              <span className="text-sm font-medium text-slate-200 text-center leading-tight line-clamp-2">
                 {awayTeam?.display_name ?? game.away_name ?? "Unknown"}
               </span>
               {teamRecords?.[game.away_team_id] && (
@@ -688,16 +688,16 @@ export function GameCard({
                   )}
                 </div>
               )}
-              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full">
                 Away
               </span>
             </div>
-            <div className="text-base font-bold text-slate-400 shrink-0">
+            <div className="text-base font-bold text-slate-500 shrink-0">
               VS
             </div>
             <div className="flex flex-col items-center gap-2 flex-1">
               <TeamLogo team={homeTeam} teamId={game.home_team_id} size={56} />
-              <span className="text-sm font-medium text-slate-700 text-center leading-tight line-clamp-2">
+              <span className="text-sm font-medium text-slate-200 text-center leading-tight line-clamp-2">
                 {homeTeam?.display_name ?? game.home_name ?? "Unknown"}
               </span>
               {teamRecords?.[game.home_team_id] && (
@@ -718,7 +718,7 @@ export function GameCard({
                   )}
                 </div>
               )}
-              <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
+              <span className="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded-full">
                 Home
               </span>
             </div>
@@ -842,7 +842,7 @@ function IssueButton({
           "p-1.5 rounded-lg transition-all",
           hasIssue
             ? "bg-orange-500 text-white hover:bg-orange-600"
-            : "bg-slate-200 text-slate-600 hover:bg-slate-300",
+            : "bg-slate-700 text-slate-300 hover:bg-slate-600",
         )}
         aria-label="Report data quality issue"
         type="button"
@@ -870,15 +870,15 @@ function IssueButton({
             onClick={() => setShowMenu(false)}
           >
             <div
-              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-slate-800 rounded-xl shadow-2xl shadow-black/30 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
               }}
             >
-              <div className="p-6 border-b border-slate-200 flex-shrink-0">
+              <div className="p-6 border-b border-slate-700 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-lg font-semibold text-slate-100">
                     Data Quality Issues
                   </h3>
                   <button
@@ -887,7 +887,7 @@ function IssueButton({
                       e.stopPropagation();
                       setShowMenu(false);
                     }}
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-300 hover:text-slate-100 flex-shrink-0"
                     aria-label="Close modal"
                     type="button"
                   >
@@ -906,7 +906,7 @@ function IssueButton({
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-slate-600 mt-2">{pitcherName}</p>
+                <p className="text-sm text-slate-300 mt-2">{pitcherName}</p>
               </div>
 
               <div className="p-6 overflow-y-auto flex-1">
@@ -920,7 +920,7 @@ function IssueButton({
                         "w-full text-left px-4 py-3 rounded-xl border-2 font-medium text-sm transition-all duration-150",
                         selectedIssues.includes(option)
                           ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                          : "bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50",
+                          : "bg-slate-900 border-slate-600 text-slate-200 hover:border-blue-400 hover:bg-slate-700",
                       )}
                     >
                       {option}
@@ -940,10 +940,10 @@ function IssueButton({
                 </div>
               </div>
 
-              <div className="p-6 border-t border-slate-200 flex gap-3">
+              <div className="p-6 border-t border-slate-700 flex gap-3">
                 <button
                   onClick={handleClear}
-                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                  className="flex-1 px-4 py-3 bg-slate-700 text-slate-200 rounded-lg font-medium hover:bg-slate-600 transition-colors"
                 >
                   Clear
                 </button>
@@ -1065,7 +1065,7 @@ function GameIssueButton({
           "p-1.5 rounded-lg transition-all",
           hasIssue
             ? "bg-orange-500 text-white hover:bg-orange-600"
-            : "bg-slate-200 text-slate-600 hover:bg-slate-300",
+            : "bg-slate-700 text-slate-300 hover:bg-slate-600",
         )}
         aria-label="Report game data quality issue"
         type="button"
@@ -1093,15 +1093,15 @@ function GameIssueButton({
             onClick={() => setShowMenu(false)}
           >
             <div
-              className="bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+              className="bg-slate-800 rounded-xl shadow-2xl shadow-black/30 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
               }}
             >
-              <div className="p-6 border-b border-slate-200 flex-shrink-0">
+              <div className="p-6 border-b border-slate-700 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-slate-900">
+                  <h3 className="text-lg font-semibold text-slate-100">
                     Game Data Quality Issues
                   </h3>
                   <button
@@ -1110,7 +1110,7 @@ function GameIssueButton({
                       e.stopPropagation();
                       setShowMenu(false);
                     }}
-                    className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-700 hover:text-slate-900 flex-shrink-0"
+                    className="p-2 hover:bg-slate-700 rounded-lg transition-colors text-slate-300 hover:text-slate-100 flex-shrink-0"
                     aria-label="Close modal"
                     type="button"
                   >
@@ -1129,7 +1129,7 @@ function GameIssueButton({
                     </svg>
                   </button>
                 </div>
-                <p className="text-sm text-slate-600 mt-2">
+                <p className="text-sm text-slate-300 mt-2">
                   {awayTeam} @ {homeTeam}
                 </p>
               </div>
@@ -1145,7 +1145,7 @@ function GameIssueButton({
                         "w-full text-left px-4 py-3 rounded-xl border-2 font-medium text-sm transition-all duration-150",
                         selectedIssues.includes(option)
                           ? "bg-blue-600 border-blue-600 text-white shadow-sm"
-                          : "bg-white border-slate-200 text-slate-700 hover:border-blue-300 hover:bg-blue-50",
+                          : "bg-slate-900 border-slate-600 text-slate-200 hover:border-blue-400 hover:bg-slate-700",
                       )}
                     >
                       {option}
@@ -1165,10 +1165,10 @@ function GameIssueButton({
                 </div>
               </div>
 
-              <div className="p-6 border-t border-slate-200 flex gap-3">
+              <div className="p-6 border-t border-slate-700 flex gap-3">
                 <button
                   onClick={handleClear}
-                  className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-lg font-medium hover:bg-slate-200 transition-colors"
+                  className="flex-1 px-4 py-3 bg-slate-700 text-slate-200 rounded-lg font-medium hover:bg-slate-600 transition-colors"
                 >
                   Clear
                 </button>
