@@ -55,7 +55,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
 
 /* Dark mode scrollbar (default) */
 ::-webkit-scrollbar-track { background: #1e293b; }
