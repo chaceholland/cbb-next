@@ -55,7 +55,7 @@ export function CommandPalette() {
   return (
     <div className="fixed inset-0 z-50 bg-black/50" onClick={close}>
       <div
-        className="fixed left-1/2 top-[20%] w-full max-w-2xl -translate-x-1/2 rounded-lg border border-gray-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800"
+        className="fixed left-1/2 top-[20%] w-full max-w-2xl -translate-x-1/2 rounded-lg border border-slate-700 bg-slate-800 shadow-xl shadow-black/30"
         onClick={(e) => e.stopPropagation()}
       >
         <CommandRoot className="w-full" shouldFilter={false}>
@@ -63,10 +63,10 @@ export function CommandPalette() {
             value={search}
             onValueChange={setSearch}
             placeholder="Type a command or search..."
-            className="w-full border-b border-gray-200 bg-transparent px-4 py-3 text-sm outline-none dark:border-slate-700"
+            className="w-full border-b border-slate-700 bg-transparent px-4 py-3 text-sm text-slate-100 outline-none"
           />
           <CommandList className="max-h-96 overflow-y-auto p-2">
-            <CommandEmpty className="py-6 text-center text-sm text-gray-500 dark:text-slate-400">
+            <CommandEmpty className="py-6 text-center text-sm text-slate-400">
               No results found.
             </CommandEmpty>
 
@@ -80,13 +80,13 @@ export function CommandPalette() {
                       close();
                       setSearch('');
                     }}
-                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-slate-700 aria-selected:bg-gray-100 dark:aria-selected:bg-slate-700"
+                    className="flex cursor-pointer items-center gap-3 rounded-md px-3 py-2 text-sm text-slate-200 hover:bg-slate-700 aria-selected:bg-slate-700"
                   >
-                    {cmd.icon && <span className="text-gray-500 dark:text-slate-400">{cmd.icon}</span>}
+                    {cmd.icon && <span className="text-slate-400">{cmd.icon}</span>}
                     <div className="flex-1">
                       <div className="font-medium">{cmd.label}</div>
                       {cmd.description && (
-                        <div className="text-xs text-gray-500 dark:text-slate-400">
+                        <div className="text-xs text-slate-400">
                           {cmd.description}
                         </div>
                       )}
@@ -96,7 +96,7 @@ export function CommandPalette() {
                         {cmd.shortcut.map((key) => (
                           <kbd
                             key={key}
-                            className="rounded border border-gray-300 bg-gray-50 px-2 py-0.5 text-xs dark:border-slate-600 dark:bg-slate-700"
+                            className="rounded border border-slate-600 bg-slate-700 px-2 py-0.5 text-xs text-slate-300"
                           >
                             {key}
                           </kbd>

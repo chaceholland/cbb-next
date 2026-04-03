@@ -150,8 +150,8 @@ export function Navigation({
             placeholder="Search pitchers..."
             className={cn(
               'w-full px-4 py-2 rounded-lg text-sm',
-              'bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600',
-              'text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400',
+              'bg-slate-800 border border-slate-600',
+              'text-slate-100 placeholder:text-slate-400',
               'focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500'
             )}
           />
