@@ -21,9 +21,8 @@ interface PitcherRecord {
   stats: Record<string, string | null>;
 }
 
-/**
- * Scrapes pitcher participation data from ESPN game summary API.
- */
+// ─── ESPN Scraper ────────────────────────────────────────────────────────────
+
 async function scrapePitcherData(
   gameId: string,
 ): Promise<PitcherRecord[] | { error: string }> {
@@ -85,10 +84,360 @@ async function scrapePitcherData(
   }
 }
 
-/**
- * Checks ESPN for game completion status and updates scores.
- * Returns the number of games newly marked as completed.
- */
+// ─── D1Baseball / StatBroadcast Fallback ─────────────────────────────────────
+
+const TEAM_NAME_OVERRIDES: Record<string, string> = {
+  "ole miss rebels": "mississippi",
+  "ole miss": "mississippi",
+  "lsu tigers": "lsu",
+  "usc trojans": "usc",
+  "ucf knights": "ucf",
+  "miami hurricanes": "miami (fl)",
+  "pitt panthers": "pittsburgh",
+  "nc state wolfpack": "nc state",
+  "vt hokies": "virginia tech",
+  "unlv rebels": "unlv",
+  "utsa roadrunners": "utsa",
+  "utep miners": "utep",
+  "uab blazers": "uab",
+  "unc tar heels": "unc",
+  "tcu horned frogs": "tcu",
+  "smu mustangs": "smu",
+  "byu cougars": "byu",
+  "app state mountaineers": "appalachian state",
+};
+
+const D1_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+};
+
+function normalizeTeamName(name: string): string {
+  if (!name) return "";
+  const lower = name.toLowerCase().trim();
+  for (const [key, val] of Object.entries(TEAM_NAME_OVERRIDES)) {
+    if (lower.includes(key)) return val;
+  }
+  return lower
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toD1Date(dateStr: string): string {
+  const d = new Date(dateStr);
+  const yyyy = d.getUTCFullYear();
+  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(d.getUTCDate()).padStart(2, "0");
+  return `${yyyy}${mm}${dd}`;
+}
+
+interface D1Game {
+  broadcastId: string;
+  homeEspnId?: string;
+  awayEspnId?: string;
+  homeName?: string;
+  awayName?: string;
+}
+
+// Cache scoreboard responses per date within a single cron run
+const scoreboardCache = new Map<string, D1Game[]>();
+
+async function fetchD1Scoreboard(dateStr: string): Promise<D1Game[]> {
+  const d1Date = toD1Date(dateStr);
+  if (scoreboardCache.has(d1Date)) return scoreboardCache.get(d1Date)!;
+
+  const url = `https://d1baseball.com/wp-content/plugins/integritive/dynamic-scores.php?v=${Date.now()}&date=${d1Date}`;
+  const res = await fetch(url, {
+    headers: {
+      ...D1_HEADERS,
+      Referer: `https://d1baseball.com/scores/?date=${d1Date}`,
+    },
+  });
+  if (!res.ok) throw new Error(`D1Baseball API HTTP ${res.status}`);
+
+  const json = await res.json();
+  const dump = (json?.content?.["d1-scores"] || "") as string;
+
+  const games: D1Game[] = [];
+  const gameRe =
+    /\["game_id"\]=>\s+int\((\d+)\)([\s\S]{0,4000}?)(?=\["game_id"\]|$)/g;
+  let m;
+  while ((m = gameRe.exec(dump)) !== null) {
+    const block = m[2];
+    const broadcastId = block.match(
+      /statbroadcast\.com\/broadcast\/\?id=(\d+)/,
+    )?.[1];
+    if (!broadcastId) continue;
+
+    const homeEspnId = block.match(
+      /\["home_team_643_team_id"\]=>\s+int\((\d+)\)/,
+    )?.[1];
+    const awayEspnId = block.match(
+      /\["road_team_643_team_id"\]=>\s+int\((\d+)\)/,
+    )?.[1];
+    const homeName = block.match(
+      /\["home_team_name"\]=>\s+string\(\d+\)\s+"([^"]+)"/,
+    )?.[1];
+    const awayName = block.match(
+      /\["road_team_name"\]=>\s+string\(\d+\)\s+"([^"]+)"/,
+    )?.[1];
+
+    games.push({ broadcastId, homeEspnId, awayEspnId, homeName, awayName });
+  }
+
+  scoreboardCache.set(d1Date, games);
+  return games;
+}
+
+interface GameRecord {
+  game_id: string;
+  home_team_id: string;
+  away_team_id: string;
+  home_name?: string;
+  away_name?: string;
+  date: string;
+}
+
+async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
+  let d1Games: D1Game[];
+  try {
+    d1Games = await fetchD1Scoreboard(game.date);
+  } catch {
+    return null;
+  }
+
+  if (d1Games.length === 0) return null;
+
+  const homeId = String(game.home_team_id);
+  const awayId = String(game.away_team_id);
+
+  // Primary: exact ESPN team ID match
+  for (const g of d1Games) {
+    if (
+      (g.homeEspnId === homeId && g.awayEspnId === awayId) ||
+      (g.homeEspnId === awayId && g.awayEspnId === homeId)
+    ) {
+      return g.broadcastId;
+    }
+  }
+
+  // Fallback: fuzzy team name match
+  const homeName = normalizeTeamName(game.home_name || "");
+  const awayName = normalizeTeamName(game.away_name || "");
+  const homeTokens = homeName.split(/\s+/).filter((t) => t.length > 3);
+  const awayTokens = awayName.split(/\s+/).filter((t) => t.length > 3);
+
+  let bestScore = 0;
+  let bestBroadcastId: string | null = null;
+  for (const g of d1Games) {
+    const h = normalizeTeamName(g.homeName || "");
+    const a = normalizeTeamName(g.awayName || "");
+    const hay = h + " " + a;
+    const homeHits = homeTokens.filter((t) => hay.includes(t)).length;
+    const awayHits = awayTokens.filter((t) => hay.includes(t)).length;
+    const homeFrac = homeTokens.length ? homeHits / homeTokens.length : 0;
+    const awayFrac = awayTokens.length ? awayHits / awayTokens.length : 0;
+    if (homeFrac >= 0.5 && awayFrac >= 0.5) {
+      const score = homeHits + awayHits;
+      if (score > bestScore) {
+        bestScore = score;
+        bestBroadcastId = g.broadcastId;
+      }
+    }
+  }
+
+  return bestBroadcastId;
+}
+
+// ROT13 + base64 decode — matches StatBroadcast's client-side tatdsy()+atou()
+function decodeStatBroadcast(encoded: string): string {
+  const a = "a".charCodeAt(0),
+    z = a + 26;
+  const A = "A".charCodeAt(0),
+    Z = A + 26;
+  const rot = (c: number, base: number) =>
+    String.fromCharCode(base + ((c - base + 13) % 26));
+  const b: string[] = [];
+  let i = encoded.length;
+  while (i--) {
+    const c = encoded.charCodeAt(i);
+    if (c >= a && c < z) b[i] = rot(c, a);
+    else if (c >= A && c < Z) b[i] = rot(c, A);
+    else b[i] = encoded[i];
+  }
+  return Buffer.from(b.join(""), "base64").toString("utf8");
+}
+
+const SB_WS = "https://stats.statbroadcast.com/interface/webservice/";
+
+const eventCache = new Map<string, { xmlfile: string; sport: string }>();
+
+async function fetchStatBroadcastEvent(
+  broadcastId: string,
+): Promise<{ xmlfile: string; sport: string } | null> {
+  if (eventCache.has(broadcastId)) return eventCache.get(broadcastId)!;
+  const data = Buffer.from("type=statbroadcast").toString("base64");
+  const res = await fetch(`${SB_WS}event/${broadcastId}?data=${data}`, {
+    headers: D1_HEADERS,
+  });
+  if (!res.ok) return null;
+  const xml = decodeStatBroadcast(await res.text());
+  const xmlfile =
+    xml.match(/<xmlfile><!\[CDATA\[([^\]]+)\]\]>/)?.[1] ||
+    `text/${broadcastId}.xml`;
+  const sport = xml.match(/<sport>([^<]+)<\/sport>/)?.[1] || "bsgame";
+  const result = { xmlfile, sport };
+  eventCache.set(broadcastId, result);
+  return result;
+}
+
+async function fetchStatBroadcastView(
+  broadcastId: string,
+  xsl: string,
+): Promise<string | null> {
+  const event = await fetchStatBroadcastEvent(broadcastId);
+  if (!event) return null;
+  const params =
+    `event=${broadcastId}&xml=${event.xmlfile}&xsl=${xsl}` +
+    `&sport=${event.sport}&filetime=-1&type=statbroadcast&start=true`;
+  const encoded = Buffer.from(params).toString("base64");
+  const res = await fetch(`${SB_WS}stats?data=${encoded}`, {
+    headers: D1_HEADERS,
+  });
+  if (!res.ok) return null;
+  return decodeStatBroadcast(await res.text());
+}
+
+interface ParsedPitcher {
+  teamLabel: string;
+  teamSide: string;
+  pitcherName: string;
+  stats: Record<string, string | null>;
+}
+
+function parseBoxScorePitchers(
+  html: string,
+  teamSide: string,
+): ParsedPitcher[] {
+  const results: ParsedPitcher[] = [];
+  const sectionRe =
+    /([A-Za-z &.'-]+?)\s*Pitching Stats[\s\S]{0,2000}?<tbody>([\s\S]*?)<\/tbody>/gi;
+  let sectionMatch;
+
+  while ((sectionMatch = sectionRe.exec(html)) !== null) {
+    const teamLabel = sectionMatch[1].trim();
+    const tbody = sectionMatch[2];
+    const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
+    let rowMatch;
+    while ((rowMatch = rowRe.exec(tbody)) !== null) {
+      const cells: string[] = [];
+      const cellRe = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+      let cm;
+      while ((cm = cellRe.exec(rowMatch[1])) !== null) {
+        cells.push(cm[1].replace(/<[^>]+>/g, "").trim());
+      }
+      if (cells.length < 8) continue;
+
+      // Columns: 0=#, 1=Name, 2=Dec, 3=IP, 4=H, 5=R, 6=ER, 7=BB, 8=K,
+      //          9=WP, 10=BK, 11=HP, 12=BF, 13=2B, 14=3B, 15=HR
+      const pitcherName = cells[1];
+      const IP = cells[3];
+      const H = cells[4];
+      const R = cells[5];
+      const ER = cells[6];
+      const BB = cells[7];
+      const K = cells[8];
+      const BF = cells[12];
+      const HR = cells[15];
+      const PC = cells[20];
+
+      if (!pitcherName || !IP || !/^\d/.test(IP)) continue;
+
+      results.push({
+        teamLabel,
+        teamSide,
+        pitcherName: pitcherName.replace(",", ", ").trim(),
+        stats: {
+          IP: IP || null,
+          H: H || null,
+          R: R || null,
+          ER: ER || null,
+          BB: BB || null,
+          K: K || null,
+          HR: HR || null,
+          BF: BF || null,
+          PC: PC || null,
+          source: "d1baseball",
+        },
+      });
+    }
+  }
+
+  return results;
+}
+
+async function scrapeD1Baseball(
+  game: GameRecord,
+): Promise<PitcherRecord[] | null> {
+  const broadcastId = await findD1BroadcastId(game);
+  if (!broadcastId) return null;
+
+  // Fetch both home and visitor box scores in parallel
+  const [homeHtml, visHtml] = await Promise.all([
+    fetchStatBroadcastView(
+      broadcastId,
+      'baseball/sb.bsgame.views.box.xsl&params={"team": "H"}',
+    ),
+    fetchStatBroadcastView(
+      broadcastId,
+      'baseball/sb.bsgame.views.box.xsl&params={"team": "V"}',
+    ),
+  ]);
+
+  const parsed: ParsedPitcher[] = [];
+  if (homeHtml) parsed.push(...parseBoxScorePitchers(homeHtml, "home"));
+  if (visHtml) parsed.push(...parseBoxScorePitchers(visHtml, "visitor"));
+
+  if (parsed.length === 0) return null;
+
+  // Assign team IDs
+  return parsed.map((p) => {
+    let teamId: string;
+    if (p.teamSide === "home") {
+      teamId = game.home_team_id;
+    } else if (p.teamSide === "visitor") {
+      teamId = game.away_team_id;
+    } else {
+      const label = (p.teamLabel || "").toLowerCase();
+      const homeName = normalizeTeamName(game.home_name || "");
+      const awayName = normalizeTeamName(game.away_name || "");
+      const homeTokens = homeName.split(/\s+/).filter((t) => t.length > 2);
+      const awayTokens = awayName.split(/\s+/).filter((t) => t.length > 2);
+      const homeScore = homeTokens.filter((t) => label.includes(t)).length;
+      const awayScore = awayTokens.filter((t) => label.includes(t)).length;
+      teamId = homeScore >= awayScore ? game.home_team_id : game.away_team_id;
+    }
+
+    const normalizedName = p.pitcherName
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, "");
+    const pitcherId = `D1-${game.game_id}-${teamId}-${normalizedName}`;
+
+    return {
+      game_id: game.game_id,
+      team_id: teamId,
+      pitcher_id: pitcherId,
+      pitcher_name: p.pitcherName,
+      stats: p.stats,
+    };
+  });
+}
+
+// ─── Game Completion Status ──────────────────────────────────────────────────
+
 async function updateGameCompletionStatus(
   supabase: ReturnType<typeof getSupabaseAdmin>,
   trackedTeamIds: Set<string>,
@@ -98,7 +447,6 @@ async function updateGameCompletionStatus(
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - daysBack);
 
-  // Find games that are NOT completed but whose date is in the past
   const { data: incompleteGames, error: incErr } = await supabase
     .from("cbb_games")
     .select("*")
@@ -116,8 +464,7 @@ async function updateGameCompletionStatus(
 
   const trackedIncomplete = (incompleteGames || []).filter(
     (g: { home_team_id: string; away_team_id: string }) =>
-      trackedTeamIds.has(g.home_team_id) ||
-      trackedTeamIds.has(g.away_team_id),
+      trackedTeamIds.has(g.home_team_id) || trackedTeamIds.has(g.away_team_id),
   );
 
   if (trackedIncomplete.length === 0) {
@@ -194,15 +541,19 @@ async function updateGameCompletionStatus(
   return { checked: trackedIncomplete.length, completed, errors };
 }
 
+// ─── Main Handler ────────────────────────────────────────────────────────────
+
 /**
  * GET /api/update
  *
- * Called by Vercel Cron every 6 hours:
+ * Called by Vercel Cron 3x daily (6 AM, 2 PM, 10 PM UTC):
  *   1. Update game completion status from ESPN (scores, final status)
- *   2. Find completed games from the last 7 days that are missing pitcher data
- *   3. Scrape ESPN box scores for each
- *   4. Upsert to cbb_pitcher_participation
- *   5. Log to cbb_sync_log
+ *   2. Find completed games from the last 14 days missing pitcher data
+ *   3. Skip games with 5+ failed scrape attempts (no_data_available)
+ *   4. Scrape ESPN box scores for each
+ *   5. If ESPN has no data, try D1Baseball/StatBroadcast fallback
+ *   6. Upsert to cbb_pitcher_participation
+ *   7. Log to cbb_sync_log
  */
 export async function GET(request: Request) {
   // Verify cron secret in production (Vercel sends this header)
@@ -215,7 +566,8 @@ export async function GET(request: Request) {
   }
 
   const supabase = getSupabaseAdmin();
-  const DAYS_BACK = 7;
+  const DAYS_BACK = 14;
+  const MAX_SCRAPE_ATTEMPTS = 5;
   const DELAY_MS = 300;
 
   const results = {
@@ -223,12 +575,15 @@ export async function GET(request: Request) {
     successful: 0,
     noData: 0,
     errors: 0,
+    d1Fallback: 0,
+    skippedMaxAttempts: 0,
     totalPitchers: 0,
     completionUpdate: { checked: 0, completed: 0, errors: 0 },
     games: [] as Array<{
       game_id: string;
       matchup: string;
       status: string;
+      source?: string;
       pitchers?: number;
       message?: string;
     }>,
@@ -245,7 +600,7 @@ export async function GET(request: Request) {
       (trackedTeams || []).map((t: { team_id: string }) => t.team_id),
     );
 
-    // 2. Update game completion status first (marks finished games as completed)
+    // 2. Update game completion status first
     results.completionUpdate = await updateGameCompletionStatus(
       supabase,
       trackedTeamIds,
@@ -253,7 +608,7 @@ export async function GET(request: Request) {
       DELAY_MS,
     );
 
-    // 3. Get completed games from last N days (now includes newly completed ones)
+    // 3. Get completed games from last N days
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - DAYS_BACK);
 
@@ -300,31 +655,63 @@ export async function GET(request: Request) {
       (existingParticipation || []).map((p: { game_id: string }) => p.game_id),
     );
 
-    // 6. Games that still need scraping
+    // 6. Games that still need scraping (skip those with too many failed attempts)
     const gamesToScrape = trackedGames.filter(
-      (g: { game_id: string }) => !gamesWithData.has(g.game_id),
+      (g: {
+        game_id: string;
+        scrape_attempts?: number;
+        scrape_status?: string;
+      }) => {
+        if (gamesWithData.has(g.game_id)) return false;
+        // Skip games that have been tried too many times with no data
+        const attempts = g.scrape_attempts || 0;
+        if (
+          attempts >= MAX_SCRAPE_ATTEMPTS &&
+          g.scrape_status === "no_data_available"
+        ) {
+          return false;
+        }
+        return true;
+      },
     );
+
+    // Count skipped games
+    const skipped = trackedGames.filter(
+      (g: {
+        game_id: string;
+        scrape_attempts?: number;
+        scrape_status?: string;
+      }) =>
+        !gamesWithData.has(g.game_id) &&
+        (g.scrape_attempts || 0) >= MAX_SCRAPE_ATTEMPTS &&
+        g.scrape_status === "no_data_available",
+    );
+    results.skippedMaxAttempts = skipped.length;
 
     results.total = gamesToScrape.length;
     console.log(
-      `[api/update] Found ${gamesToScrape.length} games missing participation data`,
+      `[api/update] Found ${gamesToScrape.length} games to scrape (${results.skippedMaxAttempts} skipped, ${MAX_SCRAPE_ATTEMPTS}+ attempts)`,
     );
 
-    // 6. Scrape each game
+    // 7. Scrape each game: ESPN first, then D1Baseball fallback
     for (let i = 0; i < gamesToScrape.length; i++) {
       const game = gamesToScrape[i];
       const matchup = `${game.away_name} @ ${game.home_name}`;
+      const currentAttempts = (game.scrape_attempts || 0) + 1;
 
-      const result = await scrapePitcherData(game.game_id);
+      const espnResult = await scrapePitcherData(game.game_id);
 
-      if ("error" in result) {
+      if ("error" in espnResult) {
         // ESPN returned an error
-        console.log(`[api/update] Error for ${matchup}: ${result.error}`);
+        console.log(
+          `[api/update] ESPN error for ${matchup}: ${espnResult.error}`,
+        );
         await supabase
           .from("cbb_games")
           .update({
             last_scrape_attempt: new Date().toISOString(),
             scrape_status: "error",
+            scrape_attempts: currentAttempts,
           })
           .eq("game_id", game.game_id);
         results.errors++;
@@ -332,29 +719,90 @@ export async function GET(request: Request) {
           game_id: game.game_id,
           matchup,
           status: "error",
-          message: result.error,
+          source: "espn",
+          message: espnResult.error,
         });
-      } else if (result.length === 0) {
-        // No pitcher data available yet
-        console.log(`[api/update] No data for ${matchup}`);
-        await supabase
-          .from("cbb_games")
-          .update({
-            last_scrape_attempt: new Date().toISOString(),
-            scrape_status: "no_data_available",
-          })
-          .eq("game_id", game.game_id);
-        results.noData++;
-        results.games.push({
-          game_id: game.game_id,
-          matchup,
-          status: "no_data",
-        });
+      } else if (espnResult.length === 0) {
+        // ESPN has no data — try D1Baseball fallback
+        console.log(
+          `[api/update] ESPN no data for ${matchup}, trying D1Baseball...`,
+        );
+
+        let d1Result: PitcherRecord[] | null = null;
+        try {
+          d1Result = await scrapeD1Baseball(game as GameRecord);
+        } catch (err) {
+          console.log(
+            `[api/update] D1Baseball error for ${matchup}: ${(err as Error).message}`,
+          );
+        }
+
+        if (d1Result && d1Result.length > 0) {
+          // D1Baseball returned data
+          const { error: upsertErr } = await supabase
+            .from("cbb_pitcher_participation")
+            .upsert(d1Result, {
+              onConflict: "game_id,pitcher_id",
+              ignoreDuplicates: false,
+            });
+
+          if (upsertErr) {
+            console.error(
+              `[api/update] D1 upsert error for ${matchup}: ${upsertErr.message}`,
+            );
+            results.errors++;
+            results.games.push({
+              game_id: game.game_id,
+              matchup,
+              status: "error",
+              source: "d1baseball",
+              message: upsertErr.message,
+            });
+          } else {
+            await supabase
+              .from("cbb_games")
+              .update({
+                last_scrape_attempt: new Date().toISOString(),
+                scrape_status: "d1_has_data",
+                scrape_attempts: currentAttempts,
+              })
+              .eq("game_id", game.game_id);
+            results.successful++;
+            results.d1Fallback++;
+            results.totalPitchers += d1Result.length;
+            results.games.push({
+              game_id: game.game_id,
+              matchup,
+              status: "success",
+              source: "d1baseball",
+              pitchers: d1Result.length,
+            });
+            console.log(
+              `[api/update] D1Baseball success for ${matchup}: ${d1Result.length} pitchers`,
+            );
+          }
+        } else {
+          // Neither ESPN nor D1Baseball had data
+          await supabase
+            .from("cbb_games")
+            .update({
+              last_scrape_attempt: new Date().toISOString(),
+              scrape_status: "no_data_available",
+              scrape_attempts: currentAttempts,
+            })
+            .eq("game_id", game.game_id);
+          results.noData++;
+          results.games.push({
+            game_id: game.game_id,
+            matchup,
+            status: "no_data",
+          });
+        }
       } else {
-        // Upsert pitcher participation
+        // ESPN returned data — upsert
         const { error: upsertErr } = await supabase
           .from("cbb_pitcher_participation")
-          .upsert(result, {
+          .upsert(espnResult, {
             onConflict: "game_id,pitcher_id",
             ignoreDuplicates: false,
           });
@@ -368,6 +816,7 @@ export async function GET(request: Request) {
             game_id: game.game_id,
             matchup,
             status: "error",
+            source: "espn",
             message: upsertErr.message,
           });
         } else {
@@ -376,15 +825,17 @@ export async function GET(request: Request) {
             .update({
               last_scrape_attempt: new Date().toISOString(),
               scrape_status: "has_data",
+              scrape_attempts: currentAttempts,
             })
             .eq("game_id", game.game_id);
           results.successful++;
-          results.totalPitchers += result.length;
+          results.totalPitchers += espnResult.length;
           results.games.push({
             game_id: game.game_id,
             matchup,
             status: "success",
-            pitchers: result.length,
+            source: "espn",
+            pitchers: espnResult.length,
           });
         }
       }
@@ -395,7 +846,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // 7. Log to cbb_sync_log
+    // 8. Log to cbb_sync_log
     const hasErrors = results.errors > 0;
     await supabase.from("cbb_sync_log").insert({
       sync_type: "participation_scrape",
@@ -408,7 +859,7 @@ export async function GET(request: Request) {
     });
 
     console.log(
-      `[api/update] Done: ${results.successful} success, ${results.noData} no-data, ${results.errors} errors, ${results.totalPitchers} pitchers`,
+      `[api/update] Done: ${results.successful} success (${results.d1Fallback} via D1), ${results.noData} no-data, ${results.errors} errors, ${results.skippedMaxAttempts} skipped, ${results.totalPitchers} pitchers`,
     );
 
     return NextResponse.json({ ok: true, results });
@@ -416,7 +867,6 @@ export async function GET(request: Request) {
     const message = (error as Error).message || String(error);
     console.error(`[api/update] Fatal error: ${message}`);
 
-    // Log fatal error
     try {
       await supabase.from("cbb_sync_log").insert({
         sync_type: "participation_scrape",
