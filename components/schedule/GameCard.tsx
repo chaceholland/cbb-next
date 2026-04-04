@@ -200,7 +200,7 @@ function PitcherRow({
             alt={row.pitcher_name}
             width={112}
             height={128}
-            className="object-cover object-top w-full h-full rounded-lg transition-all duration-300 relative z-[1] group-hover/hs:scale-[2.2] group-hover/hs:z-[100] group-hover/hs:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="object-cover object-top w-full h-full rounded-lg transition-transform duration-200 hover:scale-125 hover:shadow-xl hover:z-10"
             unoptimized
             onError={(e) => {
               const img = e.target as HTMLImageElement;
@@ -408,7 +408,7 @@ function TeamColumn({
           </p>
         ) : (
           <div>
-            {rows.slice(0, 4).map((row) => (
+            {rows.map((row) => (
               <PitcherRow
                 key={row.id}
                 row={row}
@@ -429,11 +429,6 @@ function TeamColumn({
                 onToggleFavoritePitcher={onToggleFavoritePitcher}
               />
             ))}
-            {rows.length > 4 && (
-              <p className="text-[10px] text-slate-400 text-center pt-1">
-                +{rows.length - 4} more
-              </p>
-            )}
           </div>
         )}
       </div>
