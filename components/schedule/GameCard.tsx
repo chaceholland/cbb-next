@@ -188,7 +188,7 @@ function PitcherRow({
       className={cn(
         "flex items-center gap-3 p-2 rounded-lg border mb-2 last:mb-0 shadow-sm",
         isDnp
-          ? "bg-slate-900/50 border-slate-700/50 opacity-60"
+          ? "bg-slate-900 border-slate-700/50"
           : "bg-slate-900 border-slate-700",
       )}
     >
