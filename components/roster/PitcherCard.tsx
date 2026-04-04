@@ -268,7 +268,7 @@ export function PitcherCard({
               alt={pitcher.display_name || pitcher.name}
               fill
               className={cn(
-                "object-cover transition-opacity duration-300",
+                "object-cover transition-all duration-300 hover:scale-125",
                 imgLoading ? "opacity-0" : "opacity-100",
                 ["294", "132"].includes(pitcher.team.team_id)
                   ? "object-top"
