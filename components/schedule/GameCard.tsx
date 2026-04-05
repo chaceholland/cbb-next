@@ -193,7 +193,7 @@ function PitcherRow({
       )}
     >
       {/* Headshot */}
-      <div className="w-28 h-32 rounded-lg overflow-visible bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 relative group/hs">
+      <div className="w-28 h-32 rounded-lg overflow-hidden bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 relative">
         {imgSrc && (
           <Image
             src={imgSrc}
