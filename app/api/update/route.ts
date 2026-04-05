@@ -897,9 +897,14 @@ export async function GET(request: Request) {
         );
 
         let d1Result: PitcherRecord[] | null = null;
+        let d1Debug = "";
         try {
           d1Result = await scrapeD1Baseball(game as GameRecord);
+          d1Debug = d1Result
+            ? `got ${d1Result.length} pitchers`
+            : "returned null";
         } catch (err) {
+          d1Debug = `error: ${(err as Error).message}`;
           console.log(
             `[api/update] D1Baseball error for ${matchup}: ${(err as Error).message}`,
           );
@@ -964,6 +969,7 @@ export async function GET(request: Request) {
             game_id: game.game_id,
             matchup,
             status: "no_data",
+            message: d1Debug,
           });
         }
       } else {
