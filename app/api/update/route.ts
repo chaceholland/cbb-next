@@ -900,6 +900,24 @@ export async function GET(request: Request) {
       `[api/update] Found ${gamesToScrape.length} games to scrape (${results.skippedMaxAttempts} skipped, ${MAX_SCRAPE_ATTEMPTS}+ attempts)`,
     );
 
+    // Debug: test D1 scoreboard fetch for first game
+    let d1Diagnostic = "not tested";
+    if (gamesToScrape.length > 0) {
+      const testGame = gamesToScrape[0];
+      try {
+        const testDate = testGame.date;
+        const testD1Date = toD1Date(testDate);
+        const d1Games = await fetchD1Scoreboard(testDate);
+        d1Diagnostic = `date=${testDate}, d1date=${testD1Date}, games=${d1Games.length}`;
+        if (d1Games.length > 0) {
+          d1Diagnostic += `, sample: ${d1Games[0].homeName} vs ${d1Games[0].awayName} (bid=${d1Games[0].broadcastId})`;
+        }
+      } catch (err) {
+        d1Diagnostic = `error: ${(err as Error).message}`;
+      }
+    }
+    console.log(`[api/update] D1 diagnostic: ${d1Diagnostic}`);
+
     // 7. Scrape each game: ESPN first, then D1Baseball fallback
     for (let i = 0; i < gamesToScrape.length; i++) {
       const game = gamesToScrape[i];
@@ -1075,7 +1093,7 @@ export async function GET(request: Request) {
       `[api/update] Done: ${results.successful} success (${results.d1Fallback} via D1), ${results.noData} no-data, ${results.errors} errors, ${results.skippedMaxAttempts} skipped, ${results.totalPitchers} pitchers`,
     );
 
-    return NextResponse.json({ ok: true, results });
+    return NextResponse.json({ ok: true, results, d1Diagnostic });
   } catch (error) {
     const message = (error as Error).message || String(error);
     console.error(`[api/update] Fatal error: ${message}`);
