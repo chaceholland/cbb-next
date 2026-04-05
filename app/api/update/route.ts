@@ -150,14 +150,11 @@ async function fetchD1Scoreboard(dateStr: string): Promise<D1Game[]> {
   const d1Date = toD1Date(dateStr);
   if (scoreboardCache.has(d1Date)) return scoreboardCache.get(d1Date)!;
 
-  const url = `https://d1baseball.com/wp-content/plugins/integritive/dynamic-scores.php?v=${Date.now()}&date=${d1Date}`;
-  const res = await fetch(url, {
-    headers: {
-      ...D1_HEADERS,
-      Referer: `https://d1baseball.com/scores/?date=${d1Date}`,
-    },
-  });
-  if (!res.ok) throw new Error(`D1Baseball API HTTP ${res.status}`);
+  // Use Cloudflare Worker proxy (D1Baseball blocks Vercel IPs directly)
+  const proxySecret = process.env.D1_PROXY_SECRET;
+  const proxyUrl = `https://d1-proxy.chace-holland.workers.dev/?date=${d1Date}&secret=${proxySecret}`;
+  const res = await fetch(proxyUrl);
+  if (!res.ok) throw new Error(`D1 proxy HTTP ${res.status}`);
 
   const json = await res.json();
   const dump = (json?.content?.["d1-scores"] || "") as string;
