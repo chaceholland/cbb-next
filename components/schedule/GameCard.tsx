@@ -193,14 +193,14 @@ function PitcherRow({
       )}
     >
       {/* Headshot */}
-      <div className="w-28 h-32 rounded-lg overflow-visible bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 relative">
+      <div className="w-28 h-32 rounded-lg overflow-visible bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 relative group/hs">
         {imgSrc && (
           <Image
             src={imgSrc}
             alt={row.pitcher_name}
             width={112}
             height={128}
-            className="object-cover object-top w-full h-full rounded-lg transition-all duration-300 relative z-[1] hover:scale-[2] hover:z-[100] hover:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="w-full h-full object-cover object-top rounded-lg transition-all duration-300 relative z-[1] group-hover/hs:scale-[4.4] group-hover/hs:z-[100] group-hover/hs:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
             unoptimized
             onError={(e) => {
               const img = e.target as HTMLImageElement;
