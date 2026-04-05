@@ -897,20 +897,35 @@ export async function GET(request: Request) {
       `[api/update] Found ${gamesToScrape.length} games to scrape (${results.skippedMaxAttempts} skipped, ${MAX_SCRAPE_ATTEMPTS}+ attempts)`,
     );
 
-    // Debug: test D1 scoreboard fetch for first game
+    // Debug: test D1 scoreboard + matching for first game
     let d1Diagnostic = "not tested";
     if (gamesToScrape.length > 0) {
       const testGame = gamesToScrape[0];
       try {
         const testDate = testGame.date;
-        const testD1Date = toD1Date(testDate);
-        const d1Games = await fetchD1Scoreboard(testDate);
-        d1Diagnostic = `date=${testDate}, d1date=${testD1Date}, games=${d1Games.length}`;
-        if (d1Games.length > 0) {
-          d1Diagnostic += `, sample: ${d1Games[0].homeName} vs ${d1Games[0].awayName} (bid=${d1Games[0].broadcastId})`;
+        const utcHour = new Date(testDate).getUTCHours();
+        const d1Date1 = toD1Date(testDate);
+        const d1Games1 = await fetchD1Scoreboard(testDate);
+        d1Diagnostic = `date=${testDate}, h=${utcHour}, d1=${d1Date1}(${d1Games1.length})`;
+
+        if (utcHour < 7) {
+          const prevDay = new Date(testDate);
+          prevDay.setUTCDate(prevDay.getUTCDate() - 1);
+          const d1Date2 = toD1Date(prevDay.toISOString());
+          const d1Games2 = await fetchD1Scoreboard(prevDay.toISOString());
+          d1Diagnostic += `, prev=${d1Date2}(${d1Games2.length})`;
+
+          const bid = matchD1Games(
+            d1Games2,
+            String(testGame.home_team_id),
+            String(testGame.away_team_id),
+            testGame.home_name || "",
+            testGame.away_name || "",
+          );
+          d1Diagnostic += `, match=${bid || "none"}`;
         }
       } catch (err) {
-        d1Diagnostic = `error: ${(err as Error).message}`;
+        d1Diagnostic += ` error: ${(err as Error).message}`;
       }
     }
     console.log(`[api/update] D1 diagnostic: ${d1Diagnostic}`);
