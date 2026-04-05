@@ -217,23 +217,31 @@ function matchD1Games(
   }
 
   // Fallback: fuzzy team name match
+  // DB uses full names ("California Golden Bears"), D1 uses short ("California")
   const homeNorm = normalizeTeamName(homeName);
   const awayNorm = normalizeTeamName(awayName);
-  const homeTokens = homeNorm.split(/\s+/).filter((t) => t.length > 2);
-  const awayTokens = awayNorm.split(/\s+/).filter((t) => t.length > 2);
 
   let bestScore = 0;
   let bestBroadcastId: string | null = null;
   for (const g of d1Games) {
     const h = normalizeTeamName(g.homeName || "");
     const a = normalizeTeamName(g.awayName || "");
-    const hay = h + " " + a;
-    const homeHits = homeTokens.filter((t) => hay.includes(t)).length;
-    const awayHits = awayTokens.filter((t) => hay.includes(t)).length;
-    const homeFrac = homeTokens.length ? homeHits / homeTokens.length : 0;
-    const awayFrac = awayTokens.length ? awayHits / awayTokens.length : 0;
-    if (homeFrac >= 0.5 && awayFrac >= 0.5) {
-      const score = homeHits + awayHits;
+
+    // Check containment in both directions (handles short vs full names)
+    const homeMatch =
+      (h && (homeNorm.includes(h) || h.includes(homeNorm))) ||
+      (a && (homeNorm.includes(a) || a.includes(homeNorm)));
+    const awayMatch =
+      (a && (awayNorm.includes(a) || a.includes(awayNorm))) ||
+      (h && (awayNorm.includes(h) || h.includes(awayNorm)));
+
+    // Need both home AND away to match, and they must match different sides
+    if (homeMatch && awayMatch) {
+      // Prefer matches where home matches home and away matches away
+      const directMatch =
+        (homeNorm.includes(h) || h.includes(homeNorm)) &&
+        (awayNorm.includes(a) || a.includes(awayNorm));
+      const score = directMatch ? 10 : 5;
       if (score > bestScore) {
         bestScore = score;
         bestBroadcastId = g.broadcastId;
