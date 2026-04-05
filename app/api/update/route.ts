@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 300; // 5 minutes
@@ -252,63 +253,219 @@ async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
   return bestBroadcastId;
 }
 
-// ROT13 + base64 decode — matches StatBroadcast's client-side tatdsy()+atou()
-function decodeStatBroadcast(encoded: string): string {
-  const a = "a".charCodeAt(0),
-    z = a + 26;
-  const A = "A".charCodeAt(0),
-    Z = A + 26;
-  const rot = (c: number, base: number) =>
-    String.fromCharCode(base + ((c - base + 13) % 26));
-  const b: string[] = [];
-  let i = encoded.length;
-  while (i--) {
-    const c = encoded.charCodeAt(i);
-    if (c >= a && c < z) b[i] = rot(c, a);
-    else if (c >= A && c < Z) b[i] = rot(c, A);
-    else b[i] = encoded[i];
+// ─── StatBroadcast Auth + Decode ────────────────────────────────────────────
+// StatBroadcast uses: PoW challenge → session tokens → XOR + dynamic-ROT + base64
+
+interface SBSession {
+  powCookie: string;
+  sbk: string; // XOR hex key
+  sbe: string; // event/broadcast ID
+  sbhn: string; // custom header name
+  sbt: string; // custom header token
+  sbc: string; // chain token
+  rotShift: number; // dynamic Caesar cipher shift (was always 13, now varies)
+}
+
+// Cache one session per cron run (PoW + tokens valid for ~2 hours)
+let sbSessionCache: SBSession | null = null;
+
+async function solveStatBroadcastPoW(
+  broadcastId: string,
+): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://stats.statbroadcast.com/statmonitr/?id=${broadcastId}`,
+      { headers: D1_HEADERS },
+    );
+    if (!res.ok) return null;
+    const html = await res.text();
+    const puzzleMatch = html.match(/var p="([a-f0-9]+)"/);
+    const diffMatch = html.match(/d=(\d+)/);
+    if (!puzzleMatch || !diffMatch) return null;
+
+    const puzzle = puzzleMatch[1];
+    const diff = parseInt(diffMatch[1]);
+    const target = "0".repeat(diff);
+
+    for (let n = 0; n < 20_000_000; n++) {
+      const hash = createHash("sha256")
+        .update(puzzle + n)
+        .digest("hex");
+      if (hash.substring(0, diff) === target) {
+        return `${puzzle}:${n}`;
+      }
+    }
+    return null;
+  } catch {
+    return null;
   }
-  return Buffer.from(b.join(""), "base64").toString("utf8");
+}
+
+async function getStatBroadcastSession(
+  broadcastId: string,
+): Promise<SBSession | null> {
+  if (sbSessionCache) return sbSessionCache;
+
+  const powCookie = await solveStatBroadcastPoW(broadcastId);
+  if (!powCookie) return null;
+
+  try {
+    const res = await fetch(
+      `https://stats.statbroadcast.com/statmonitr/?id=${broadcastId}`,
+      {
+        headers: {
+          ...D1_HEADERS,
+          Cookie: `sb_pow=${powCookie}`,
+        },
+      },
+    );
+    if (!res.ok) return null;
+    const html = await res.text();
+
+    const sbk = html.match(/_sbk\s*=\s*"([^"]+)"/)?.[1];
+    const sbhn = html.match(/_sbhn\s*=\s*"([^"]+)"/)?.[1];
+    const sbt = html.match(/_sbt\s*=\s*"([^"]+)"/)?.[1];
+    const sbc = html.match(/_sbc\s*=\s*"([^"]+)"/)?.[1];
+    if (!sbk || !sbhn || !sbt || !sbc) return null;
+
+    // Extract dynamic ROT shift from the custom decode function
+    let rotShift = 13;
+    const drfName = html.match(/_drf\s*=\s*['"]([^'"]+)/)?.[1];
+    if (drfName) {
+      const funcRe = new RegExp(
+        `function\\s+${drfName}\\([^)]*\\)\\s*\\{[^}]+\\}`,
+      );
+      const funcMatch = html.match(funcRe);
+      if (funcMatch) {
+        const shiftMatch = funcMatch[0].match(/\+(\d+)\)%26/);
+        if (shiftMatch) rotShift = parseInt(shiftMatch[1]);
+      }
+    }
+
+    sbSessionCache = {
+      powCookie,
+      sbk,
+      sbe: broadcastId,
+      sbhn,
+      sbt,
+      sbc,
+      rotShift,
+    };
+    return sbSessionCache;
+  } catch {
+    return null;
+  }
+}
+
+function decodeStatBroadcast(
+  encoded: string,
+  session: SBSession,
+  encrypted: boolean,
+): string {
+  const shift = session.rotShift;
+
+  function customRot(s: string): string {
+    const result: string[] = [];
+    let i = s.length;
+    while (i--) {
+      const c = s.charCodeAt(i);
+      if (c >= 97 && c < 123) {
+        result[i] = String.fromCharCode(((c - 97 + shift) % 26) + 97);
+      } else if (c >= 65 && c < 91) {
+        result[i] = String.fromCharCode(((c - 65 + shift) % 26) + 65);
+      } else {
+        result[i] = s[i];
+      }
+    }
+    return result.join("");
+  }
+
+  let rotInput: string;
+  if (encrypted) {
+    const raw = Buffer.from(encoded, "base64");
+    const key = Buffer.from(session.sbk, "hex");
+    const xored: string[] = [];
+    for (let i = 0; i < raw.length; i++) {
+      xored.push(String.fromCharCode(raw[i] ^ key[i % key.length]));
+    }
+    rotInput = customRot(xored.join(""));
+  } else {
+    rotInput = customRot(encoded);
+  }
+
+  return Buffer.from(rotInput, "base64").toString("utf8");
 }
 
 const SB_WS = "https://stats.statbroadcast.com/interface/webservice/";
 
 const eventCache = new Map<string, { xmlfile: string; sport: string }>();
 
+async function sbFetch(
+  url: string,
+  session: SBSession,
+): Promise<{ data: string; encrypted: boolean } | null> {
+  const hnValue = session.sbhn.replace("X-ST-", "");
+  const separator = url.includes("?") ? "&" : "?";
+  const fullUrl = `${url}${separator}_eid=${session.sbe}&_hn=${hnValue}&_c=${session.sbc}&_cf=0`;
+
+  const res = await fetch(fullUrl, {
+    headers: {
+      ...D1_HEADERS,
+      Cookie: `sb_pow=${session.powCookie}`,
+      "X-Requested-With": "XMLHttpRequest",
+      [session.sbhn]: session.sbt,
+    },
+  });
+
+  if (!res.ok) return null;
+  const rejected = res.headers.get("X-SB-Rejected");
+  if (rejected === "1") return null;
+
+  const encrypted = res.headers.get("X-SB-Enc") === "1";
+  const data = await res.text();
+  return { data, encrypted };
+}
+
 async function fetchStatBroadcastEvent(
   broadcastId: string,
+  session: SBSession,
 ): Promise<{ xmlfile: string; sport: string } | null> {
   if (eventCache.has(broadcastId)) return eventCache.get(broadcastId)!;
+
   const data = Buffer.from("type=statbroadcast").toString("base64");
-  const res = await fetch(`${SB_WS}event/${broadcastId}?data=${data}`, {
-    headers: D1_HEADERS,
-  });
-  if (!res.ok) return null;
-  const xml = decodeStatBroadcast(await res.text());
+  const result = await sbFetch(
+    `${SB_WS}event/${broadcastId}?data=${data}`,
+    session,
+  );
+  if (!result) return null;
+
+  const xml = decodeStatBroadcast(result.data, session, result.encrypted);
   const xmlfile =
     xml.match(/<xmlfile><!\[CDATA\[([^\]]+)\]\]>/)?.[1] ||
     `text/${broadcastId}.xml`;
   const sport = xml.match(/<sport>([^<]+)<\/sport>/)?.[1] || "bsgame";
-  const result = { xmlfile, sport };
-  eventCache.set(broadcastId, result);
-  return result;
+  const entry = { xmlfile, sport };
+  eventCache.set(broadcastId, entry);
+  return entry;
 }
 
 async function fetchStatBroadcastView(
   broadcastId: string,
   xsl: string,
+  session: SBSession,
 ): Promise<string | null> {
-  const event = await fetchStatBroadcastEvent(broadcastId);
+  const event = await fetchStatBroadcastEvent(broadcastId, session);
   if (!event) return null;
+
   const params =
     `event=${broadcastId}&xml=${event.xmlfile}&xsl=${xsl}` +
     `&sport=${event.sport}&filetime=-1&type=statbroadcast&start=true`;
   const encoded = Buffer.from(params).toString("base64");
-  const res = await fetch(`${SB_WS}stats?data=${encoded}`, {
-    headers: D1_HEADERS,
-  });
-  if (!res.ok) return null;
-  return decodeStatBroadcast(await res.text());
+
+  const result = await sbFetch(`${SB_WS}stats?data=${encoded}`, session);
+  if (!result) return null;
+
+  return decodeStatBroadcast(result.data, session, result.encrypted);
 }
 
 interface ParsedPitcher {
@@ -385,15 +542,26 @@ async function scrapeD1Baseball(
   const broadcastId = await findD1BroadcastId(game);
   if (!broadcastId) return null;
 
+  // Get or create StatBroadcast session (PoW + tokens)
+  const session = await getStatBroadcastSession(broadcastId);
+  if (!session) {
+    console.log(
+      `[api/update] Failed to get StatBroadcast session for broadcast ${broadcastId}`,
+    );
+    return null;
+  }
+
   // Fetch both home and visitor box scores in parallel
   const [homeHtml, visHtml] = await Promise.all([
     fetchStatBroadcastView(
       broadcastId,
       'baseball/sb.bsgame.views.box.xsl&params={"team": "H"}',
+      session,
     ),
     fetchStatBroadcastView(
       broadcastId,
       'baseball/sb.bsgame.views.box.xsl&params={"team": "V"}',
+      session,
     ),
   ]);
 
