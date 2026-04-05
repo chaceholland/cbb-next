@@ -268,7 +268,7 @@ export function PitcherCard({
               alt={pitcher.display_name || pitcher.name}
               fill
               className={cn(
-                "object-cover transition-all duration-300 hover:scale-100",
+                "object-cover transition-all duration-300 hover:scale-105",
                 imgLoading ? "opacity-0" : "opacity-100",
                 ["294", "132"].includes(pitcher.team.team_id)
                   ? "object-top"
@@ -421,7 +421,7 @@ export function PitcherCard({
           ease: "easeOut",
           scale: { duration: 0.25, ease: "easeOut", delay: 0 },
         }}
-        whileHover={{ scale: 1.0 }}
+        whileHover={{ scale: 1.05 }}
         onClick={onClick}
         className="cursor-pointer relative z-0 hover:z-[100] hover:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
       >
@@ -433,7 +433,7 @@ export function PitcherCard({
   return (
     <motion.div
       onClick={onClick}
-      whileHover={{ scale: 1.0 }}
+      whileHover={{ scale: 1.05 }}
       transition={{ scale: { duration: 0.25, ease: "easeOut" } }}
       className="cursor-pointer relative z-0 hover:z-[100] hover:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
     >
