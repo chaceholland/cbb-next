@@ -202,19 +202,13 @@ interface GameRecord {
   date: string;
 }
 
-async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
-  let d1Games: D1Game[];
-  try {
-    d1Games = await fetchD1Scoreboard(game.date);
-  } catch {
-    return null;
-  }
-
-  if (d1Games.length === 0) return null;
-
-  const homeId = String(game.home_team_id);
-  const awayId = String(game.away_team_id);
-
+function matchD1Games(
+  d1Games: D1Game[],
+  homeId: string,
+  awayId: string,
+  homeName: string,
+  awayName: string,
+): string | null {
   // Primary: exact ESPN team ID match
   for (const g of d1Games) {
     if (
@@ -226,10 +220,10 @@ async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
   }
 
   // Fallback: fuzzy team name match
-  const homeName = normalizeTeamName(game.home_name || "");
-  const awayName = normalizeTeamName(game.away_name || "");
-  const homeTokens = homeName.split(/\s+/).filter((t) => t.length > 3);
-  const awayTokens = awayName.split(/\s+/).filter((t) => t.length > 3);
+  const homeNorm = normalizeTeamName(homeName);
+  const awayNorm = normalizeTeamName(awayName);
+  const homeTokens = homeNorm.split(/\s+/).filter((t) => t.length > 2);
+  const awayTokens = awayNorm.split(/\s+/).filter((t) => t.length > 2);
 
   let bestScore = 0;
   let bestBroadcastId: string | null = null;
@@ -251,6 +245,43 @@ async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
   }
 
   return bestBroadcastId;
+}
+
+async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
+  const homeId = String(game.home_team_id);
+  const awayId = String(game.away_team_id);
+  const homeName = game.home_name || "";
+  const awayName = game.away_name || "";
+
+  // Try the UTC date first
+  const datesToTry = [game.date];
+
+  // If game is in the 00:00-06:59 UTC window, also try the previous day
+  // (evening US games often cross midnight UTC)
+  const utcHour = new Date(game.date).getUTCHours();
+  if (utcHour < 7) {
+    const prevDay = new Date(game.date);
+    prevDay.setUTCDate(prevDay.getUTCDate() - 1);
+    datesToTry.push(prevDay.toISOString());
+  }
+
+  for (const dateStr of datesToTry) {
+    let d1Games: D1Game[];
+    try {
+      d1Games = await fetchD1Scoreboard(dateStr);
+    } catch {
+      continue;
+    }
+    if (d1Games.length === 0) continue;
+
+    const result = matchD1Games(d1Games, homeId, awayId, homeName, awayName);
+    if (result) return result;
+  }
+
+  console.log(
+    `[api/update] D1: no match for ${awayName} @ ${homeName} on dates ${datesToTry.map(toD1Date).join(",")}`,
+  );
+  return null;
 }
 
 // ─── StatBroadcast Auth + Decode ────────────────────────────────────────────
@@ -540,7 +571,15 @@ async function scrapeD1Baseball(
   game: GameRecord,
 ): Promise<PitcherRecord[] | null> {
   const broadcastId = await findD1BroadcastId(game);
-  if (!broadcastId) return null;
+  if (!broadcastId) {
+    console.log(
+      `[api/update] D1: no broadcast ID for ${game.away_name} @ ${game.home_name} (date=${game.date}, home=${game.home_team_id}, away=${game.away_team_id})`,
+    );
+    return null;
+  }
+  console.log(
+    `[api/update] D1: found broadcast ${broadcastId} for ${game.away_name} @ ${game.home_name}`,
+  );
 
   // Get or create StatBroadcast session (PoW + tokens)
   const session = await getStatBroadcastSession(broadcastId);
