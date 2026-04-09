@@ -1096,6 +1096,27 @@ export function ScheduleView({
           )}
         </button>
 
+        {/* Favs Played — games where a favorited pitcher appears in participation */}
+        <button
+          onClick={() =>
+            setPitcherFilter(
+              pitcherFilter === "favorites-only"
+                ? "favorites-or-played"
+                : "favorites-only",
+            )
+          }
+          title="Only show games where a favorited pitcher actually played"
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200",
+            pitcherFilter === "favorites-only"
+              ? "bg-gradient-to-r from-amber-500 to-rose-500 text-white shadow-lg shadow-amber-500/30"
+              : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600",
+          )}
+        >
+          <span className="text-amber-300">★</span>
+          Favs Played
+        </button>
+
         {/* View Mode Toggle */}
         <div className="flex items-center bg-slate-700 rounded-full p-1 border border-slate-600">
           <button
