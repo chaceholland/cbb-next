@@ -185,7 +185,15 @@ export function ScheduleView({
     Record<string, string | null>
   >({});
   const [pitcherById, setPitcherById] = useState<
-    Record<string, { team_id: string; name: string; headshot: string | null }>
+    Record<
+      string,
+      {
+        team_id: string;
+        name: string;
+        headshot: string | null;
+        espn_id: string | null;
+      }
+    >
   >({});
   // Map team_id → list of favorited pitcher info for that team
   const favsByTeam = useMemo(() => {
@@ -193,6 +201,7 @@ export function ScheduleView({
       string,
       Array<{
         pitcher_id: string;
+        espn_id: string | null;
         pitcher_name: string;
         team_id: string;
         headshot: string | null;
@@ -204,6 +213,7 @@ export function ScheduleView({
         if (!map[info.team_id]) map[info.team_id] = [];
         map[info.team_id].push({
           pitcher_id: pid,
+          espn_id: info.espn_id,
           pitcher_name: info.name,
           team_id: info.team_id,
           headshot: info.headshot,
@@ -239,6 +249,7 @@ export function ScheduleView({
         // Load pitcher headshots (map by normalized name for participation lookup)
         const allPitchers: {
           pitcher_id: string;
+          espn_id: string | null;
           team_id: string;
           name: string;
           headshot: string | null;
@@ -247,7 +258,7 @@ export function ScheduleView({
         while (true) {
           const { data: pd } = await supabase
             .from("cbb_pitchers")
-            .select("pitcher_id, team_id, name, headshot")
+            .select("pitcher_id, espn_id, team_id, name, headshot")
             .range(pitcherPage * 1000, (pitcherPage + 1) * 1000 - 1);
           if (!pd || pd.length === 0) break;
           allPitchers.push(...pd);
@@ -285,7 +296,12 @@ export function ScheduleView({
         // Build pitcher_id → info map for favorites lookup
         const pMap: Record<
           string,
-          { team_id: string; name: string; headshot: string | null }
+          {
+            team_id: string;
+            name: string;
+            headshot: string | null;
+            espn_id: string | null;
+          }
         > = {};
         allPitchers.forEach((p) => {
           if (p.pitcher_id)
@@ -293,6 +309,7 @@ export function ScheduleView({
               team_id: p.team_id,
               name: p.name,
               headshot: p.headshot,
+              espn_id: p.espn_id,
             };
         });
         setPitcherById(pMap);
@@ -728,23 +745,28 @@ export function ScheduleView({
     }
 
     // Pitcher filter - requires participation data to be loaded.
-    // Reconcile favorites↔participation by NAME (IDs don't align between
-    // cbb_pitchers synthetic IDs and cbb_pitcher_participation ESPN IDs).
+    // Reconcile favorites↔participation by espn_id where available,
+    // falling back to normalized name (walk-ons without espn_id backfill).
     if (pitcherFilter !== "favorites-or-played" && pitcherFilter !== "all") {
       const normName = (s: string | null | undefined) =>
         (s || "").toLowerCase().replace(/[^a-z]/g, "");
+      const favoriteEspnIds = new Set<string>();
       const favoriteNames = new Set<string>();
       for (const pid of favorites) {
         const info = pitcherById[pid];
-        if (info?.name) favoriteNames.add(normName(info.name));
+        if (!info) continue;
+        if (info.espn_id) favoriteEspnIds.add(info.espn_id);
+        if (info.name) favoriteNames.add(normName(info.name));
       }
       result = result.filter((g) => {
         const gameParticipation = participationByGame[g.game_id] || [];
         if (gameParticipation.length === 0) return false;
 
         if (pitcherFilter === "favorites-only") {
-          return gameParticipation.some((row) =>
-            favoriteNames.has(normName(row.pitcher_name)),
+          return gameParticipation.some(
+            (row) =>
+              (row.pitcher_id && favoriteEspnIds.has(row.pitcher_id)) ||
+              favoriteNames.has(normName(row.pitcher_name)),
           );
         } else if (pitcherFilter === "played-only") {
           return gameParticipation.length > 0;

@@ -43,6 +43,7 @@ interface Props {
     string,
     Array<{
       pitcher_id: string;
+      espn_id?: string | null;
       pitcher_name: string;
       team_id: string;
       headshot: string | null;
@@ -503,38 +504,58 @@ export function GameCard({
   );
 
   // Merge favorites + participation for each team.
-  // NOTE: cbb_pitchers uses synthetic IDs (e.g. "123-P7") while
-  // cbb_pitcher_participation uses ESPN numeric IDs, so the two cannot
-  // be joined by pitcher_id. Dedup + reconciliation here is by
-  // normalized pitcher name within the team.
+  // cbb_pitchers uses synthetic IDs ("123-P7") while
+  // cbb_pitcher_participation uses ESPN numeric IDs. Reconciliation is
+  // primarily via the espn_id column on cbb_pitchers (backfilled
+  // 2026-04-09), with normalized-name fallback for walk-ons and any
+  // pitchers that haven't been matched yet.
   const normName = (s: string | null | undefined) =>
     (s || "").toLowerCase().replace(/[^a-z]/g, "");
 
-  // Names of favorited pitchers across all teams (by name, since favs
-  // live in the synthetic-id pitcher table)
+  const favoriteEspnIds = new Set<string>();
   const favoriteNames = new Set<string>();
   if (favsByTeam) {
     for (const roster of Object.values(favsByTeam)) {
-      for (const f of roster as { pitcher_name: string }[]) {
+      for (const f of roster as {
+        pitcher_name: string;
+        espn_id?: string | null;
+      }[]) {
+        if (f.espn_id) favoriteEspnIds.add(f.espn_id);
         favoriteNames.add(normName(f.pitcher_name));
       }
     }
   }
 
+  const isFavoritePitcherRow = (r: {
+    pitcher_id?: string;
+    pitcher_name?: string;
+  }) =>
+    Boolean(
+      (r.pitcher_id && favoriteEspnIds.has(r.pitcher_id)) ||
+      favoriteNames.has(normName(r.pitcher_name)),
+    );
+
   function buildMergedRows(
     teamId: string,
     participationRows: ParticipationRow[],
   ) {
+    const playedEspnIds = new Set(
+      participationRows.map((r) => r.pitcher_id).filter(Boolean) as string[],
+    );
     const playedNames = new Set(
       participationRows.map((r) => normName(r.pitcher_name)),
     );
 
-    // Favorited pitchers who DIDN'T play (DNP). Dedup by name against
-    // anyone already in the participation list — this prevents the
-    // same player appearing twice when their favorite record and
-    // their participation record have different IDs.
+    // Favorited pitchers who DIDN'T play (DNP). Dedup by espn_id
+    // (preferred) or name — prevents double-rendering when the
+    // favorite record and the participation record reference the
+    // same player through different ID schemes.
     const favDnp: ParticipationRow[] = (favsByTeam?.[teamId] || [])
-      .filter((f) => !playedNames.has(normName(f.pitcher_name)))
+      .filter((f) => {
+        if (f.espn_id && playedEspnIds.has(f.espn_id)) return false;
+        if (playedNames.has(normName(f.pitcher_name))) return false;
+        return true;
+      })
       .map((f) => ({
         id: -f.pitcher_id
           .split("")
@@ -546,13 +567,10 @@ export function GameCard({
         stats: { source: "dnp" } as Record<string, string>,
       }));
 
-    // Sort: fav+played, fav+DNP, non-fav played — "favorite" determined
-    // by name match since IDs don't reconcile.
-    const favPlayed = participationRows.filter((r) =>
-      favoriteNames.has(normName(r.pitcher_name)),
-    );
+    // Sort: fav+played, fav+DNP, non-fav played.
+    const favPlayed = participationRows.filter(isFavoritePitcherRow);
     const nonFavPlayed = participationRows.filter(
-      (r) => !favoriteNames.has(normName(r.pitcher_name)),
+      (r) => !isFavoritePitcherRow(r),
     );
     return [...favPlayed, ...favDnp, ...nonFavPlayed];
   }
@@ -561,9 +579,8 @@ export function GameCard({
   const sortedAwayRows = buildMergedRows(game.away_team_id, awayParticipation);
 
   // Check if any favorited pitcher played in this game (for green border).
-  // Match by name since cbb_pitchers IDs don't reconcile with participation.
   const hasFavoritePitcher = [...homeParticipation, ...awayParticipation].some(
-    (r) => favoriteNames.has(normName(r.pitcher_name)),
+    isFavoritePitcherRow,
   );
 
   const hasPitching = sortedHomeRows.length > 0 || sortedAwayRows.length > 0;

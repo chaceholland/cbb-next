@@ -8,11 +8,13 @@ export interface CbbTeam {
 
 export interface CbbPitcher {
   pitcher_id: string;
+  /** ESPN numeric pitcher ID — joins to cbb_pitcher_participation.pitcher_id. Null for walk-ons/never-pitched. */
+  espn_id?: string | null;
   team_id: string;
   name: string;
   display_name: string | null;
   number: string | null;
-  position?: string | null;     // may not exist yet
+  position?: string | null; // may not exist yet
   year?: string | null;
   height?: string | null;
   weight?: string | null;
