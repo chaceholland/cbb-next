@@ -727,15 +727,24 @@ export function ScheduleView({
       result = result.filter((g) => favoriteGameIds.includes(g.game_id));
     }
 
-    // Pitcher filter - requires participation data to be loaded
+    // Pitcher filter - requires participation data to be loaded.
+    // Reconcile favorites↔participation by NAME (IDs don't align between
+    // cbb_pitchers synthetic IDs and cbb_pitcher_participation ESPN IDs).
     if (pitcherFilter !== "favorites-or-played" && pitcherFilter !== "all") {
+      const normName = (s: string | null | undefined) =>
+        (s || "").toLowerCase().replace(/[^a-z]/g, "");
+      const favoriteNames = new Set<string>();
+      for (const pid of favorites) {
+        const info = pitcherById[pid];
+        if (info?.name) favoriteNames.add(normName(info.name));
+      }
       result = result.filter((g) => {
         const gameParticipation = participationByGame[g.game_id] || [];
         if (gameParticipation.length === 0) return false;
 
         if (pitcherFilter === "favorites-only") {
           return gameParticipation.some((row) =>
-            favoritePitcherIds.has(row.pitcher_id || ""),
+            favoriteNames.has(normName(row.pitcher_name)),
           );
         } else if (pitcherFilter === "played-only") {
           return gameParticipation.length > 0;

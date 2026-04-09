@@ -200,7 +200,7 @@ function PitcherRow({
             alt={row.pitcher_name}
             width={112}
             height={128}
-            className="w-full h-full object-cover object-top rounded-lg transition-all duration-300 relative z-[1] group-hover/hs:scale-[4.4] group-hover/hs:z-[100] group-hover/hs:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="headshot-zoom w-full h-full object-cover object-top rounded-lg relative z-[1] group-hover/hs:scale-[4.4] group-hover/hs:z-[100] group-hover/hs:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
             unoptimized
             onError={(e) => {
               const img = e.target as HTMLImageElement;
@@ -502,18 +502,39 @@ export function GameCard({
     (r) => r.team_id === game.away_team_id,
   );
 
-  // Merge favorites + participation for each team
+  // Merge favorites + participation for each team.
+  // NOTE: cbb_pitchers uses synthetic IDs (e.g. "123-P7") while
+  // cbb_pitcher_participation uses ESPN numeric IDs, so the two cannot
+  // be joined by pitcher_id. Dedup + reconciliation here is by
+  // normalized pitcher name within the team.
+  const normName = (s: string | null | undefined) =>
+    (s || "").toLowerCase().replace(/[^a-z]/g, "");
+
+  // Names of favorited pitchers across all teams (by name, since favs
+  // live in the synthetic-id pitcher table)
+  const favoriteNames = new Set<string>();
+  if (favsByTeam) {
+    for (const roster of Object.values(favsByTeam)) {
+      for (const f of roster as { pitcher_name: string }[]) {
+        favoriteNames.add(normName(f.pitcher_name));
+      }
+    }
+  }
+
   function buildMergedRows(
     teamId: string,
     participationRows: ParticipationRow[],
   ) {
-    const playedIds = new Set(
-      participationRows.map((r) => r.pitcher_id).filter(Boolean),
+    const playedNames = new Set(
+      participationRows.map((r) => normName(r.pitcher_name)),
     );
 
-    // Favorited pitchers who DIDN'T play (DNP)
+    // Favorited pitchers who DIDN'T play (DNP). Dedup by name against
+    // anyone already in the participation list — this prevents the
+    // same player appearing twice when their favorite record and
+    // their participation record have different IDs.
     const favDnp: ParticipationRow[] = (favsByTeam?.[teamId] || [])
-      .filter((f) => !playedIds.has(f.pitcher_id))
+      .filter((f) => !playedNames.has(normName(f.pitcher_name)))
       .map((f) => ({
         id: -f.pitcher_id
           .split("")
@@ -525,12 +546,13 @@ export function GameCard({
         stats: { source: "dnp" } as Record<string, string>,
       }));
 
-    // Sort: fav+played, fav+DNP, non-fav played
-    const favPlayed = participationRows.filter(
-      (r) => r.pitcher_id && favoritePitcherIds?.has(r.pitcher_id),
+    // Sort: fav+played, fav+DNP, non-fav played — "favorite" determined
+    // by name match since IDs don't reconcile.
+    const favPlayed = participationRows.filter((r) =>
+      favoriteNames.has(normName(r.pitcher_name)),
     );
     const nonFavPlayed = participationRows.filter(
-      (r) => !r.pitcher_id || !favoritePitcherIds?.has(r.pitcher_id),
+      (r) => !favoriteNames.has(normName(r.pitcher_name)),
     );
     return [...favPlayed, ...favDnp, ...nonFavPlayed];
   }
@@ -538,12 +560,11 @@ export function GameCard({
   const sortedHomeRows = buildMergedRows(game.home_team_id, homeParticipation);
   const sortedAwayRows = buildMergedRows(game.away_team_id, awayParticipation);
 
-  // Check if any favorited pitcher played in this game (for green border)
-  const hasFavoritePitcher = favoritePitcherIds
-    ? [...homeParticipation, ...awayParticipation].some(
-        (r) => r.pitcher_id && favoritePitcherIds.has(r.pitcher_id),
-      )
-    : false;
+  // Check if any favorited pitcher played in this game (for green border).
+  // Match by name since cbb_pitchers IDs don't reconcile with participation.
+  const hasFavoritePitcher = [...homeParticipation, ...awayParticipation].some(
+    (r) => favoriteNames.has(normName(r.pitcher_name)),
+  );
 
   const hasPitching = sortedHomeRows.length > 0 || sortedAwayRows.length > 0;
   const dataSource =
