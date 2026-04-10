@@ -320,6 +320,7 @@ function TeamColumn({
   headshotsMap,
   gameId,
   favoritePitcherIds,
+  checkFavoritePitcher,
   gameDate,
   pitcherIssuesMap,
   onPitcherIssueToggle,
@@ -350,6 +351,10 @@ function TeamColumn({
   ) => void;
   teamRecord?: TeamRecord;
   favoritePitcherIds?: Set<string>;
+  checkFavoritePitcher?: (row: {
+    pitcher_id?: string;
+    pitcher_name?: string;
+  }) => boolean;
   onToggleFavoritePitcher?: (pitcherId: string) => void;
 }) {
   const displayName = team?.display_name ?? name ?? "Unknown";
@@ -425,7 +430,9 @@ function TeamColumn({
                 pitcherIssuesMap={pitcherIssuesMap}
                 onPitcherIssueToggle={onPitcherIssueToggle}
                 isFavoritePitcher={
-                  favoritePitcherIds?.has(row.pitcher_id || "") ?? false
+                  checkFavoritePitcher?.(row) ??
+                  favoritePitcherIds?.has(row.pitcher_id || "") ??
+                  false
                 }
                 onToggleFavoritePitcher={onToggleFavoritePitcher}
               />
@@ -765,6 +772,7 @@ export function GameCard({
             onPitcherIssueToggle={onPitcherIssueToggle}
             teamRecord={teamRecords?.[game.away_team_id]}
             favoritePitcherIds={favoritePitcherIds}
+            checkFavoritePitcher={isFavoritePitcherRow}
             onToggleFavoritePitcher={onToggleFavoritePitcher}
           />
           <div className="w-px bg-slate-700 shrink-0" />
@@ -785,6 +793,7 @@ export function GameCard({
             onPitcherIssueToggle={onPitcherIssueToggle}
             teamRecord={teamRecords?.[game.home_team_id]}
             favoritePitcherIds={favoritePitcherIds}
+            checkFavoritePitcher={isFavoritePitcherRow}
             onToggleFavoritePitcher={onToggleFavoritePitcher}
           />
         </div>
