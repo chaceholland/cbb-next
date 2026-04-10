@@ -1413,13 +1413,8 @@ export function ScheduleView({
                 >
                   {viewMode === "games"
                     ? // Individual games view
-                      gamesByWeek[week].map((game, i) => (
-                        <motion.div
-                          key={game.game_id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.02, duration: 0.3 }}
-                        >
+                      gamesByWeek[week].map((game) => (
+                        <div key={game.game_id}>
                           <GameCard
                             game={game}
                             teams={teams}
@@ -1447,17 +1442,11 @@ export function ScheduleView({
                             favsByTeam={favsByTeam}
                             onToggleFavoritePitcher={toggleFavoritePitcher}
                           />
-                        </motion.div>
+                        </div>
                       ))
                     : // Series view
-                      seriesByWeek[week]?.map((seriesGames, i) => (
-                        <motion.div
-                          key={seriesGames[0].game_id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.02, duration: 0.3 }}
-                          className="space-y-2"
-                        >
+                      seriesByWeek[week]?.map((seriesGames) => (
+                        <div key={seriesGames[0].game_id} className="space-y-2">
                           {/* Series header */}
                           {seriesGames.length > 1 && (
                             <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-900/30 to-purple-900/30 rounded-lg border border-blue-800">
@@ -1507,7 +1496,7 @@ export function ScheduleView({
                               onToggleFavoritePitcher={toggleFavoritePitcher}
                             />
                           ))}
-                        </motion.div>
+                        </div>
                       ))}
                 </motion.div>
               )}

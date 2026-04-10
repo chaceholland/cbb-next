@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { motion, useAnimation } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { motion, useAnimation } from "framer-motion";
+import { useEffect, useState } from "react";
 
 interface StatCardProps {
   value: number;
@@ -9,7 +9,7 @@ interface StatCardProps {
   suffix?: string;
 }
 
-function StatCard({ value, label, suffix = '' }: StatCardProps) {
+function StatCard({ value, label, suffix = "" }: StatCardProps) {
   const [count, setCount] = useState(0);
   const [inView, setInView] = useState(false);
 
@@ -44,14 +44,17 @@ function StatCard({ value, label, suffix = '' }: StatCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
       className="relative overflow-hidden rounded-2xl p-6 md:p-8 backdrop-blur-sm bg-white/10 border-2 border-white/20 hover:scale-105 transition-transform duration-300"
     >
       <div className="relative z-10">
         <div className="text-4xl md:text-5xl font-bold mb-2 text-[#60a5fa]">
-          {count.toLocaleString()}{suffix}
+          {count.toLocaleString()}
+          {suffix}
         </div>
-        <div className="text-white/90 text-base md:text-lg font-medium">{label}</div>
+        <div className="text-white/90 text-base md:text-lg font-medium">
+          {label}
+        </div>
       </div>
       <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-blue-500/20 to-blue-600/20" />
     </motion.div>
@@ -65,10 +68,10 @@ export function HeroSection() {
   useEffect(() => {
     setMounted(true);
     controls.start({
-      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+      backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
       transition: {
         duration: 8,
-        ease: 'linear',
+        ease: "linear",
         repeat: Infinity,
       },
     });
@@ -80,15 +83,16 @@ export function HeroSection() {
       <motion.div
         className="absolute inset-0 bg-gradient-to-br from-[#0A1628] via-[#1E3A5F] to-[#0A1628]"
         animate={mounted ? controls : {}}
-        style={{ backgroundSize: '200% 200%' }}
+        style={{ backgroundSize: "200% 200%" }}
       />
 
       {/* Subtle dot pattern overlay */}
       <div
         className="absolute inset-0 opacity-5"
         style={{
-          backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
+          backgroundImage:
+            "radial-gradient(circle, #ffffff 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
         }}
       />
 
@@ -99,16 +103,23 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: -30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center mb-10"
           >
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-[#60a5fa] via-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent"
-                style={{ backgroundSize: '200% auto', animation: 'gradient 4s ease infinite' }}>
+              <span
+                className="bg-gradient-to-r from-[#60a5fa] via-[#93c5fd] to-[#60a5fa] bg-clip-text text-transparent"
+                style={{
+                  backgroundSize: "200% auto",
+                  animation: "gradient 4s ease infinite",
+                }}
+              >
                 College Baseball
               </span>
               <br />
-              <span className="text-white text-4xl md:text-5xl lg:text-6xl">Pitcher Tracker</span>
+              <span className="text-white text-4xl md:text-5xl lg:text-6xl">
+                Pitcher Tracker
+              </span>
             </h1>
 
             <motion.p
@@ -140,32 +151,39 @@ export function HeroSection() {
             transition={{ delay: 0.8, duration: 0.8 }}
             className="text-center text-white/50 text-sm"
           >
-            Data last updated: {new Date().toLocaleDateString('en-US', {
-              month: 'long',
-              day: 'numeric',
-              year: 'numeric',
+            Data last updated:{" "}
+            {new Date().toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
             })}
           </motion.div>
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Scroll indicator — CSS animation avoids continuous DOM mutations */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2, duration: 0.8 }}
         className="absolute bottom-6 left-1/2 -translate-x-1/2"
       >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, ease: 'easeInOut', repeat: Infinity }}
-          className="flex flex-col items-center gap-1"
-        >
+        <div className="flex flex-col items-center gap-1 animate-bounce">
           <span className="text-white/50 text-xs font-medium">Scroll</span>
-          <svg className="w-5 h-5 text-[#60a5fa]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          <svg
+            className="w-5 h-5 text-[#60a5fa]"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+            />
           </svg>
-        </motion.div>
+        </div>
       </motion.div>
     </section>
   );
