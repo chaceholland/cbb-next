@@ -46,6 +46,35 @@ const norm = (s) =>
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z]/g, "");
 
+// Clean ESPN participation names before normalizing:
+// 1. Strip " - P " marker (e.g. "AJ - P Ciscar" → "AJ Ciscar")
+// 2. Flip "Last, First" → "First Last"
+function cleanName(raw) {
+  let s = (raw || "").replace(/\s*-\s*P\s+/g, "");
+  if (s.includes(",")) {
+    const parts = s.split(",").map((p) => p.trim());
+    if (parts.length === 2 && parts[1].length > 1 && !parts[1].endsWith(".")) {
+      s = `${parts[1]} ${parts[0]}`;
+    }
+  }
+  return s;
+}
+
+// Generate multiple normalized lookup keys for a name
+function normKeys(raw) {
+  const cleaned = cleanName(raw);
+  const keys = new Set([norm(cleaned)]);
+  // Also try the raw without cleaning (covers names that have commas in them)
+  keys.add(norm(raw));
+  // Try reversed word order of cleaned name
+  const words = cleaned.trim().split(/\s+/);
+  if (words.length >= 2) {
+    keys.add(norm([...words.slice(1), words[0]].join(" ")));
+  }
+  keys.delete("");
+  return [...keys];
+}
+
 async function fetchAll(table, select) {
   const rows = [];
   const page = 1000;
@@ -93,12 +122,17 @@ async function main() {
   }
   console.log(`  ${distinct.length} distinct participation pitchers`);
 
-  // Build (team_id, normName) → [roster row] index
+  // Build (team_id, normName) → [roster row] index.
+  // Index roster by BOTH raw name and reversed word order so lookups
+  // find matches regardless of First-Last vs Last-First ordering.
   const rosterByKey = new Map();
   for (const r of pitchers) {
-    const k = `${r.team_id}|${norm(r.name)}`;
-    if (!rosterByKey.has(k)) rosterByKey.set(k, []);
-    rosterByKey.get(k).push(r);
+    for (const nk of normKeys(r.name)) {
+      const k = `${r.team_id}|${nk}`;
+      if (!rosterByKey.has(k)) rosterByKey.set(k, []);
+      const arr = rosterByKey.get(k);
+      if (!arr.some((x) => x.pitcher_id === r.pitcher_id)) arr.push(r);
+    }
   }
 
   const updates = [];
@@ -107,8 +141,12 @@ async function main() {
   const already = [];
 
   for (const p of distinct) {
-    const k = `${p.team_id}|${norm(p.pitcher_name)}`;
-    const matches = rosterByKey.get(k) || [];
+    // Try all normalized keys for the participation name
+    let matches = [];
+    for (const nk of normKeys(p.pitcher_name)) {
+      matches = rosterByKey.get(`${p.team_id}|${nk}`) || [];
+      if (matches.length > 0) break;
+    }
     if (matches.length === 0) {
       unmatched.push(p);
     } else if (matches.length > 1) {
