@@ -778,7 +778,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = getSupabaseAdmin();
-  const DAYS_BACK = 14;
+  const DAYS_BACK = 90; // Cover full season for backfill
   const MAX_SCRAPE_ATTEMPTS = 5;
   const DELAY_MS = 300;
 
