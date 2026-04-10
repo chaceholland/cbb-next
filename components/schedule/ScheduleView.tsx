@@ -59,7 +59,6 @@ export function ScheduleView({
     "cbb-watched-games",
     [],
   );
-  const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
   const [showFiltersModal, setShowFiltersModal] = useState(false);
   const [viewMode, setViewMode] = useState<"games" | "series">("games");
   const [virtualScroll, setVirtualScroll] = useState(false);
@@ -76,8 +75,25 @@ export function ScheduleView({
         watchOrder: "all",
         pitcherFilter: "favorites-or-played",
         selectedWeeks: [],
+        expandedWeeks: [],
       },
     });
+
+  // Expanded weeks — persisted via filter memory
+  const expandedWeeks = useMemo(
+    () => new Set(filters.expandedWeeks as number[]),
+    [filters.expandedWeeks],
+  );
+  const setExpandedWeeks = useCallback(
+    (value: Set<number> | ((prev: Set<number>) => Set<number>)) => {
+      setFilters((prev) => {
+        const current = new Set(prev.expandedWeeks as number[]);
+        const next = typeof value === "function" ? value(current) : value;
+        return { ...prev, expandedWeeks: Array.from(next) };
+      });
+    },
+    [setFilters],
+  );
 
   // Derived state from filter memory
   const conferences = useMemo(
@@ -351,13 +367,16 @@ export function ScheduleView({
         const weeks = [
           ...new Set(allGames.map((g) => computeWeek(g.date))),
         ].sort((a, b) => a - b);
-        const todayWeek = computeWeek(new Date().toISOString().slice(0, 10));
-        // Find the current week, or the next upcoming week, or fall back to the last week
-        const targetWeek =
-          weeks.find((w) => w >= todayWeek) ??
-          weeks[weeks.length - 1] ??
-          weeks[0];
-        setExpandedWeeks(new Set([targetWeek]));
+        // Only auto-expand current week on first visit (no saved state)
+        const saved = filters.expandedWeeks as number[];
+        if (!saved || saved.length === 0) {
+          const todayWeek = computeWeek(new Date().toISOString().slice(0, 10));
+          const targetWeek =
+            weeks.find((w) => w >= todayWeek) ??
+            weeks[weeks.length - 1] ??
+            weeks[0];
+          setExpandedWeeks(new Set([targetWeek]));
+        }
       } catch (err) {
         console.error("Error fetching schedule:", err);
         setError("Failed to load schedule. Please try again.");
