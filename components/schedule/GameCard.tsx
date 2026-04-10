@@ -66,7 +66,7 @@ function TeamLogo({
   const logoSrc = team?.logo || getEspnLogoUrl(teamId);
   return (
     <div
-      className="relative rounded-full overflow-hidden bg-slate-900 shadow-md shadow-black/30 shrink-0 transition-transform duration-200 hover:scale-125 hover:shadow-xl hover:z-10"
+      className="relative rounded-full overflow-hidden bg-slate-900 shadow-md shadow-black/30 shrink-0"
       style={{ width: size, height: size }}
     >
       {logoSrc && (
@@ -196,14 +196,14 @@ function PitcherRow({
       )}
     >
       {/* Headshot */}
-      <div className="w-28 h-32 rounded-lg overflow-visible bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 relative group/hs">
+      <div className="w-28 h-32 rounded-lg overflow-hidden bg-slate-800 shrink-0 border-2 border-slate-600 shadow-md shadow-black/30 relative group/hs">
         {imgSrc && (
           <Image
             src={imgSrc}
             alt={row.pitcher_name}
             width={112}
             height={128}
-            className="headshot-zoom w-full h-full object-cover object-top rounded-lg relative z-[1] group-hover/hs:scale-[4.4] group-hover/hs:z-[100] group-hover/hs:shadow-[0_8px_24px_rgba(0,0,0,0.6)]"
+            className="w-full h-full object-cover object-top rounded-lg relative z-[1] transition-transform duration-200 group-hover/hs:scale-110"
             unoptimized
             onError={(e) => {
               const img = e.target as HTMLImageElement;
