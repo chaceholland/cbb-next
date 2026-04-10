@@ -39,6 +39,8 @@ interface Props {
   onToggleWatched?: () => void;
   favoritePitcherIds?: Set<string>;
   onToggleFavoritePitcher?: (pitcherId: string) => void;
+  /** When "favorites-only", buildMergedRows omits DNP favorites and non-fav played */
+  pitcherFilter?: string;
   favsByTeam?: Record<
     string,
     Array<{
@@ -462,6 +464,7 @@ export function GameCard({
   onToggleWatched,
   favoritePitcherIds,
   onToggleFavoritePitcher,
+  pitcherFilter,
   favsByTeam,
 }: Props) {
   const homeTeam = teams[game.home_team_id];
@@ -579,6 +582,13 @@ export function GameCard({
     const nonFavPlayed = participationRows.filter(
       (r) => !isFavoritePitcherRow(r),
     );
+
+    // When "Favs Played" filter is active, only show favorited pitchers
+    // who actually played — hide DNP favorites and non-fav pitchers.
+    if (pitcherFilter === "favorites-only") {
+      return favPlayed;
+    }
+
     return [...favPlayed, ...favDnp, ...nonFavPlayed];
   }
 

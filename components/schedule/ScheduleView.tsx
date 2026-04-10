@@ -1443,6 +1443,7 @@ export function ScheduleView({
                               toggleWatchedGame(game.game_id)
                             }
                             favoritePitcherIds={favoritePitcherIds}
+                            pitcherFilter={pitcherFilter}
                             favsByTeam={favsByTeam}
                             onToggleFavoritePitcher={toggleFavoritePitcher}
                           />
@@ -1501,6 +1502,7 @@ export function ScheduleView({
                                 toggleWatchedGame(game.game_id)
                               }
                               favoritePitcherIds={favoritePitcherIds}
+                              pitcherFilter={pitcherFilter}
                               favsByTeam={favsByTeam}
                               onToggleFavoritePitcher={toggleFavoritePitcher}
                             />
