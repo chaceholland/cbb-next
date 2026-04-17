@@ -116,8 +116,10 @@ const TEAM_SITES: Record<string, { domain: string; sportPath: string }> = {
 
 const SIDEARM_WORKER_URL = "https://d1-proxy.chace-holland.workers.dev";
 
-// Cache schedule responses per team within a single cron run
-const scheduleCache = new Map<string, SidearmScheduleGame[]>();
+// Delay between SIDEARM fallback attempts to stay under Cloudflare
+// Browser Rendering rate limits. Schedule + boxscore fetches launch
+// fresh browser instances; firing them back-to-back cascades into 429s.
+const SIDEARM_GAP_MS = 3000;
 
 interface SidearmScheduleGame {
   date: string;
@@ -190,13 +192,24 @@ function datesMatch(espnDate: string, sidearmDate: string): boolean {
   return diffMs <= twoDays;
 }
 
+interface SidearmScheduleFetch {
+  games: SidearmScheduleGame[];
+  error?: string;
+}
+
+// Per-run cache of full schedule responses (games + worker error). Caching
+// the error message too means dateless 429s don't masquerade as empty
+// schedules when the caller surfaces `error` in diagnostics.
+const scheduleResponseCache = new Map<string, SidearmScheduleFetch>();
+
 async function fetchSidearmSchedule(
   domain: string,
   sportPath: string,
   season: string,
-): Promise<SidearmScheduleGame[]> {
+): Promise<SidearmScheduleFetch> {
   const cacheKey = `${domain}${sportPath}:${season}`;
-  if (scheduleCache.has(cacheKey)) return scheduleCache.get(cacheKey)!;
+  if (scheduleResponseCache.has(cacheKey))
+    return scheduleResponseCache.get(cacheKey)!;
 
   const proxySecret = process.env.D1_PROXY_SECRET;
   const res = await fetch(`${SIDEARM_WORKER_URL}/sidearm/schedule`, {
@@ -214,14 +227,21 @@ async function fetchSidearmSchedule(
     console.log(
       `[api/update] SIDEARM schedule fetch failed for ${domain}: HTTP ${res.status}`,
     );
-    scheduleCache.set(cacheKey, []);
-    return [];
+    const out: SidearmScheduleFetch = {
+      games: [],
+      error: `HTTP ${res.status}`,
+    };
+    scheduleResponseCache.set(cacheKey, out);
+    return out;
   }
 
   const json = await res.json();
-  const games: SidearmScheduleGame[] = json.games || [];
-  scheduleCache.set(cacheKey, games);
-  return games;
+  const out: SidearmScheduleFetch = {
+    games: json.games || [],
+    error: json.error,
+  };
+  scheduleResponseCache.set(cacheKey, out);
+  return out;
 }
 
 interface SidearmPitcher {
@@ -289,13 +309,16 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
   // Fetch schedule for this team. SIDEARM schedule URLs are keyed by
   // season year (e.g. /schedule/2026), so derive season from game.date.
   let schedule: SidearmScheduleGame[];
+  let scheduleError: string | undefined;
   const season = String(new Date(game.date).getFullYear());
   try {
-    schedule = await fetchSidearmSchedule(
+    const resp = await fetchSidearmSchedule(
       config.domain,
       config.sportPath,
       season,
     );
+    schedule = resp.games;
+    scheduleError = resp.error;
   } catch (err) {
     const msg = (err as Error).message;
     console.log(
@@ -305,10 +328,14 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
   }
 
   if (schedule.length === 0) {
-    console.log(`[api/update] SIDEARM: empty schedule for ${config.domain}`);
+    console.log(
+      `[api/update] SIDEARM: empty schedule for ${config.domain}${scheduleError ? ` (${scheduleError})` : ""}`,
+    );
     return {
       records: null,
-      reason: `empty schedule for ${config.domain}`,
+      reason: scheduleError
+        ? `schedule ${scheduleError} for ${config.domain}`
+        : `empty schedule for ${config.domain}`,
     };
   }
 
@@ -318,18 +345,28 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
       ? game.away_name || ""
       : game.home_name || "";
 
+  // Prefer stats-style URLs (`/sports/.../stats/<year>/<slug>/boxscore/`)
+  // over legacy `/boxscore.aspx?id=` URLs — the aspx links 302-redirect
+  // and frequently rate-limit/fail rendering under Cloudflare Browser
+  // Rendering load, while stats URLs render reliably.
+  const isStatsUrl = (u?: string): boolean =>
+    !!u && /\/stats\/\d{4}\/[^/]+\/boxscore\//i.test(u);
+
   // Phase A — strict match on schedule entries that already have dates.
-  let matchedGame: SidearmScheduleGame | null = null;
-  for (const sg of schedule) {
-    if (
+  const phaseAMatches = schedule.filter(
+    (sg) =>
+      !!sg.boxscoreUrl &&
       sg.date &&
       datesMatch(game.date, sg.date) &&
-      fuzzyTeamMatch(opponentName, sg.opponent)
-    ) {
-      matchedGame = sg;
-      break;
-    }
-  }
+      fuzzyTeamMatch(opponentName, sg.opponent),
+  );
+  // Rank: stats URLs first, then aspx.
+  phaseAMatches.sort((a, b) => {
+    const diff =
+      Number(isStatsUrl(b.boxscoreUrl)) - Number(isStatsUrl(a.boxscoreUrl));
+    return diff;
+  });
+  let matchedGame: SidearmScheduleGame | null = phaseAMatches[0] ?? null;
 
   // Fetch the boxscore. For Phase B we may need its date to disambiguate,
   // so defer this until after we know which schedule entry to use.
@@ -409,12 +446,13 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
   }
 
   if (!boxscore || (boxscore.home.length === 0 && boxscore.away.length === 0)) {
+    const errPart = boxscore?.error ? ` (${boxscore.error})` : "";
     console.log(
-      `[api/update] SIDEARM: no pitchers in boxscore for ${matchedGame.boxscoreUrl}`,
+      `[api/update] SIDEARM: no pitchers in boxscore for ${matchedGame.boxscoreUrl}${errPart}`,
     );
     return {
       records: null,
-      reason: `no pitchers in boxscore ${matchedGame.boxscoreUrl}`,
+      reason: `no pitchers in boxscore ${matchedGame.boxscoreUrl}${errPart}`,
     };
   }
 
@@ -744,7 +782,11 @@ export async function GET(request: Request) {
           message: espnResult.error,
         });
       } else if (espnResult.length === 0) {
-        // ESPN has no data — try SIDEARM school site fallback
+        // ESPN has no data — try SIDEARM school site fallback.
+        // Pace these: each call may spin up a fresh Cloudflare Browser
+        // Rendering instance (schedule + boxscores), and back-to-back
+        // launches cascade into 429s.
+        await new Promise((r) => setTimeout(r, SIDEARM_GAP_MS));
         console.log(
           `[api/update] ESPN no data for ${matchup}, trying SIDEARM...`,
         );
