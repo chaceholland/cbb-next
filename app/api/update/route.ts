@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 
 export const maxDuration = 300; // 5 minutes
@@ -85,109 +84,46 @@ async function scrapePitcherData(
   }
 }
 
-// ─── D1Baseball / StatBroadcast Fallback ─────────────────────────────────────
+// ─── SIDEARM School Site Fallback ────────────────────────────────────────────
 
-const TEAM_NAME_OVERRIDES: Record<string, string> = {
-  "ole miss rebels": "mississippi",
-  "ole miss": "mississippi",
-  "lsu tigers": "lsu",
-  "usc trojans": "usc",
-  "ucf knights": "ucf",
-  "miami hurricanes": "miami (fl)",
-  "pitt panthers": "pittsburgh",
-  "nc state wolfpack": "nc state",
-  "vt hokies": "virginia tech",
-  "unlv rebels": "unlv",
-  "utsa roadrunners": "utsa",
-  "utep miners": "utep",
-  "uab blazers": "uab",
-  "unc tar heels": "unc",
-  "tcu horned frogs": "tcu",
-  "smu mustangs": "smu",
-  "byu cougars": "byu",
-  "app state mountaineers": "appalachian state",
+const TEAM_SITES: Record<string, { domain: string; sportPath: string }> = {
+  "127": { domain: "byucougars.com", sportPath: "/sports/baseball" },
+  "198": { domain: "gofrogs.com", sportPath: "/sports/baseball" },
+  "90": { domain: "gophersports.com", sportPath: "/sports/baseball" },
+  "85": { domain: "lsusports.net", sportPath: "/sports/baseball" },
+  "59": { domain: "thesundevils.com", sportPath: "/sports/baseball" },
+  "102": { domain: "scarletknights.com", sportPath: "/sports/baseball" },
+  "91": { domain: "mutigers.com", sportPath: "/sports/baseball" },
+  "93": { domain: "goduke.com", sportPath: "/sports/baseball" },
+  "108": { domain: "ohiostatebuckeyes.com", sportPath: "/sports/baseball" },
+  "411": { domain: "nusports.com", sportPath: "/sports/baseball" },
+  "60": { domain: "arizonawildcats.com", sportPath: "/sports/baseball" },
+  "86": { domain: "bceagles.com", sportPath: "/sports/baseball" },
+  "168": { domain: "kuathletics.com", sportPath: "/sports/baseball" },
+  "132": { domain: "hokiesports.com", sportPath: "/sports/baseball" },
+  "131": { domain: "virginiasports.com", sportPath: "/sports/baseball" },
+  "294": { domain: "iuhoosiers.com", sportPath: "/sports/baseball" },
+  "153": { domain: "fightingillini.com", sportPath: "/sports/baseball" },
+  "87": { domain: "umterps.com", sportPath: "/sports/baseball" },
+  "120": { domain: "vucommodores.com", sportPath: "/sports/baseball" },
+  "136": { domain: "wvusports.com", sportPath: "/sports/baseball" },
+  "97": { domain: "godeacs.com", sportPath: "/sports/baseball" },
+  "161": { domain: "gobearcats.com", sportPath: "/sports/baseball" },
+  "124": { domain: "uhcougars.com", sportPath: "/sports/baseball" },
+  "133": { domain: "gohuskies.com", sportPath: "/sports/baseball" },
+  "89": { domain: "mgoblue.com", sportPath: "/sports/baseball" },
 };
 
-const D1_HEADERS = {
-  "User-Agent":
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-  "Accept-Language": "en-US,en;q=0.9",
-};
+const SIDEARM_WORKER_URL = "https://d1-proxy.chace-holland.workers.dev";
 
-function normalizeTeamName(name: string): string {
-  if (!name) return "";
-  const lower = name.toLowerCase().trim();
-  for (const [key, val] of Object.entries(TEAM_NAME_OVERRIDES)) {
-    if (lower.includes(key)) return val;
-  }
-  return lower
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+// Cache schedule responses per team within a single cron run
+const scheduleCache = new Map<string, SidearmScheduleGame[]>();
 
-function toD1Date(dateStr: string): string {
-  const d = new Date(dateStr);
-  const yyyy = d.getUTCFullYear();
-  const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(d.getUTCDate()).padStart(2, "0");
-  return `${yyyy}${mm}${dd}`;
-}
-
-interface D1Game {
-  broadcastId: string;
-  homeEspnId?: string;
-  awayEspnId?: string;
-  homeName?: string;
-  awayName?: string;
-}
-
-// Cache scoreboard responses per date within a single cron run
-const scoreboardCache = new Map<string, D1Game[]>();
-
-async function fetchD1Scoreboard(dateStr: string): Promise<D1Game[]> {
-  const d1Date = toD1Date(dateStr);
-  if (scoreboardCache.has(d1Date)) return scoreboardCache.get(d1Date)!;
-
-  // Use Cloudflare Worker proxy (D1Baseball blocks Vercel IPs directly)
-  const proxySecret = process.env.D1_PROXY_SECRET;
-  const proxyUrl = `https://d1-proxy.chace-holland.workers.dev/?date=${d1Date}&secret=${proxySecret}`;
-  const res = await fetch(proxyUrl);
-  if (!res.ok) throw new Error(`D1 proxy HTTP ${res.status}`);
-
-  const json = await res.json();
-  const dump = (json?.content?.["d1-scores"] || "") as string;
-
-  const games: D1Game[] = [];
-  const gameRe =
-    /\["game_id"\]=>\s+int\((\d+)\)([\s\S]{0,4000}?)(?=\["game_id"\]|$)/g;
-  let m;
-  while ((m = gameRe.exec(dump)) !== null) {
-    const block = m[2];
-    const broadcastId = block.match(
-      /statbroadcast\.com\/broadcast\/\?id=(\d+)/,
-    )?.[1];
-    if (!broadcastId) continue;
-
-    const homeEspnId = block.match(
-      /\["home_team_643_team_id"\]=>\s+int\((\d+)\)/,
-    )?.[1];
-    const awayEspnId = block.match(
-      /\["road_team_643_team_id"\]=>\s+int\((\d+)\)/,
-    )?.[1];
-    const homeName = block.match(
-      /\["home_team_name"\]=>\s+string\(\d+\)\s+"([^"]+)"/,
-    )?.[1];
-    const awayName = block.match(
-      /\["road_team_name"\]=>\s+string\(\d+\)\s+"([^"]+)"/,
-    )?.[1];
-
-    games.push({ broadcastId, homeEspnId, awayEspnId, homeName, awayName });
-  }
-
-  scoreboardCache.set(d1Date, games);
-  return games;
+interface SidearmScheduleGame {
+  date: string;
+  opponent: string;
+  boxscoreUrl?: string;
+  result?: string;
 }
 
 interface GameRecord {
@@ -199,451 +135,233 @@ interface GameRecord {
   date: string;
 }
 
-function matchD1Games(
-  d1Games: D1Game[],
-  homeId: string,
-  awayId: string,
-  homeName: string,
-  awayName: string,
-): string | null {
-  // Primary: exact ESPN team ID match
-  for (const g of d1Games) {
-    if (
-      (g.homeEspnId === homeId && g.awayEspnId === awayId) ||
-      (g.homeEspnId === awayId && g.awayEspnId === homeId)
-    ) {
-      return g.broadcastId;
-    }
-  }
-
-  // Fallback: fuzzy team name match
-  // DB uses full names ("California Golden Bears"), D1 uses short ("California")
-  const homeNorm = normalizeTeamName(homeName);
-  const awayNorm = normalizeTeamName(awayName);
-
-  let bestScore = 0;
-  let bestBroadcastId: string | null = null;
-  for (const g of d1Games) {
-    const h = normalizeTeamName(g.homeName || "");
-    const a = normalizeTeamName(g.awayName || "");
-
-    // Check containment in both directions (handles short vs full names)
-    const homeMatch =
-      (h && (homeNorm.includes(h) || h.includes(homeNorm))) ||
-      (a && (homeNorm.includes(a) || a.includes(homeNorm)));
-    const awayMatch =
-      (a && (awayNorm.includes(a) || a.includes(awayNorm))) ||
-      (h && (awayNorm.includes(h) || h.includes(awayNorm)));
-
-    // Need both home AND away to match, and they must match different sides
-    if (homeMatch && awayMatch) {
-      // Prefer matches where home matches home and away matches away
-      const directMatch =
-        (homeNorm.includes(h) || h.includes(homeNorm)) &&
-        (awayNorm.includes(a) || a.includes(awayNorm));
-      const score = directMatch ? 10 : 5;
-      if (score > bestScore) {
-        bestScore = score;
-        bestBroadcastId = g.broadcastId;
-      }
-    }
-  }
-
-  return bestBroadcastId;
+function normalizeName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
-async function findD1BroadcastId(game: GameRecord): Promise<string | null> {
-  const homeId = String(game.home_team_id);
-  const awayId = String(game.away_team_id);
-  const homeName = game.home_name || "";
-  const awayName = game.away_name || "";
+function fuzzyTeamMatch(espnName: string, sidearmName: string): boolean {
+  const a = normalizeName(espnName);
+  const b = normalizeName(sidearmName);
+  if (!a || !b) return false;
 
-  // Try the UTC date first
-  const datesToTry = [game.date];
+  const aTokens = a.split(" ").filter((t) => t.length > 1);
+  const bTokens = b.split(" ").filter((t) => t.length > 1);
 
-  // If game is in the 00:00-06:59 UTC window, also try the previous day
-  // (evening US games often cross midnight UTC)
-  const utcHour = new Date(game.date).getUTCHours();
-  if (utcHour < 7) {
-    const prevDay = new Date(game.date);
-    prevDay.setUTCDate(prevDay.getUTCDate() - 1);
-    datesToTry.push(prevDay.toISOString());
-  }
+  // Check if >50% of shorter name's tokens appear in the longer
+  const shorter = aTokens.length <= bTokens.length ? aTokens : bTokens;
+  const longer = aTokens.length <= bTokens.length ? bTokens : aTokens;
+  const longerStr = longer.join(" ");
 
-  for (const dateStr of datesToTry) {
-    let d1Games: D1Game[];
-    try {
-      d1Games = await fetchD1Scoreboard(dateStr);
-    } catch {
-      continue;
-    }
-    if (d1Games.length === 0) continue;
-
-    const result = matchD1Games(d1Games, homeId, awayId, homeName, awayName);
-    if (result) return result;
-  }
-
-  console.log(
-    `[api/update] D1: no match for ${awayName} @ ${homeName} on dates ${datesToTry.map(toD1Date).join(",")}`,
-  );
-  return null;
+  const matches = shorter.filter((t) => longerStr.includes(t)).length;
+  return matches > shorter.length * 0.5;
 }
 
-// ─── StatBroadcast Auth + Decode ────────────────────────────────────────────
-// StatBroadcast uses: PoW challenge → session tokens → XOR + dynamic-ROT + base64
+function datesMatch(espnDate: string, sidearmDate: string): boolean {
+  // Parse ESPN date (ISO format) and SIDEARM date (various formats)
+  const espn = new Date(espnDate);
+  const espnTime = espn.getTime();
+  if (isNaN(espnTime)) return false;
 
-interface SBSession {
-  powCookie: string;
-  sbk: string; // XOR hex key
-  sbe: string; // event/broadcast ID
-  sbhn: string; // custom header name
-  sbt: string; // custom header token
-  sbc: string; // chain token
-  rotShift: number; // dynamic Caesar cipher shift (was always 13, now varies)
-}
-
-// Cache one session per cron run (PoW + tokens valid for ~2 hours)
-let sbSessionCache: SBSession | null = null;
-
-async function solveStatBroadcastPoW(
-  broadcastId: string,
-): Promise<string | null> {
-  try {
-    const res = await fetch(
-      `https://stats.statbroadcast.com/statmonitr/?id=${broadcastId}`,
-      { headers: D1_HEADERS },
-    );
-    if (!res.ok) return null;
-    const html = await res.text();
-    const puzzleMatch = html.match(/var p="([a-f0-9]+)"/);
-    const diffMatch = html.match(/d=(\d+)/);
-    if (!puzzleMatch || !diffMatch) return null;
-
-    const puzzle = puzzleMatch[1];
-    const diff = parseInt(diffMatch[1]);
-    const target = "0".repeat(diff);
-
-    for (let n = 0; n < 20_000_000; n++) {
-      const hash = createHash("sha256")
-        .update(puzzle + n)
-        .digest("hex");
-      if (hash.substring(0, diff) === target) {
-        return `${puzzle}:${n}`;
-      }
-    }
-    return null;
-  } catch {
-    return null;
-  }
-}
-
-async function getStatBroadcastSession(
-  broadcastId: string,
-): Promise<SBSession | null> {
-  if (sbSessionCache) return sbSessionCache;
-
-  const powCookie = await solveStatBroadcastPoW(broadcastId);
-  if (!powCookie) return null;
-
-  try {
-    const res = await fetch(
-      `https://stats.statbroadcast.com/statmonitr/?id=${broadcastId}`,
-      {
-        headers: {
-          ...D1_HEADERS,
-          Cookie: `sb_pow=${powCookie}`,
-        },
-      },
-    );
-    if (!res.ok) return null;
-    const html = await res.text();
-
-    const sbk = html.match(/_sbk\s*=\s*"([^"]+)"/)?.[1];
-    const sbhn = html.match(/_sbhn\s*=\s*"([^"]+)"/)?.[1];
-    const sbt = html.match(/_sbt\s*=\s*"([^"]+)"/)?.[1];
-    const sbc = html.match(/_sbc\s*=\s*"([^"]+)"/)?.[1];
-    if (!sbk || !sbhn || !sbt || !sbc) return null;
-
-    // Extract dynamic ROT shift from the custom decode function
-    let rotShift = 13;
-    const drfName = html.match(/_drf\s*=\s*['"]([^'"]+)/)?.[1];
-    if (drfName) {
-      const funcRe = new RegExp(
-        `function\\s+${drfName}\\([^)]*\\)\\s*\\{[^}]+\\}`,
+  // Try multiple SIDEARM date formats
+  let sidearm: Date;
+  // Try ISO first
+  sidearm = new Date(sidearmDate);
+  if (isNaN(sidearm.getTime())) {
+    // Try MM/DD/YYYY
+    const parts = sidearmDate.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (parts) {
+      sidearm = new Date(
+        parseInt(parts[3]),
+        parseInt(parts[1]) - 1,
+        parseInt(parts[2]),
       );
-      const funcMatch = html.match(funcRe);
-      if (funcMatch) {
-        const shiftMatch = funcMatch[0].match(/\+(\d+)\)%26/);
-        if (shiftMatch) rotShift = parseInt(shiftMatch[1]);
-      }
+    } else {
+      return false;
     }
-
-    sbSessionCache = {
-      powCookie,
-      sbk,
-      sbe: broadcastId,
-      sbhn,
-      sbt,
-      sbc,
-      rotShift,
-    };
-    return sbSessionCache;
-  } catch {
-    return null;
   }
+
+  // Compare within +/- 2 days (timezone differences between ESPN UTC and local game times)
+  const diffMs = Math.abs(espnTime - sidearm.getTime());
+  const twoDays = 2 * 24 * 60 * 60 * 1000;
+  return diffMs <= twoDays;
 }
 
-function decodeStatBroadcast(
-  encoded: string,
-  session: SBSession,
-  encrypted: boolean,
-): string {
-  const shift = session.rotShift;
+async function fetchSidearmSchedule(
+  domain: string,
+  sportPath: string,
+): Promise<SidearmScheduleGame[]> {
+  const cacheKey = `${domain}${sportPath}`;
+  if (scheduleCache.has(cacheKey)) return scheduleCache.get(cacheKey)!;
 
-  function customRot(s: string): string {
-    const result: string[] = [];
-    let i = s.length;
-    while (i--) {
-      const c = s.charCodeAt(i);
-      if (c >= 97 && c < 123) {
-        result[i] = String.fromCharCode(((c - 97 + shift) % 26) + 97);
-      } else if (c >= 65 && c < 91) {
-        result[i] = String.fromCharCode(((c - 65 + shift) % 26) + 65);
-      } else {
-        result[i] = s[i];
-      }
-    }
-    return result.join("");
-  }
-
-  let rotInput: string;
-  if (encrypted) {
-    const raw = Buffer.from(encoded, "base64");
-    const key = Buffer.from(session.sbk, "hex");
-    const xored: string[] = [];
-    for (let i = 0; i < raw.length; i++) {
-      xored.push(String.fromCharCode(raw[i] ^ key[i % key.length]));
-    }
-    rotInput = customRot(xored.join(""));
-  } else {
-    rotInput = customRot(encoded);
-  }
-
-  return Buffer.from(rotInput, "base64").toString("utf8");
-}
-
-const SB_WS = "https://stats.statbroadcast.com/interface/webservice/";
-
-const eventCache = new Map<string, { xmlfile: string; sport: string }>();
-
-async function sbFetch(
-  url: string,
-  session: SBSession,
-): Promise<{ data: string; encrypted: boolean } | null> {
-  const hnValue = session.sbhn.replace("X-ST-", "");
-  const separator = url.includes("?") ? "&" : "?";
-  const fullUrl = `${url}${separator}_eid=${session.sbe}&_hn=${hnValue}&_c=${session.sbc}&_cf=0`;
-
-  const res = await fetch(fullUrl, {
-    headers: {
-      ...D1_HEADERS,
-      Cookie: `sb_pow=${session.powCookie}`,
-      "X-Requested-With": "XMLHttpRequest",
-      [session.sbhn]: session.sbt,
-    },
+  const proxySecret = process.env.D1_PROXY_SECRET;
+  const res = await fetch(`${SIDEARM_WORKER_URL}/sidearm/schedule`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      secret: proxySecret,
+      domain,
+      sportPath,
+    }),
   });
 
-  if (!res.ok) return null;
-  const rejected = res.headers.get("X-SB-Rejected");
-  if (rejected === "1") return null;
+  if (!res.ok) {
+    console.log(
+      `[api/update] SIDEARM schedule fetch failed for ${domain}: HTTP ${res.status}`,
+    );
+    scheduleCache.set(cacheKey, []);
+    return [];
+  }
 
-  const encrypted = res.headers.get("X-SB-Enc") === "1";
-  const data = await res.text();
-  return { data, encrypted };
+  const json = await res.json();
+  const games: SidearmScheduleGame[] = json.games || [];
+  scheduleCache.set(cacheKey, games);
+  return games;
 }
 
-async function fetchStatBroadcastEvent(
-  broadcastId: string,
-  session: SBSession,
-): Promise<{ xmlfile: string; sport: string } | null> {
-  if (eventCache.has(broadcastId)) return eventCache.get(broadcastId)!;
+async function fetchSidearmBoxscore(
+  url: string,
+): Promise<{ pitchers: Array<{ name: string; team: string; stats: Record<string, string | null> }> } | null> {
+  const proxySecret = process.env.D1_PROXY_SECRET;
+  const res = await fetch(`${SIDEARM_WORKER_URL}/sidearm/boxscore`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      secret: proxySecret,
+      url,
+    }),
+  });
 
-  const data = Buffer.from("type=statbroadcast").toString("base64");
-  const result = await sbFetch(
-    `${SB_WS}event/${broadcastId}?data=${data}`,
-    session,
+  if (!res.ok) {
+    console.log(
+      `[api/update] SIDEARM boxscore fetch failed for ${url}: HTTP ${res.status}`,
+    );
+    return null;
+  }
+
+  const json = await res.json();
+  return json;
+}
+
+async function scrapeSidearm(
+  game: GameRecord,
+): Promise<PitcherRecord[] | null> {
+  // Find which team(s) in this game have a SIDEARM config
+  const homeConfig = TEAM_SITES[game.home_team_id];
+  const awayConfig = TEAM_SITES[game.away_team_id];
+  const config = homeConfig || awayConfig;
+  const configTeamId = homeConfig ? game.home_team_id : game.away_team_id;
+
+  if (!config) {
+    return null; // Neither team has a SIDEARM config
+  }
+
+  console.log(
+    `[api/update] SIDEARM: trying ${config.domain} for ${game.away_name} @ ${game.home_name}`,
   );
-  if (!result) return null;
 
-  const xml = decodeStatBroadcast(result.data, session, result.encrypted);
-  const xmlfile =
-    xml.match(/<xmlfile><!\[CDATA\[([^\]]+)\]\]>/)?.[1] ||
-    `text/${broadcastId}.xml`;
-  const sport = xml.match(/<sport>([^<]+)<\/sport>/)?.[1] || "bsgame";
-  const entry = { xmlfile, sport };
-  eventCache.set(broadcastId, entry);
-  return entry;
-}
+  // Fetch schedule for this team
+  let schedule: SidearmScheduleGame[];
+  try {
+    schedule = await fetchSidearmSchedule(config.domain, config.sportPath);
+  } catch (err) {
+    console.log(
+      `[api/update] SIDEARM schedule error for ${config.domain}: ${(err as Error).message}`,
+    );
+    return null;
+  }
 
-async function fetchStatBroadcastView(
-  broadcastId: string,
-  xsl: string,
-  session: SBSession,
-): Promise<string | null> {
-  const event = await fetchStatBroadcastEvent(broadcastId, session);
-  if (!event) return null;
+  if (schedule.length === 0) {
+    console.log(
+      `[api/update] SIDEARM: empty schedule for ${config.domain}`,
+    );
+    return null;
+  }
 
-  const params =
-    `event=${broadcastId}&xml=${event.xmlfile}&xsl=${xsl}` +
-    `&sport=${event.sport}&filetime=-1&type=statbroadcast&start=true`;
-  const encoded = Buffer.from(params).toString("base64");
+  // Match the game: find a schedule entry matching the opponent and date
+  const opponentName =
+    configTeamId === game.home_team_id
+      ? game.away_name || ""
+      : game.home_name || "";
 
-  const result = await sbFetch(`${SB_WS}stats?data=${encoded}`, session);
-  if (!result) return null;
-
-  return decodeStatBroadcast(result.data, session, result.encrypted);
-}
-
-interface ParsedPitcher {
-  teamLabel: string;
-  teamSide: string;
-  pitcherName: string;
-  stats: Record<string, string | null>;
-}
-
-function parseBoxScorePitchers(
-  html: string,
-  teamSide: string,
-): ParsedPitcher[] {
-  const results: ParsedPitcher[] = [];
-  const sectionRe =
-    /([A-Za-z &.'-]+?)\s*Pitching Stats[\s\S]{0,2000}?<tbody>([\s\S]*?)<\/tbody>/gi;
-  let sectionMatch;
-
-  while ((sectionMatch = sectionRe.exec(html)) !== null) {
-    const teamLabel = sectionMatch[1].trim();
-    const tbody = sectionMatch[2];
-    const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
-    let rowMatch;
-    while ((rowMatch = rowRe.exec(tbody)) !== null) {
-      const cells: string[] = [];
-      const cellRe = /<td[^>]*>([\s\S]*?)<\/td>/gi;
-      let cm;
-      while ((cm = cellRe.exec(rowMatch[1])) !== null) {
-        cells.push(cm[1].replace(/<[^>]+>/g, "").trim());
-      }
-      if (cells.length < 8) continue;
-
-      // Columns: 0=#, 1=Name, 2=Dec, 3=IP, 4=H, 5=R, 6=ER, 7=BB, 8=K,
-      //          9=WP, 10=BK, 11=HP, 12=BF, 13=2B, 14=3B, 15=HR
-      const pitcherName = cells[1];
-      const IP = cells[3];
-      const H = cells[4];
-      const R = cells[5];
-      const ER = cells[6];
-      const BB = cells[7];
-      const K = cells[8];
-      const BF = cells[12];
-      const HR = cells[15];
-      const PC = cells[20];
-
-      if (!pitcherName || !IP || !/^\d/.test(IP)) continue;
-
-      results.push({
-        teamLabel,
-        teamSide,
-        pitcherName: pitcherName.replace(",", ", ").trim(),
-        stats: {
-          IP: IP || null,
-          H: H || null,
-          R: R || null,
-          ER: ER || null,
-          BB: BB || null,
-          K: K || null,
-          HR: HR || null,
-          BF: BF || null,
-          PC: PC || null,
-          source: "d1baseball",
-        },
-      });
+  let matchedGame: SidearmScheduleGame | null = null;
+  for (const sg of schedule) {
+    if (
+      datesMatch(game.date, sg.date) &&
+      fuzzyTeamMatch(opponentName, sg.opponent)
+    ) {
+      matchedGame = sg;
+      break;
     }
   }
 
-  return results;
-}
-
-async function scrapeD1Baseball(
-  game: GameRecord,
-): Promise<PitcherRecord[] | null> {
-  const broadcastId = await findD1BroadcastId(game);
-  if (!broadcastId) {
+  if (!matchedGame || !matchedGame.boxscoreUrl) {
     console.log(
-      `[api/update] D1: no broadcast ID for ${game.away_name} @ ${game.home_name} (date=${game.date}, home=${game.home_team_id}, away=${game.away_team_id})`,
+      `[api/update] SIDEARM: no matching game for ${opponentName} on ${game.date} in ${config.domain} schedule (${schedule.length} games)`,
     );
     return null;
   }
+
   console.log(
-    `[api/update] D1: found broadcast ${broadcastId} for ${game.away_name} @ ${game.home_name}`,
+    `[api/update] SIDEARM: matched game, fetching boxscore from ${matchedGame.boxscoreUrl}`,
   );
 
-  // Get or create StatBroadcast session (PoW + tokens)
-  const session = await getStatBroadcastSession(broadcastId);
-  if (!session) {
+  // Fetch boxscore
+  let boxscore: { pitchers: Array<{ name: string; team: string; stats: Record<string, string | null> }> } | null;
+  try {
+    boxscore = await fetchSidearmBoxscore(matchedGame.boxscoreUrl);
+  } catch (err) {
     console.log(
-      `[api/update] Failed to get StatBroadcast session for broadcast ${broadcastId}`,
+      `[api/update] SIDEARM boxscore error: ${(err as Error).message}`,
     );
     return null;
   }
 
-  // Fetch both home and visitor box scores in parallel
-  const [homeHtml, visHtml] = await Promise.all([
-    fetchStatBroadcastView(
-      broadcastId,
-      'baseball/sb.bsgame.views.box.xsl&params={"team": "H"}',
-      session,
-    ),
-    fetchStatBroadcastView(
-      broadcastId,
-      'baseball/sb.bsgame.views.box.xsl&params={"team": "V"}',
-      session,
-    ),
-  ]);
+  if (!boxscore || !boxscore.pitchers || boxscore.pitchers.length === 0) {
+    console.log(
+      `[api/update] SIDEARM: no pitchers in boxscore for ${matchedGame.boxscoreUrl}`,
+    );
+    return null;
+  }
 
-  const parsed: ParsedPitcher[] = [];
-  if (homeHtml) parsed.push(...parseBoxScorePitchers(homeHtml, "home"));
-  if (visHtml) parsed.push(...parseBoxScorePitchers(visHtml, "visitor"));
-
-  if (parsed.length === 0) return null;
-
-  // Assign team IDs
-  return parsed.map((p) => {
+  // Map to PitcherRecord[]
+  return boxscore.pitchers.map((p) => {
+    // Determine team ID from the team label in boxscore
     let teamId: string;
-    if (p.teamSide === "home") {
+    const teamLabel = normalizeName(p.team);
+    const homeName = normalizeName(game.home_name || "");
+    const awayName = normalizeName(game.away_name || "");
+
+    if (fuzzyTeamMatch(p.team, game.home_name || "")) {
       teamId = game.home_team_id;
-    } else if (p.teamSide === "visitor") {
+    } else if (fuzzyTeamMatch(p.team, game.away_name || "")) {
       teamId = game.away_team_id;
     } else {
-      const label = (p.teamLabel || "").toLowerCase();
-      const homeName = normalizeTeamName(game.home_name || "");
-      const awayName = normalizeTeamName(game.away_name || "");
-      const homeTokens = homeName.split(/\s+/).filter((t) => t.length > 2);
-      const awayTokens = awayName.split(/\s+/).filter((t) => t.length > 2);
-      const homeScore = homeTokens.filter((t) => label.includes(t)).length;
-      const awayScore = awayTokens.filter((t) => label.includes(t)).length;
+      // Fallback: token overlap scoring
+      const homeTokens = homeName.split(" ").filter((t) => t.length > 2);
+      const awayTokens = awayName.split(" ").filter((t) => t.length > 2);
+      const homeScore = homeTokens.filter((t) => teamLabel.includes(t)).length;
+      const awayScore = awayTokens.filter((t) => teamLabel.includes(t)).length;
       teamId = homeScore >= awayScore ? game.home_team_id : game.away_team_id;
     }
 
-    const normalizedName = p.pitcherName
+    const normalizedPitcherName = p.name
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "");
-    const pitcherId = `D1-${game.game_id}-${teamId}-${normalizedName}`;
+    const pitcherId = `SIDEARM-${game.game_id}-${teamId}-${normalizedPitcherName}`;
 
     return {
       game_id: game.game_id,
       team_id: teamId,
       pitcher_id: pitcherId,
-      pitcher_name: p.pitcherName,
-      stats: p.stats,
+      pitcher_name: p.name,
+      stats: {
+        ...p.stats,
+        source: "sidearm",
+      },
     };
   });
 }
@@ -758,7 +476,7 @@ async function updateGameCompletionStatus(
  *   2. Find completed games from the last 14 days missing pitcher data
  *   3. Skip games with 5+ failed scrape attempts (no_data_available)
  *   4. Scrape ESPN box scores for each
- *   5. If ESPN has no data, try D1Baseball/StatBroadcast fallback
+ *   5. If ESPN has no data, try SIDEARM school site fallback (25 Power 5 teams)
  *   6. Upsert to cbb_pitcher_participation
  *   7. Log to cbb_sync_log
  */
@@ -781,7 +499,7 @@ export async function GET(request: Request) {
     successful: 0,
     noData: 0,
     errors: 0,
-    d1Fallback: 0,
+    sidearmFallback: 0,
     skippedMaxAttempts: 0,
     totalPitchers: 0,
     completionUpdate: { checked: 0, completed: 0, errors: 0 },
@@ -894,40 +612,7 @@ export async function GET(request: Request) {
       `[api/update] Found ${gamesToScrape.length} games to scrape (${results.skippedMaxAttempts} skipped, ${MAX_SCRAPE_ATTEMPTS}+ attempts)`,
     );
 
-    // Debug: test D1 scoreboard + matching for first game
-    let d1Diagnostic = "not tested";
-    if (gamesToScrape.length > 0) {
-      const testGame = gamesToScrape[0];
-      try {
-        const testDate = testGame.date;
-        const utcHour = new Date(testDate).getUTCHours();
-        const d1Date1 = toD1Date(testDate);
-        const d1Games1 = await fetchD1Scoreboard(testDate);
-        d1Diagnostic = `date=${testDate}, h=${utcHour}, d1=${d1Date1}(${d1Games1.length})`;
-
-        if (utcHour < 7) {
-          const prevDay = new Date(testDate);
-          prevDay.setUTCDate(prevDay.getUTCDate() - 1);
-          const d1Date2 = toD1Date(prevDay.toISOString());
-          const d1Games2 = await fetchD1Scoreboard(prevDay.toISOString());
-          d1Diagnostic += `, prev=${d1Date2}(${d1Games2.length})`;
-
-          const bid = matchD1Games(
-            d1Games2,
-            String(testGame.home_team_id),
-            String(testGame.away_team_id),
-            testGame.home_name || "",
-            testGame.away_name || "",
-          );
-          d1Diagnostic += `, match=${bid || "none"}`;
-        }
-      } catch (err) {
-        d1Diagnostic += ` error: ${(err as Error).message}`;
-      }
-    }
-    console.log(`[api/update] D1 diagnostic: ${d1Diagnostic}`);
-
-    // 7. Scrape each game: ESPN first, then D1Baseball fallback
+    // 7. Scrape each game: ESPN first, then SIDEARM school site fallback
     for (let i = 0; i < gamesToScrape.length; i++) {
       const game = gamesToScrape[i];
       const matchup = `${game.away_name} @ ${game.home_name}`;
@@ -957,44 +642,44 @@ export async function GET(request: Request) {
           message: espnResult.error,
         });
       } else if (espnResult.length === 0) {
-        // ESPN has no data — try D1Baseball fallback
+        // ESPN has no data — try SIDEARM school site fallback
         console.log(
-          `[api/update] ESPN no data for ${matchup}, trying D1Baseball...`,
+          `[api/update] ESPN no data for ${matchup}, trying SIDEARM...`,
         );
 
-        let d1Result: PitcherRecord[] | null = null;
-        let d1Debug = "";
+        let sidearmResult: PitcherRecord[] | null = null;
+        let sidearmDebug = "";
         try {
-          d1Result = await scrapeD1Baseball(game as GameRecord);
-          d1Debug = d1Result
-            ? `got ${d1Result.length} pitchers`
+          sidearmResult = await scrapeSidearm(game as GameRecord);
+          sidearmDebug = sidearmResult
+            ? `got ${sidearmResult.length} pitchers`
             : "returned null";
         } catch (err) {
-          d1Debug = `error: ${(err as Error).message}`;
+          sidearmDebug = `error: ${(err as Error).message}`;
           console.log(
-            `[api/update] D1Baseball error for ${matchup}: ${(err as Error).message}`,
+            `[api/update] SIDEARM error for ${matchup}: ${(err as Error).message}`,
           );
         }
 
-        if (d1Result && d1Result.length > 0) {
-          // D1Baseball returned data
+        if (sidearmResult && sidearmResult.length > 0) {
+          // SIDEARM returned data
           const { error: upsertErr } = await supabase
             .from("cbb_pitcher_participation")
-            .upsert(d1Result, {
+            .upsert(sidearmResult, {
               onConflict: "game_id,pitcher_id",
               ignoreDuplicates: false,
             });
 
           if (upsertErr) {
             console.error(
-              `[api/update] D1 upsert error for ${matchup}: ${upsertErr.message}`,
+              `[api/update] SIDEARM upsert error for ${matchup}: ${upsertErr.message}`,
             );
             results.errors++;
             results.games.push({
               game_id: game.game_id,
               matchup,
               status: "error",
-              source: "d1baseball",
+              source: "sidearm",
               message: upsertErr.message,
             });
           } else {
@@ -1002,26 +687,26 @@ export async function GET(request: Request) {
               .from("cbb_games")
               .update({
                 last_scrape_attempt: new Date().toISOString(),
-                scrape_status: "d1_has_data",
+                scrape_status: "sidearm_has_data",
                 scrape_attempts: currentAttempts,
               })
               .eq("game_id", game.game_id);
             results.successful++;
-            results.d1Fallback++;
-            results.totalPitchers += d1Result.length;
+            results.sidearmFallback++;
+            results.totalPitchers += sidearmResult.length;
             results.games.push({
               game_id: game.game_id,
               matchup,
               status: "success",
-              source: "d1baseball",
-              pitchers: d1Result.length,
+              source: "sidearm",
+              pitchers: sidearmResult.length,
             });
             console.log(
-              `[api/update] D1Baseball success for ${matchup}: ${d1Result.length} pitchers`,
+              `[api/update] SIDEARM success for ${matchup}: ${sidearmResult.length} pitchers`,
             );
           }
         } else {
-          // Neither ESPN nor D1Baseball had data
+          // Neither ESPN nor SIDEARM had data
           await supabase
             .from("cbb_games")
             .update({
@@ -1035,7 +720,7 @@ export async function GET(request: Request) {
             game_id: game.game_id,
             matchup,
             status: "no_data",
-            message: d1Debug,
+            message: sidearmDebug,
           });
         }
       } else {
@@ -1099,10 +784,10 @@ export async function GET(request: Request) {
     });
 
     console.log(
-      `[api/update] Done: ${results.successful} success (${results.d1Fallback} via D1), ${results.noData} no-data, ${results.errors} errors, ${results.skippedMaxAttempts} skipped, ${results.totalPitchers} pitchers`,
+      `[api/update] Done: ${results.successful} success (${results.sidearmFallback} via SIDEARM), ${results.noData} no-data, ${results.errors} errors, ${results.skippedMaxAttempts} skipped, ${results.totalPitchers} pitchers`,
     );
 
-    return NextResponse.json({ ok: true, results, d1Diagnostic });
+    return NextResponse.json({ ok: true, results });
   } catch (error) {
     const message = (error as Error).message || String(error);
     console.error(`[api/update] Fatal error: ${message}`);
