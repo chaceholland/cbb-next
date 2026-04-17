@@ -193,8 +193,9 @@ function datesMatch(espnDate: string, sidearmDate: string): boolean {
 async function fetchSidearmSchedule(
   domain: string,
   sportPath: string,
+  season: string,
 ): Promise<SidearmScheduleGame[]> {
-  const cacheKey = `${domain}${sportPath}`;
+  const cacheKey = `${domain}${sportPath}:${season}`;
   if (scheduleCache.has(cacheKey)) return scheduleCache.get(cacheKey)!;
 
   const proxySecret = process.env.D1_PROXY_SECRET;
@@ -205,6 +206,7 @@ async function fetchSidearmSchedule(
       secret: proxySecret,
       domain,
       sportPath,
+      season,
     }),
   });
 
@@ -237,6 +239,7 @@ interface SidearmPitcher {
 interface SidearmBoxscoreResponse {
   home: SidearmPitcher[];
   away: SidearmPitcher[];
+  date?: string;
   error?: string;
 }
 
@@ -280,10 +283,16 @@ async function scrapeSidearm(
     `[api/update] SIDEARM: trying ${config.domain} for ${game.away_name} @ ${game.home_name}`,
   );
 
-  // Fetch schedule for this team
+  // Fetch schedule for this team. SIDEARM schedule URLs are keyed by
+  // season year (e.g. /schedule/2026), so derive season from game.date.
   let schedule: SidearmScheduleGame[];
+  const season = String(new Date(game.date).getFullYear());
   try {
-    schedule = await fetchSidearmSchedule(config.domain, config.sportPath);
+    schedule = await fetchSidearmSchedule(
+      config.domain,
+      config.sportPath,
+      season,
+    );
   } catch (err) {
     console.log(
       `[api/update] SIDEARM schedule error for ${config.domain}: ${(err as Error).message}`,
@@ -296,15 +305,17 @@ async function scrapeSidearm(
     return null;
   }
 
-  // Match the game: find a schedule entry matching the opponent and date
+  // Match the game: find a schedule entry matching the opponent and date.
   const opponentName =
     configTeamId === game.home_team_id
       ? game.away_name || ""
       : game.home_name || "";
 
+  // Phase A — strict match on schedule entries that already have dates.
   let matchedGame: SidearmScheduleGame | null = null;
   for (const sg of schedule) {
     if (
+      sg.date &&
       datesMatch(game.date, sg.date) &&
       fuzzyTeamMatch(opponentName, sg.opponent)
     ) {
@@ -313,9 +324,55 @@ async function scrapeSidearm(
     }
   }
 
-  if (!matchedGame || !matchedGame.boxscoreUrl) {
+  // Fetch the boxscore. For Phase B we may need its date to disambiguate,
+  // so defer this until after we know which schedule entry to use.
+  let boxscore: SidearmBoxscoreResponse | null = null;
+
+  // Phase B — if strict match failed, fall back to opponent-only candidates
+  // (schedule entries with the right opponent but no date in the schedule
+  // DOM). Fetch each candidate's boxscore and use the date the worker
+  // parsed from the boxscore page to disambiguate.
+  if (!matchedGame) {
+    const candidates = schedule.filter(
+      (sg) =>
+        !!sg.boxscoreUrl &&
+        !sg.date && // dateless entries — the archive/stats-URL links
+        fuzzyTeamMatch(opponentName, sg.opponent),
+    );
+
+    if (candidates.length === 0) {
+      console.log(
+        `[api/update] SIDEARM: no matching game for ${opponentName} on ${game.date} in ${config.domain} schedule (${schedule.length} games)`,
+      );
+      return null;
+    }
+
+    for (const candidate of candidates) {
+      let box: SidearmBoxscoreResponse | null;
+      try {
+        box = await fetchSidearmBoxscore(candidate.boxscoreUrl!);
+      } catch {
+        continue;
+      }
+      if (!box || !box.date) continue;
+      if (datesMatch(game.date, box.date)) {
+        matchedGame = candidate;
+        boxscore = box;
+        break;
+      }
+    }
+
+    if (!matchedGame) {
+      console.log(
+        `[api/update] SIDEARM: ${candidates.length} opponent-matching candidate(s) for ${opponentName}, none had a boxscore date matching ${game.date}`,
+      );
+      return null;
+    }
+  }
+
+  if (!matchedGame.boxscoreUrl) {
     console.log(
-      `[api/update] SIDEARM: no matching game for ${opponentName} on ${game.date} in ${config.domain} schedule (${schedule.length} games)`,
+      `[api/update] SIDEARM: matched schedule entry has no boxscoreUrl`,
     );
     return null;
   }
@@ -324,15 +381,16 @@ async function scrapeSidearm(
     `[api/update] SIDEARM: matched game, fetching boxscore from ${matchedGame.boxscoreUrl}`,
   );
 
-  // Fetch boxscore
-  let boxscore: SidearmBoxscoreResponse | null;
-  try {
-    boxscore = await fetchSidearmBoxscore(matchedGame.boxscoreUrl);
-  } catch (err) {
-    console.log(
-      `[api/update] SIDEARM boxscore error: ${(err as Error).message}`,
-    );
-    return null;
+  // Fetch boxscore if Phase B didn't already do it.
+  if (!boxscore) {
+    try {
+      boxscore = await fetchSidearmBoxscore(matchedGame.boxscoreUrl);
+    } catch (err) {
+      console.log(
+        `[api/update] SIDEARM boxscore error: ${(err as Error).message}`,
+      );
+      return null;
+    }
   }
 
   if (!boxscore || (boxscore.home.length === 0 && boxscore.away.length === 0)) {
