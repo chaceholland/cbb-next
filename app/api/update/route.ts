@@ -653,17 +653,12 @@ async function scrapeD1Baseball(
 async function updateGameCompletionStatus(
   supabase: ReturnType<typeof getSupabaseAdmin>,
   trackedTeamIds: Set<string>,
-  daysBack: number,
   delayMs: number,
 ): Promise<{ checked: number; completed: number; errors: number }> {
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - daysBack);
-
   const { data: incompleteGames, error: incErr } = await supabase
     .from("cbb_games")
     .select("*")
     .eq("completed", false)
-    .gte("date", cutoffDate.toISOString())
     .lte("date", new Date().toISOString())
     .order("date", { ascending: false });
 
@@ -815,7 +810,6 @@ export async function GET(request: Request) {
     results.completionUpdate = await updateGameCompletionStatus(
       supabase,
       trackedTeamIds,
-      DAYS_BACK,
       DELAY_MS,
     );
 
