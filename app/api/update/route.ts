@@ -222,9 +222,27 @@ async function fetchSidearmSchedule(
   return games;
 }
 
+interface SidearmPitcher {
+  name: string;
+  IP: string | null;
+  H: string | null;
+  R: string | null;
+  ER: string | null;
+  BB: string | null;
+  K: string | null;
+  HR: string | null;
+  ERA: string | null;
+}
+
+interface SidearmBoxscoreResponse {
+  home: SidearmPitcher[];
+  away: SidearmPitcher[];
+  error?: string;
+}
+
 async function fetchSidearmBoxscore(
   url: string,
-): Promise<{ pitchers: Array<{ name: string; team: string; stats: Record<string, string | null> }> } | null> {
+): Promise<SidearmBoxscoreResponse | null> {
   const proxySecret = process.env.D1_PROXY_SECRET;
   const res = await fetch(`${SIDEARM_WORKER_URL}/sidearm/boxscore`, {
     method: "POST",
@@ -242,8 +260,7 @@ async function fetchSidearmBoxscore(
     return null;
   }
 
-  const json = await res.json();
-  return json;
+  return (await res.json()) as SidearmBoxscoreResponse;
 }
 
 async function scrapeSidearm(
@@ -275,9 +292,7 @@ async function scrapeSidearm(
   }
 
   if (schedule.length === 0) {
-    console.log(
-      `[api/update] SIDEARM: empty schedule for ${config.domain}`,
-    );
+    console.log(`[api/update] SIDEARM: empty schedule for ${config.domain}`);
     return null;
   }
 
@@ -310,7 +325,7 @@ async function scrapeSidearm(
   );
 
   // Fetch boxscore
-  let boxscore: { pitchers: Array<{ name: string; team: string; stats: Record<string, string | null> }> } | null;
+  let boxscore: SidearmBoxscoreResponse | null;
   try {
     boxscore = await fetchSidearmBoxscore(matchedGame.boxscoreUrl);
   } catch (err) {
@@ -320,50 +335,58 @@ async function scrapeSidearm(
     return null;
   }
 
-  if (!boxscore || !boxscore.pitchers || boxscore.pitchers.length === 0) {
+  if (!boxscore || (boxscore.home.length === 0 && boxscore.away.length === 0)) {
     console.log(
       `[api/update] SIDEARM: no pitchers in boxscore for ${matchedGame.boxscoreUrl}`,
     );
     return null;
   }
 
-  // Map to PitcherRecord[]
-  return boxscore.pitchers.map((p) => {
-    // Determine team ID from the team label in boxscore
-    let teamId: string;
-    const teamLabel = normalizeName(p.team);
-    const homeName = normalizeName(game.home_name || "");
-    const awayName = normalizeName(game.away_name || "");
+  // Map to PitcherRecord[] — worker returns { home: [...], away: [...] }
+  const records: PitcherRecord[] = [];
 
-    if (fuzzyTeamMatch(p.team, game.home_name || "")) {
-      teamId = game.home_team_id;
-    } else if (fuzzyTeamMatch(p.team, game.away_name || "")) {
-      teamId = game.away_team_id;
-    } else {
-      // Fallback: token overlap scoring
-      const homeTokens = homeName.split(" ").filter((t) => t.length > 2);
-      const awayTokens = awayName.split(" ").filter((t) => t.length > 2);
-      const homeScore = homeTokens.filter((t) => teamLabel.includes(t)).length;
-      const awayScore = awayTokens.filter((t) => teamLabel.includes(t)).length;
-      teamId = homeScore >= awayScore ? game.home_team_id : game.away_team_id;
+  const mapPitchers = (pitchers: SidearmPitcher[], teamId: string) => {
+    for (const p of pitchers) {
+      const normalizedPitcherName = p.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+      records.push({
+        game_id: game.game_id,
+        team_id: teamId,
+        pitcher_id: `SIDEARM-${game.game_id}-${teamId}-${normalizedPitcherName}`,
+        pitcher_name: p.name,
+        stats: {
+          IP: p.IP,
+          H: p.H,
+          R: p.R,
+          ER: p.ER,
+          BB: p.BB,
+          K: p.K,
+          HR: p.HR,
+          ERA: p.ERA,
+          source: "sidearm",
+        },
+      });
     }
+  };
 
-    const normalizedPitcherName = p.name
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "");
-    const pitcherId = `SIDEARM-${game.game_id}-${teamId}-${normalizedPitcherName}`;
+  // Worker convention: away pitchers first, home pitchers second
+  // But if we scraped the home team's site, home = home_team, away = away_team
+  const isHomeSite = !!homeConfig;
+  if (isHomeSite) {
+    mapPitchers(boxscore.away, game.away_team_id);
+    mapPitchers(boxscore.home, game.home_team_id);
+  } else {
+    // Scraped away team's site — their perspective: home = their team, away = opponent
+    mapPitchers(boxscore.home, game.away_team_id);
+    mapPitchers(boxscore.away, game.home_team_id);
+  }
 
-    return {
-      game_id: game.game_id,
-      team_id: teamId,
-      pitcher_id: pitcherId,
-      pitcher_name: p.name,
-      stats: {
-        ...p.stats,
-        source: "sidearm",
-      },
-    };
-  });
+  console.log(
+    `[api/update] SIDEARM: found ${records.length} pitchers for ${game.away_name} @ ${game.home_name}`,
+  );
+
+  return records.length > 0 ? records : null;
 }
 
 // ─── Game Completion Status ──────────────────────────────────────────────────
