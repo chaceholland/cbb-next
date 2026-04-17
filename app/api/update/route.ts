@@ -778,7 +778,6 @@ export async function GET(request: Request) {
   }
 
   const supabase = getSupabaseAdmin();
-  const DAYS_BACK = 90; // Cover full season for backfill
   const MAX_SCRAPE_ATTEMPTS = 5;
   const DELAY_MS = 300;
 
@@ -820,15 +819,11 @@ export async function GET(request: Request) {
       DELAY_MS,
     );
 
-    // 3. Get completed games from last N days
-    const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - DAYS_BACK);
-
+    // 3. Get all completed games (no date cutoff — backfill entire season)
     const { data: games, error: gamesErr } = await supabase
       .from("cbb_games")
       .select("*")
       .eq("completed", true)
-      .gte("date", cutoffDate.toISOString())
       .order("date", { ascending: false });
 
     if (gamesErr) throw new Error(`Failed to fetch games: ${gamesErr.message}`);
