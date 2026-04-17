@@ -266,9 +266,12 @@ async function fetchSidearmBoxscore(
   return (await res.json()) as SidearmBoxscoreResponse;
 }
 
-async function scrapeSidearm(
-  game: GameRecord,
-): Promise<PitcherRecord[] | null> {
+interface SidearmOutcome {
+  records: PitcherRecord[] | null;
+  reason: string;
+}
+
+async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
   // Find which team(s) in this game have a SIDEARM config
   const homeConfig = TEAM_SITES[game.home_team_id];
   const awayConfig = TEAM_SITES[game.away_team_id];
@@ -276,7 +279,7 @@ async function scrapeSidearm(
   const configTeamId = homeConfig ? game.home_team_id : game.away_team_id;
 
   if (!config) {
-    return null; // Neither team has a SIDEARM config
+    return { records: null, reason: "no TEAM_SITES config" };
   }
 
   console.log(
@@ -294,15 +297,19 @@ async function scrapeSidearm(
       season,
     );
   } catch (err) {
+    const msg = (err as Error).message;
     console.log(
-      `[api/update] SIDEARM schedule error for ${config.domain}: ${(err as Error).message}`,
+      `[api/update] SIDEARM schedule error for ${config.domain}: ${msg}`,
     );
-    return null;
+    return { records: null, reason: `schedule error: ${msg}` };
   }
 
   if (schedule.length === 0) {
     console.log(`[api/update] SIDEARM: empty schedule for ${config.domain}`);
-    return null;
+    return {
+      records: null,
+      reason: `empty schedule for ${config.domain}`,
+    };
   }
 
   // Match the game: find a schedule entry matching the opponent and date.
@@ -344,7 +351,10 @@ async function scrapeSidearm(
       console.log(
         `[api/update] SIDEARM: no matching game for ${opponentName} on ${game.date} in ${config.domain} schedule (${schedule.length} games)`,
       );
-      return null;
+      return {
+        records: null,
+        reason: `no match for "${opponentName}" in ${schedule.length}-game ${config.domain} schedule`,
+      };
     }
 
     for (const candidate of candidates) {
@@ -366,7 +376,10 @@ async function scrapeSidearm(
       console.log(
         `[api/update] SIDEARM: ${candidates.length} opponent-matching candidate(s) for ${opponentName}, none had a boxscore date matching ${game.date}`,
       );
-      return null;
+      return {
+        records: null,
+        reason: `${candidates.length} opponent-only candidates for ${opponentName}, none matched date ${game.date}`,
+      };
     }
   }
 
@@ -374,7 +387,10 @@ async function scrapeSidearm(
     console.log(
       `[api/update] SIDEARM: matched schedule entry has no boxscoreUrl`,
     );
-    return null;
+    return {
+      records: null,
+      reason: "matched schedule entry has no boxscoreUrl",
+    };
   }
 
   console.log(
@@ -386,10 +402,9 @@ async function scrapeSidearm(
     try {
       boxscore = await fetchSidearmBoxscore(matchedGame.boxscoreUrl);
     } catch (err) {
-      console.log(
-        `[api/update] SIDEARM boxscore error: ${(err as Error).message}`,
-      );
-      return null;
+      const msg = (err as Error).message;
+      console.log(`[api/update] SIDEARM boxscore error: ${msg}`);
+      return { records: null, reason: `boxscore error: ${msg}` };
     }
   }
 
@@ -397,7 +412,10 @@ async function scrapeSidearm(
     console.log(
       `[api/update] SIDEARM: no pitchers in boxscore for ${matchedGame.boxscoreUrl}`,
     );
-    return null;
+    return {
+      records: null,
+      reason: `no pitchers in boxscore ${matchedGame.boxscoreUrl}`,
+    };
   }
 
   // Map to PitcherRecord[] — worker returns { home: [...], away: [...] }
@@ -444,7 +462,10 @@ async function scrapeSidearm(
     `[api/update] SIDEARM: found ${records.length} pitchers for ${game.away_name} @ ${game.home_name}`,
   );
 
-  return records.length > 0 ? records : null;
+  if (records.length === 0) {
+    return { records: null, reason: "boxscore yielded 0 records post-mapping" };
+  }
+  return { records, reason: `ok (${records.length} pitchers)` };
 }
 
 // ─── Game Completion Status ──────────────────────────────────────────────────
@@ -731,10 +752,9 @@ export async function GET(request: Request) {
         let sidearmResult: PitcherRecord[] | null = null;
         let sidearmDebug = "";
         try {
-          sidearmResult = await scrapeSidearm(game as GameRecord);
-          sidearmDebug = sidearmResult
-            ? `got ${sidearmResult.length} pitchers`
-            : "returned null";
+          const outcome = await scrapeSidearm(game as GameRecord);
+          sidearmResult = outcome.records;
+          sidearmDebug = outcome.reason;
         } catch (err) {
           sidearmDebug = `error: ${(err as Error).message}`;
           console.log(
