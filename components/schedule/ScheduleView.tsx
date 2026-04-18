@@ -1039,6 +1039,26 @@ export function ScheduleView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [games]);
 
+  // Filters that depend on participation data need it loaded for ALL weeks,
+  // not just expanded ones — otherwise collapsed weeks get silently filtered out.
+  const needsAllParticipation =
+    showLiveDataOnly ||
+    pitcherFilter === "favorites-only" ||
+    pitcherFilter === "played-only";
+  useEffect(() => {
+    if (!needsAllParticipation || games.length === 0) return;
+    const weekMap = new Map<number, CbbGame[]>();
+    games.forEach((g) => {
+      const w = getWeekFromDate(g.date);
+      if (!weekMap.has(w)) weekMap.set(w, []);
+      weekMap.get(w)!.push(g);
+    });
+    weekMap.forEach((weekGames, week) => {
+      fetchWeekParticipation(week, weekGames);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [needsAllParticipation, games]);
+
   if (loading) {
     return <ScheduleSkeleton />;
   }

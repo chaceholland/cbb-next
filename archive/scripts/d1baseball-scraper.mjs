@@ -18,7 +18,12 @@ const envContent = fs.readFileSync(".env.local", "utf8");
 const env = {};
 envContent.split("\n").forEach((line) => {
   const [key, ...rest] = line.split("=");
-  if (key && rest.length) env[key.trim()] = rest.join("=").trim();
+  if (key && rest.length)
+    env[key.trim()] = rest
+      .join("=")
+      .trim()
+      .replace(/^["']|["']$/g, "")
+      .replace(/\\[nr]/g, "");
 });
 
 const supabase = createClient(
@@ -235,7 +240,10 @@ async function fetchStatBroadcastEvent(broadcastId) {
   const res = await fetch(`${SB_WS}event/${broadcastId}?data=${data}`, {
     headers: HEADERS,
   });
-  if (!res.ok) return null;
+  if (!res.ok) {
+    event_cache.set(broadcastId, { _error: `HTTP ${res.status}` });
+    return null;
+  }
   const xml = decodeStatBroadcast(await res.text());
   const xmlfile =
     xml.match(/<xmlfile><!\[CDATA\[([^\]]+)\]\]>/)?.[1] ||
@@ -280,6 +288,10 @@ async function fetchStatBroadcastBoxScore(broadcastId) {
   const results = [];
   if (homeHtml) results.push(...parseBoxScorePitchers(homeHtml, "home"));
   if (visHtml) results.push(...parseBoxScorePitchers(visHtml, "visitor"));
+  if (!homeHtml && !visHtml) {
+    const cached = event_cache.get(broadcastId);
+    results._upstreamError = cached?._error || "upstream unreachable";
+  }
   return results;
 }
 
@@ -546,7 +558,10 @@ export async function d1BaseballFallback(options = {}) {
       await sleep(300);
 
       if (pitchers.length === 0) {
-        if (verbose) console.log("⚠️  Box score found but no pitching data");
+        const reason = pitchers._upstreamError
+          ? `upstream blocked (${pitchers._upstreamError})`
+          : "no pitching data in box score";
+        if (verbose) console.log(`⚠️  ${reason}`);
         await updateScrapeStatus(game.game_id, "d1_no_data");
         results.noData++;
         results.games.push({

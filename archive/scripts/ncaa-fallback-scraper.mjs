@@ -17,7 +17,10 @@
 
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
-import { chromium } from "playwright";
+import { chromium as baseChromium } from "playwright-extra";
+import stealthPlugin from "puppeteer-extra-plugin-stealth";
+const chromium = baseChromium;
+chromium.use(stealthPlugin());
 
 // ─── Supabase setup ───────────────────────────────────────────────────────────
 
@@ -25,7 +28,12 @@ const envContent = fs.readFileSync(".env.local", "utf8");
 const env = {};
 envContent.split("\n").forEach((line) => {
   const [key, ...rest] = line.split("=");
-  if (key && rest.length) env[key.trim()] = rest.join("=").trim();
+  if (key && rest.length)
+    env[key.trim()] = rest
+      .join("=")
+      .trim()
+      .replace(/^["']|["']$/g, "")
+      .replace(/\\[nr]/g, "");
 });
 
 const supabase = createClient(
@@ -162,16 +170,18 @@ async function closeBrowser() {
  */
 async function browserFetch(url) {
   const page = await getBrowserPage();
-  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
-  // Wait briefly for Akamai interstitial to clear if present
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 20000 });
+  // Wait for Akamai interstitial to clear and real content to render
   await page
     .waitForFunction(
-      () =>
-        !document.title.includes("\u00a0") &&
-        document.body.innerText.length > 500,
-      { timeout: 5000 },
+      () => {
+        const t = document.title || "";
+        if (t.includes("Access Denied") || t.trim().length === 0) return false;
+        return document.body && document.body.innerText.length > 800;
+      },
+      { timeout: 15000 },
     )
-    .catch(() => {}); // proceed even if timeout
+    .catch(() => {});
   return await page.content();
 }
 
@@ -246,20 +256,17 @@ async function findNcaaContest(game) {
  * Fast-fails if box score is blocked (403/Access Denied).
  */
 async function fetchNcaaBoxScore(contestId) {
-  const url = `https://stats.ncaa.org/contests/${contestId}/box_score`;
-
-  // Try plain fetch first — returns 403 immediately if Akamai blocks it
-  const probe = await fetch(url, { headers: HEADERS });
-  if (probe.status === 403) return []; // blocked, fast fail
-
-  const probeText = await probe.text();
-  // Check for Akamai soft-block (JS challenge or Access Denied in body)
-  if (probeText.includes("Access Denied") || probeText.includes("bm-verify")) {
-    return []; // blocked, fast fail
+  // The `individual_stats` page carries the full pitcher stat table.
+  // The `box_score` page only has a summary card (no sortable table).
+  const url = `https://stats.ncaa.org/contests/${contestId}/individual_stats`;
+  try {
+    const html = await browserFetch(url);
+    if (html.includes("Access Denied") || html.length < 2000) return [];
+    return parseNcaaPitchers(html);
+  } catch (err) {
+    console.error(`\n  browser fetch failed for ${contestId}: ${err.message}`);
+    return [];
   }
-
-  // Got real HTML — parse directly, no Playwright needed
-  return parseNcaaPitchers(probeText);
 }
 
 /**
@@ -274,71 +281,61 @@ async function fetchNcaaBoxScore(contestId) {
 function parseNcaaPitchers(html) {
   const results = [];
 
-  // Find all pitching sections. They appear under headings like "Team Name Pitching"
-  // Sections are delimited by table rows with "Pitching" in the header cell.
+  // Each team's pitching section is a card shaped like:
+  //   <img alt="TEAM"...>TEAM</a> Pitching
+  //   ... <table ...><thead>#|Name|P|IP|H|R|ER|BB|SO|...</thead><tbody>rows</tbody></table>
   const sectionRe =
-    /<td[^>]*class="[^"]*heading[^"]*"[^>]*>\s*([^<]+Pitching[^<]*)<\/td>/gi;
+    /alt="([^"]+)"[^>]*>[^<]*<\/a>\s*Pitching[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/gi;
   let sectionMatch;
-
-  // Split HTML around pitching headers to get sections
-  const pitchingSections = [];
-  const indices = [];
   while ((sectionMatch = sectionRe.exec(html)) !== null) {
-    indices.push({ index: sectionMatch.index, label: sectionMatch[1].trim() });
-  }
+    const teamLabel = sectionMatch[1].trim();
+    const tbody = sectionMatch[2];
 
-  for (let i = 0; i < indices.length; i++) {
-    const start = indices[i].index;
-    const end = i + 1 < indices.length ? indices[i + 1].index : html.length;
-    pitchingSections.push({
-      label: indices[i].label,
-      chunk: html.slice(start, end),
-    });
-  }
-
-  for (const section of pitchingSections) {
-    const teamLabel = section.label.replace(/\s*pitching\s*/i, "").trim();
-
-    // Extract table rows — each row is a pitcher line
-    // Row pattern: <tr ...><td ...>name_cell</td><td>IP</td><td>H</td>...
-    const rowRe =
-      /<tr[^>]*>\s*<td[^>]*>\s*(?:<a[^>]*>)?([^<\n]+?)(?:<\/a>)?\s*<\/td>((?:\s*<td[^>]*>[^<]*<\/td>)+)/gi;
+    // Each pitcher row. Columns after the name: P, IP, H, R, ER, BB, SO, ...
+    const rowRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
     let rowMatch;
-    while ((rowMatch = rowRe.exec(section.chunk)) !== null) {
-      const name = rowMatch[1].trim();
+    while ((rowMatch = rowRe.exec(tbody)) !== null) {
+      const rowHtml = rowMatch[1];
 
-      // Skip header rows and totals
-      if (!name || /^(name|totals?|ip|pitcher|total)$/i.test(name)) continue;
-      // Skip rows that look like team subtotals (all caps short strings)
-      if (name.length < 3) continue;
+      // Pull pitcher name from the anchor tag in the second cell
+      const nameMatch = rowHtml.match(
+        /<a[^>]*href="\/players\/[^"]+"[^>]*>([^<]+)<\/a>/,
+      );
+      if (!nameMatch) continue;
+      const pitcherName = nameMatch[1].replace(/\s+/g, " ").trim();
+      if (!pitcherName || pitcherName.length < 2) continue;
 
-      // Extract all <td> values in this row
-      const cellRe = /<td[^>]*>([^<]*)<\/td>/gi;
+      // Collect all numeric stat cells in column order.
+      // The stat cells carry data-order attrs; skip the first two descriptive
+      // cells (#, Name) and the position cell ("P").
       const cells = [];
-      let cellMatch;
-      while ((cellMatch = cellRe.exec(rowMatch[2])) !== null) {
-        cells.push(cellMatch[1].trim());
+      const cellRe = /<td[^>]*>([\s\S]*?)<\/td>/gi;
+      let cm;
+      while ((cm = cellRe.exec(rowHtml)) !== null) {
+        cells.push(
+          cm[1]
+            .replace(/<[^>]+>/g, "")
+            .replace(/&nbsp;/g, "")
+            .trim(),
+        );
       }
-
-      if (cells.length < 4) continue;
-
-      // NCAA column order: IP H R ER BB SO HR BF AB ...
-      const [IP, H, R, ER, BB, SO, HR] = cells;
-
-      // Validate IP looks like a number
+      // Drop empty leading cells, then locate IP (first cell after the "P" column).
+      // Actual layout: [#, name, P, IP, H, R, ER, BB, SO, ...]
+      if (cells.length < 8) continue;
+      const [, , , IP, H, R, ER, BB, SO] = cells;
       if (!IP || !/^\d/.test(IP)) continue;
 
       results.push({
         teamLabel,
-        pitcherName: name,
+        pitcherName,
         stats: {
           IP: IP || null,
           H: H || null,
           R: R || null,
           ER: ER || null,
           BB: BB || null,
-          K: SO || null, // NCAA uses SO, we store as K
-          HR: HR || null,
+          K: SO || null,
+          HR: null,
           source: "ncaa",
         },
       });
@@ -448,11 +445,30 @@ async function findGamesForNcaaFallback(daysBack = 14) {
     trackedGames.length > 0 && "scrape_status" in trackedGames[0];
 
   if (hasScrapeStatus) {
-    return trackedGames.filter(
-      (g) =>
-        g.scrape_status === "no_data_available" ||
-        g.scrape_status === "ncaa_error",
+    // Include any game that's been flagged as missing by an upstream source
+    // (ESPN, D1Baseball, or a prior NCAA attempt).
+    const retryStatuses = new Set([
+      "no_data_available",
+      "ncaa_error",
+      "ncaa_no_data",
+      "d1_no_data",
+    ]);
+    const candidates = trackedGames.filter(
+      (g) => !g.scrape_status || retryStatuses.has(g.scrape_status),
     );
+    // Of those, keep only the ones still lacking participation rows.
+    const gameIds = candidates.map((g) => g.game_id);
+    if (gameIds.length === 0) return [];
+    const withData = new Set();
+    for (let i = 0; i < gameIds.length; i += 200) {
+      const chunk = gameIds.slice(i, i + 200);
+      const { data } = await supabase
+        .from("cbb_pitcher_participation")
+        .select("game_id")
+        .in("game_id", chunk);
+      (data || []).forEach((r) => withData.add(r.game_id));
+    }
+    return candidates.filter((g) => !withData.has(g.game_id));
   }
 
   // Fallback: find games with no participation data

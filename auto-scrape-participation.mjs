@@ -9,7 +9,11 @@ const env = {};
 envContent.split("\n").forEach((line) => {
   const [key, ...valueParts] = line.split("=");
   if (key && valueParts.length) {
-    env[key.trim()] = valueParts.join("=").trim();
+    env[key.trim()] = valueParts
+      .join("=")
+      .trim()
+      .replace(/^["']|["']$/g, "")
+      .replace(/\\[nr]/g, "");
   }
 });
 
