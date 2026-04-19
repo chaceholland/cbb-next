@@ -309,6 +309,30 @@ export function FavoritesView({
     return arr;
   }, [favGamesComputed, sortMode]);
 
+  // Pre-filter participation per game so GameCard only ever sees rows
+  // belonging to favorited pitchers — the Favorites tab must show the
+  // intersection (favorited AND pitched), never anyone else.
+  const favParticipationByGame = useMemo(() => {
+    const out: Record<string, ParticipationRow[]> = {};
+    const favoriteEspnIds = new Set<string>();
+    const favoriteNames = new Set<string>();
+    for (const pid of favorites) {
+      const info = pitcherById[pid];
+      if (!info) continue;
+      if (info.espn_id) favoriteEspnIds.add(info.espn_id);
+      if (info.name) favoriteNames.add(normName(info.name));
+    }
+    for (const [gid, rows] of Object.entries(participationByGame)) {
+      const filtered = rows.filter(
+        (r) =>
+          (r.pitcher_id && favoriteEspnIds.has(r.pitcher_id)) ||
+          favoriteNames.has(normName(r.pitcher_name)),
+      );
+      if (filtered.length > 0) out[gid] = filtered;
+    }
+    return out;
+  }, [participationByGame, favorites, pitcherById]);
+
   const trackedTeamIds = useMemo(() => new Set(Object.keys(teams)), [teams]);
 
   const toggleFavoriteGame = useCallback(
@@ -399,7 +423,7 @@ export function FavoritesView({
                 game={game}
                 teams={teams}
                 trackedTeamIds={trackedTeamIds}
-                participation={participationByGame[game.game_id] || []}
+                participation={favParticipationByGame[game.game_id] || []}
                 headshotsMap={headshotsMap}
                 onClick={() => setSelectedGame(game)}
                 isFavorite={favoriteGameIds.includes(game.game_id)}
