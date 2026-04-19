@@ -265,8 +265,16 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
 
   const homeTeam = teams[game.home_team_id];
   const awayTeam = teams[game.away_team_id];
-  const homeRows = participation.filter(r => r.team_id === game.home_team_id);
-  const awayRows = participation.filter(r => r.team_id === game.away_team_id);
+  const sortByFavThenIP = (a: ParticipationRow, b: ParticipationRow) => {
+    const aFav = favoriteNames.has(normalizeName(a.pitcher_name)) ? 0 : 1;
+    const bFav = favoriteNames.has(normalizeName(b.pitcher_name)) ? 0 : 1;
+    if (aFav !== bFav) return aFav - bFav;
+    const aIP = parseFloat(a.stats?.IP ?? "") || 0;
+    const bIP = parseFloat(b.stats?.IP ?? "") || 0;
+    return bIP - aIP;
+  };
+  const homeRows = participation.filter(r => r.team_id === game.home_team_id).sort(sortByFavThenIP);
+  const awayRows = participation.filter(r => r.team_id === game.away_team_id).sort(sortByFavThenIP);
 
   const homeScore = game.home_score ? parseInt(game.home_score) : null;
   const awayScore = game.away_score ? parseInt(game.away_score) : null;

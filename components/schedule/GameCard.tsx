@@ -577,11 +577,17 @@ export function GameCard({
         stats: { source: "dnp" } as Record<string, string>,
       }));
 
-    // Sort: fav+played, fav+DNP, non-fav played.
-    const favPlayed = participationRows.filter(isFavoritePitcherRow);
-    const nonFavPlayed = participationRows.filter(
-      (r) => !isFavoritePitcherRow(r),
-    );
+    // Within each group, sort by innings pitched descending.
+    const sortByIP = (a: ParticipationRow, b: ParticipationRow) => {
+      const aIP = parseFloat(a.stats?.IP ?? "") || 0;
+      const bIP = parseFloat(b.stats?.IP ?? "") || 0;
+      return bIP - aIP;
+    };
+
+    const favPlayed = participationRows.filter(isFavoritePitcherRow).sort(sortByIP);
+    const nonFavPlayed = participationRows
+      .filter((r) => !isFavoritePitcherRow(r))
+      .sort(sortByIP);
 
     // When "Favs Played" filter is active, only show favorited pitchers
     // who actually played — hide DNP favorites and non-fav pitchers.

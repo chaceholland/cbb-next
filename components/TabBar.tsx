@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
-type Tab = 'schedule' | 'rosters' | 'analytics';
+type Tab = 'schedule' | 'rosters' | 'analytics' | 'favorites';
 
 interface Props {
   activeTab: Tab;
@@ -26,6 +26,7 @@ export function TabBar({ activeTab, onTabChange }: Props) {
     { id: 'schedule' as const, label: '📅 Schedule' },
     { id: 'rosters' as const, label: '⚾ Rosters' },
     { id: 'analytics' as const, label: '📊 Analytics' },
+    { id: 'favorites' as const, label: '★ Favorites' },
   ];
 
   return (

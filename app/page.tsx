@@ -4,6 +4,7 @@ import { Navigation } from "@/components/Navigation";
 import { HeroSection } from "@/components/HeroSection";
 import { TabBar } from "@/components/TabBar";
 import { ScheduleView } from "@/components/schedule/ScheduleView";
+import { FavoritesView } from "@/components/schedule/FavoritesView";
 import { RosterView } from "@/components/roster/RosterView";
 import { AnalyticsView } from "@/components/analytics/AnalyticsView";
 import { CommandPalette } from "@/components/command/CommandPalette";
@@ -13,7 +14,7 @@ import { registerHelpCommands } from "@/lib/commands/help";
 import { useKeyboard } from "@/lib/hooks/useKeyboard";
 import { useFavorites } from "@/lib/hooks/useFavorites";
 
-type Tab = "schedule" | "rosters" | "analytics";
+type Tab = "schedule" | "rosters" | "analytics" | "favorites";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
@@ -22,14 +23,17 @@ export default function Home() {
 
   // Sync tab with URL hash
   useEffect(() => {
-    const hash = window.location.hash.slice(1) as Tab;
-    if (hash === "schedule" || hash === "rosters" || hash === "analytics")
-      setActiveTab(hash);
+    const isTab = (v: string): v is Tab =>
+      v === "schedule" ||
+      v === "rosters" ||
+      v === "analytics" ||
+      v === "favorites";
+    const hash = window.location.hash.slice(1);
+    if (isTab(hash)) setActiveTab(hash);
 
     const handler = () => {
-      const h = window.location.hash.slice(1) as Tab;
-      if (h === "schedule" || h === "rosters" || h === "analytics")
-        setActiveTab(h);
+      const h = window.location.hash.slice(1);
+      if (isTab(h)) setActiveTab(h);
     };
     window.addEventListener("hashchange", handler);
     return () => window.removeEventListener("hashchange", handler);
@@ -51,6 +55,7 @@ export default function Home() {
     { key: "1", action: () => handleTabChange("schedule") },
     { key: "2", action: () => handleTabChange("rosters") },
     { key: "3", action: () => handleTabChange("analytics") },
+    { key: "4", action: () => handleTabChange("favorites") },
   ]);
 
   return (
@@ -78,6 +83,12 @@ export default function Home() {
             />
           )}
           {activeTab === "analytics" && <AnalyticsView />}
+          {activeTab === "favorites" && (
+            <FavoritesView
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
+          )}
         </div>
       </main>
     </>
