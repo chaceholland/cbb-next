@@ -86,7 +86,9 @@ export function FavoritesView({
         setLoading(true);
 
         // 1. Load all teams
-        const { data: teamsData } = await supabase.from("cbb_teams").select("*");
+        const { data: teamsData } = await supabase
+          .from("cbb_teams")
+          .select("*");
         const teamsMap: Record<string, CbbTeam> = {};
         (teamsData || []).forEach((t: CbbTeam) => {
           teamsMap[t.team_id] = t;
@@ -121,6 +123,15 @@ export function FavoritesView({
             espn_id: string | null;
           }
         > = {};
+        // Match ScheduleView's headshot-map key scheme so GameCard's
+        // lookupHeadshot hits: keep spaces/digits in the normalized
+        // key, plus a team-scoped last-name-only key for D1Baseball.
+        const normHeadshot = (s: string) =>
+          s
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
         const hMap: Record<string, string | null> = {};
         for (const p of allPitchers) {
           if (p.pitcher_id) {
@@ -132,9 +143,17 @@ export function FavoritesView({
             };
           }
           if (p.headshot) {
-            const n = normName(p.name);
+            const n = normHeadshot(p.name);
             hMap[n] = p.headshot;
             hMap[`${p.team_id}:${n}`] = p.headshot;
+            const parts = p.name.trim().split(/\s+/);
+            const lastWord = parts[parts.length - 1]
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "");
+            if (lastWord) {
+              const lnKey = `${p.team_id}:ln:${lastWord}`;
+              hMap[lnKey] = lnKey in hMap ? null : p.headshot;
+            }
           }
         }
         setPitcherById(pMap);
@@ -290,10 +309,7 @@ export function FavoritesView({
     return arr;
   }, [favGamesComputed, sortMode]);
 
-  const trackedTeamIds = useMemo(
-    () => new Set(Object.keys(teams)),
-    [teams],
-  );
+  const trackedTeamIds = useMemo(() => new Set(Object.keys(teams)), [teams]);
 
   const toggleFavoriteGame = useCallback(
     (gameId: string) => {
