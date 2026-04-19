@@ -407,7 +407,7 @@ export function FavoritesView({
                 onToggleFavorite={() => toggleFavoriteGame(game.game_id)}
                 onToggleWatched={() => toggleWatchedGame(game.game_id)}
                 favoritePitcherIds={favoritePitcherIds}
-                pitcherFilter="favorites-or-played"
+                pitcherFilter="favorites-only"
                 favsByTeam={favsByTeam}
                 onToggleFavoritePitcher={toggleFavorite}
               />
