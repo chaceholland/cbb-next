@@ -671,31 +671,6 @@ export async function GET(request: Request) {
         logTable: "cbb_sync_log",
       })
     ) {
-      // Fallback log: guard's internal logSkip may fail if fetch is intercepted by
-      // Next.js instrumentation; log directly here to ensure the row is written.
-      try {
-        const sbUrl =
-          process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-        if (sbUrl && sbKey) {
-          const r = await fetch(`${sbUrl}/rest/v1/cbb_sync_log`, {
-            method: "POST",
-            headers: {
-              apikey: sbKey,
-              Authorization: `Bearer ${sbKey}`,
-              "Content-Type": "application/json",
-              Prefer: "return=minimal",
-            },
-            body: JSON.stringify({
-              status: "skipped_offseason",
-              project: "cbb",
-            }),
-          });
-          console.log(`[api/update] guard log wrote: ${r.status}`);
-        }
-      } catch (e) {
-        console.error(`[api/update] guard log fallback error: ${e}`);
-      }
       return guardResponse!;
     }
   }
