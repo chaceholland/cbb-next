@@ -665,12 +665,16 @@ export async function GET(request: Request) {
         };
       },
     };
+    console.log(
+      `[api/update] guard env check: SUPABASE_URL=${!!process.env.SUPABASE_URL} SRK=${!!process.env.SUPABASE_SERVICE_ROLE_KEY}`,
+    );
     if (
       await requireInSeason(pagesReq, pagesRes, {
         slug: "cbb",
         logTable: "cbb_sync_log",
       })
     ) {
+      console.log("[api/update] guard tripped — offseason skip");
       return guardResponse!;
     }
   }
