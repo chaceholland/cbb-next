@@ -1,5 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+// @ts-ignore — plain JS ESM module
+import { requireInSeason } from "../_lib/seasonGuard.js";
 
 export const maxDuration = 300; // 5 minutes
 export const dynamic = "force-dynamic";
@@ -649,6 +651,30 @@ async function updateGameCompletionStatus(
  *   7. Log to cbb_sync_log
  */
 export async function GET(request: Request) {
+  // Offseason guard — returns 200 {skipped:true} outside season window unless ?force=<secret>
+  {
+    const url = new URL(request.url);
+    const pagesReq = { query: Object.fromEntries(url.searchParams.entries()) };
+    let guardResponse: NextResponse | null = null;
+    const pagesRes = {
+      status(code: number) {
+        return {
+          json(body: unknown) {
+            guardResponse = NextResponse.json(body, { status: code });
+          },
+        };
+      },
+    };
+    if (
+      await requireInSeason(pagesReq, pagesRes, {
+        slug: "cbb",
+        logTable: "cbb_sync_log",
+      })
+    ) {
+      return guardResponse!;
+    }
+  }
+
   // Verify cron secret in production (Vercel sends this header)
   const authHeader = request.headers.get("authorization");
   if (
