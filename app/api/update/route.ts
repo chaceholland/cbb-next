@@ -641,10 +641,11 @@ async function updateGameCompletionStatus(
 /**
  * GET /api/update
  *
- * Called by Vercel Cron 3x daily (6 AM, 2 PM, 10 PM UTC):
+ * Called by Vercel Cron daily at 06:00 UTC (Hobby cap = 1/day).
+ * Local LaunchAgent (com.cbb.scraper) still handles ESPN+D1Baseball every 6h.
  *   1. Update game completion status from ESPN (scores, final status)
- *   2. Find completed games from the last 14 days missing pitcher data
- *   3. Skip games with 5+ failed scrape attempts (no_data_available)
+ *   2. Find all completed in-season games missing pitcher data
+ *   3. Skip games with 5+ failed scrape attempts (no_data_available, d1_no_data)
  *   4. Scrape ESPN box scores for each
  *   5. If ESPN has no data, try SIDEARM school site fallback (25 Power 5 teams)
  *   6. Upsert to cbb_pitcher_participation
@@ -687,6 +688,13 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const MAX_SCRAPE_ATTEMPTS = 5;
   const DELAY_MS = 300;
+  // Statuses that mean "we tried and got nothing." `d1_no_data` is written by
+  // the legacy auto-scrape-participation.mjs LaunchAgent path; without it here,
+  // games with that status get retried forever (some hit 90+ attempts).
+  const TERMINAL_NO_DATA_STATUSES = new Set([
+    "no_data_available",
+    "d1_no_data",
+  ]);
 
   const results = {
     total: 0,
@@ -780,7 +788,7 @@ export async function GET(request: Request) {
         const attempts = g.scrape_attempts || 0;
         if (
           attempts >= MAX_SCRAPE_ATTEMPTS &&
-          g.scrape_status === "no_data_available"
+          TERMINAL_NO_DATA_STATUSES.has(g.scrape_status ?? "")
         ) {
           return false;
         }
@@ -797,7 +805,7 @@ export async function GET(request: Request) {
       }) =>
         !gamesWithData.has(g.game_id) &&
         (g.scrape_attempts || 0) >= MAX_SCRAPE_ATTEMPTS &&
-        g.scrape_status === "no_data_available",
+        TERMINAL_NO_DATA_STATUSES.has(g.scrape_status ?? ""),
     );
     results.skippedMaxAttempts = skipped.length;
 
