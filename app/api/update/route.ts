@@ -15,6 +15,48 @@ function getSupabaseAdmin() {
   return createClient(url, key);
 }
 
+// Paginate around PostgREST's db_max_rows=1000 cap.
+async function fetchAllPages<T>(
+  buildPage: (
+    from: number,
+    to: number,
+  ) => PromiseLike<{ data: T[] | null; error: unknown }>,
+  pageSize = 1000,
+): Promise<T[]> {
+  const all: T[] = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await buildPage(from, from + pageSize - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < pageSize) break;
+  }
+  return all;
+}
+
+// Chunk an .in() filter so the URL stays under PostgREST's 16KB header limit
+// (game IDs are 9–10 chars; 500 IDs ≈ 5KB, leaving room for other params).
+async function fetchInChunks<T>(
+  ids: string[],
+  buildQuery: (chunk: string[]) => {
+    range: (
+      from: number,
+      to: number,
+    ) => PromiseLike<{ data: T[] | null; error: unknown }>;
+  },
+  chunkSize = 500,
+): Promise<T[]> {
+  const all: T[] = [];
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    const slice = ids.slice(i, i + chunkSize);
+    const rows = await fetchAllPages<T>((from, to) =>
+      buildQuery(slice).range(from, to),
+    );
+    all.push(...rows);
+  }
+  return all;
+}
+
 interface PitcherRecord {
   game_id: string;
   team_id: string;
@@ -414,16 +456,6 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
         fuzzyTeamMatch(opponentName, sg.opponent),
     );
 
-    if (candidates.length === 0) {
-      console.log(
-        `[api/update] SIDEARM: no matching game for ${opponentName} on ${game.date} in ${config.domain} schedule (${schedule.length} games)`,
-      );
-      return {
-        records: null,
-        reason: `no match for "${opponentName}" in ${schedule.length}-game ${config.domain} schedule`,
-      };
-    }
-
     for (const candidate of candidates) {
       let box: SidearmBoxscoreResponse | null;
       try {
@@ -438,14 +470,50 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
         break;
       }
     }
+  }
+
+  // Phase C — domain-only fallback for schools whose boxscore URLs are bare
+  // numeric IDs (Vandy, Cincinnati, ASU). Schedule entries arrive with empty
+  // opponent and unreliable date, so neither Phase A nor Phase B can match
+  // them. Strategy: we're on the right team's site by definition, so iterate
+  // candidates, fetch each boxscore, and accept the one whose date matches
+  // ESPN's date. Capped at PHASE_C_BUDGET fetches to bound cron runtime.
+  if (!matchedGame) {
+    const PHASE_C_BUDGET = 12;
+    const opponentlessCandidates = schedule
+      .filter((sg) => !!sg.boxscoreUrl && !sg.opponent)
+      .slice(0, PHASE_C_BUDGET);
+    const phaseBCount = schedule.filter(
+      (sg) => !sg.date && fuzzyTeamMatch(opponentName, sg.opponent),
+    ).length;
+
+    if (opponentlessCandidates.length > 0) {
+      console.log(
+        `[api/update] SIDEARM Phase C: ${opponentlessCandidates.length} opponentless candidates on ${config.domain}, scanning by date`,
+      );
+      for (const candidate of opponentlessCandidates) {
+        let box: SidearmBoxscoreResponse | null;
+        try {
+          box = await fetchSidearmBoxscore(candidate.boxscoreUrl!);
+        } catch {
+          continue;
+        }
+        if (!box || !box.date) continue;
+        if (datesMatch(game.date, box.date)) {
+          matchedGame = candidate;
+          boxscore = box;
+          break;
+        }
+      }
+    }
 
     if (!matchedGame) {
       console.log(
-        `[api/update] SIDEARM: ${candidates.length} opponent-matching candidate(s) for ${opponentName}, none had a boxscore date matching ${game.date}`,
+        `[api/update] SIDEARM: no match for ${opponentName} on ${game.date} in ${config.domain} schedule (${schedule.length} games, B=${phaseBCount}, C=${opponentlessCandidates.length})`,
       );
       return {
         records: null,
-        reason: `${candidates.length} opponent-only candidates for ${opponentName}, none matched date ${game.date}`,
+        reason: `no match for "${opponentName}" in ${schedule.length}-game ${config.domain} schedule (B=${phaseBCount}, C=${opponentlessCandidates.length})`,
       };
     }
   }
@@ -733,14 +801,24 @@ export async function GET(request: Request) {
       DELAY_MS,
     );
 
-    // 3. Get all completed games (no date cutoff — backfill entire season)
-    const { data: games, error: gamesErr } = await supabase
-      .from("cbb_games")
-      .select("*")
-      .eq("completed", true)
-      .order("date", { ascending: false });
-
-    if (gamesErr) throw new Error(`Failed to fetch games: ${gamesErr.message}`);
+    // 3. Get all completed games (no date cutoff — backfill entire season).
+    // Paginated because PostgREST caps at 1000 rows and a season is ~2k games.
+    const games = await fetchAllPages<{
+      game_id: string;
+      home_team_id: string;
+      away_team_id: string;
+      home_name: string;
+      away_name: string;
+      scrape_status?: string;
+      scrape_attempts?: number;
+    }>((from, to) =>
+      supabase
+        .from("cbb_games")
+        .select("*")
+        .eq("completed", true)
+        .order("date", { ascending: false })
+        .range(from, to),
+    );
 
     // 4. Filter to games involving tracked teams
     const trackedGames = (games || []).filter(
@@ -767,14 +845,16 @@ export async function GET(request: Request) {
       });
     }
 
-    const { data: existingParticipation } = await supabase
-      .from("cbb_pitcher_participation")
-      .select("game_id")
-      .in("game_id", gameIds);
-
-    const gamesWithData = new Set(
-      (existingParticipation || []).map((p: { game_id: string }) => p.game_id),
+    const existingParticipation = await fetchInChunks<{ game_id: string }>(
+      gameIds,
+      (chunk) =>
+        supabase
+          .from("cbb_pitcher_participation")
+          .select("game_id")
+          .in("game_id", chunk),
     );
+
+    const gamesWithData = new Set(existingParticipation.map((p) => p.game_id));
 
     // 6. Games that still need scraping (skip those with too many failed attempts)
     const gamesToScrape = trackedGames.filter(

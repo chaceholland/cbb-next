@@ -22,6 +22,33 @@ const supabase = createClient(
   env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 );
 
+// Paginate around PostgREST's db_max_rows=1000 cap.
+async function fetchAllPages(buildPage, pageSize = 1000) {
+  const all = [];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await buildPage(from, from + pageSize - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) break;
+    all.push(...data);
+    if (data.length < pageSize) break;
+  }
+  return all;
+}
+
+// Chunk an .in() filter so the URL stays under PostgREST's 16KB header limit
+// (game IDs are 9–10 chars; 500 IDs ≈ 5KB, leaving room for other params).
+async function fetchInChunks(ids, buildQuery, chunkSize = 500) {
+  const all = [];
+  for (let i = 0; i < ids.length; i += chunkSize) {
+    const slice = ids.slice(i, i + chunkSize);
+    const rows = await fetchAllPages((from, to) =>
+      buildQuery(slice).range(from, to),
+    );
+    all.push(...rows);
+  }
+  return all;
+}
+
 /**
  * Scrapes pitcher participation data from ESPN's game summary API
  */
@@ -150,12 +177,15 @@ async function findGamesMissingParticipation(daysBack = 7) {
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - daysBack);
 
-  const { data: games } = await supabase
-    .from("cbb_games")
-    .select("*")
-    .eq("completed", true)
-    .gte("date", cutoffDate.toISOString())
-    .order("date", { ascending: false });
+  const games = await fetchAllPages((from, to) =>
+    supabase
+      .from("cbb_games")
+      .select("*")
+      .eq("completed", true)
+      .gte("date", cutoffDate.toISOString())
+      .order("date", { ascending: false })
+      .range(from, to),
+  );
 
   // Filter to games involving tracked teams
   const trackedGames = games.filter(
@@ -165,10 +195,12 @@ async function findGamesMissingParticipation(daysBack = 7) {
 
   // Get all participation data in one query
   const gameIds = trackedGames.map((g) => g.game_id);
-  const { data: allParticipation } = await supabase
-    .from("cbb_pitcher_participation")
-    .select("game_id")
-    .in("game_id", gameIds);
+  const allParticipation = await fetchInChunks(gameIds, (chunk) =>
+    supabase
+      .from("cbb_pitcher_participation")
+      .select("game_id")
+      .in("game_id", chunk),
+  );
 
   // Create set of game IDs that have participation data
   const gamesWithData = new Set(allParticipation?.map((p) => p.game_id) || []);
