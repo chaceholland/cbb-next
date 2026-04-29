@@ -756,6 +756,19 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const MAX_SCRAPE_ATTEMPTS = 5;
   const DELAY_MS = 300;
+
+  // Heartbeat row — written before the long-running work begins so a Vercel
+  // 300s timeout still leaves an audit trail in cbb_sync_log. Clean exits
+  // overwrite this with the final success/error row at the bottom of the
+  // function. A lingering "started" status means the function was killed.
+  await supabase.from("cbb_sync_log").insert({
+    sync_type: "participation_scrape",
+    source: "vercel-cron",
+    records_count: 0,
+    status: "started",
+    error_message: null,
+  });
+
   // Statuses that mean "we tried and got nothing." `d1_no_data` is written by
   // the legacy auto-scrape-participation.mjs LaunchAgent path; without it here,
   // games with that status get retried forever (some hit 90+ attempts).
