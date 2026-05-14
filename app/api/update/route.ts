@@ -770,11 +770,14 @@ export async function GET(request: Request) {
   });
 
   // Statuses that mean "we tried and got nothing." `d1_no_data` is written by
-  // the legacy auto-scrape-participation.mjs LaunchAgent path; without it here,
-  // games with that status get retried forever (some hit 90+ attempts).
+  // the legacy auto-scrape-participation.mjs LaunchAgent path; `ncaa_no_data`
+  // is the NCAA stats endpoint's no-pitcher-data result. Without these in the
+  // gate, games stuck on those statuses get retried forever (some hit 200+
+  // attempts).
   const TERMINAL_NO_DATA_STATUSES = new Set([
     "no_data_available",
     "d1_no_data",
+    "ncaa_no_data",
   ]);
 
   const results = {
