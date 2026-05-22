@@ -606,12 +606,18 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
 
 // ─── Upcoming Schedule Ingest ────────────────────────────────────────────────
 
-// Re-fetches ESPN scoreboard for the next N days and INSERTs new game_ids into
-// cbb_games. Without this, the table is frozen at whatever was seeded at the
-// start of the season — conference championship rounds and NCAA postseason
-// brackets (announced Selection Monday) never appear and never get scraped.
-// Uses ignoreDuplicates so existing rows (with scores/scrape state) are never
-// touched.
+// Re-fetches ESPN scoreboard for a window around today and INSERTs new
+// game_ids into cbb_games. Without this, the table is frozen at whatever was
+// seeded at the start of the season — conference championship rounds and NCAA
+// postseason brackets (announced Selection Monday) never appear and never get
+// scraped. Uses ignoreDuplicates so existing rows (with scores/scrape state)
+// are never touched.
+//
+// The lookback window catches games ESPN publishes late (postponed games
+// played a day or two after their original date, or games added to the API
+// after the fact). Without lookback, those games would be skipped forever
+// since the cron only ever moves forward.
+const SCHEDULE_DAYS_BACK = 3;
 const SCHEDULE_DAYS_AHEAD = 30;
 
 async function upsertUpcomingSchedule(
@@ -647,7 +653,7 @@ async function upsertUpcomingSchedule(
     }
   >();
 
-  for (let i = 0; i <= SCHEDULE_DAYS_AHEAD; i++) {
+  for (let i = -SCHEDULE_DAYS_BACK; i <= SCHEDULE_DAYS_AHEAD; i++) {
     const d = new Date(today);
     d.setUTCDate(d.getUTCDate() + i);
     const yyyymmdd =
@@ -712,7 +718,7 @@ async function upsertUpcomingSchedule(
   const rows = Array.from(rowsByGameId.values());
   if (rows.length === 0) {
     return {
-      daysChecked: SCHEDULE_DAYS_AHEAD + 1,
+      daysChecked: SCHEDULE_DAYS_BACK + SCHEDULE_DAYS_AHEAD + 1,
       gamesSeen,
       gamesInserted: 0,
     };
@@ -726,14 +732,14 @@ async function upsertUpcomingSchedule(
   if (error) {
     console.error(`[api/update] Schedule upsert failed: ${error.message}`);
     return {
-      daysChecked: SCHEDULE_DAYS_AHEAD + 1,
+      daysChecked: SCHEDULE_DAYS_BACK + SCHEDULE_DAYS_AHEAD + 1,
       gamesSeen,
       gamesInserted: 0,
     };
   }
 
   return {
-    daysChecked: SCHEDULE_DAYS_AHEAD + 1,
+    daysChecked: SCHEDULE_DAYS_BACK + SCHEDULE_DAYS_AHEAD + 1,
     gamesSeen,
     gamesInserted: inserted?.length ?? 0,
   };
