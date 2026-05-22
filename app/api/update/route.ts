@@ -604,6 +604,141 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
   return { records, reason: `ok (${records.length} pitchers)` };
 }
 
+// ─── Upcoming Schedule Ingest ────────────────────────────────────────────────
+
+// Re-fetches ESPN scoreboard for the next N days and INSERTs new game_ids into
+// cbb_games. Without this, the table is frozen at whatever was seeded at the
+// start of the season — conference championship rounds and NCAA postseason
+// brackets (announced Selection Monday) never appear and never get scraped.
+// Uses ignoreDuplicates so existing rows (with scores/scrape state) are never
+// touched.
+const SCHEDULE_DAYS_AHEAD = 30;
+
+async function upsertUpcomingSchedule(
+  supabase: ReturnType<typeof getSupabaseAdmin>,
+  trackedTeamIds: Set<string>,
+  delayMs: number,
+): Promise<{ daysChecked: number; gamesSeen: number; gamesInserted: number }> {
+  const STATUS_MAP: Record<string, string> = {
+    STATUS_FINAL: "final",
+    STATUS_SCHEDULED: "scheduled",
+    STATUS_CANCELED: "canceled",
+    STATUS_SUSPENDED: "suspended",
+    STATUS_POSTPONED: "postponed",
+    STATUS_IN_PROGRESS: "in_progress",
+  };
+
+  const today = new Date();
+  let gamesSeen = 0;
+  const rowsByGameId = new Map<
+    string,
+    {
+      game_id: string;
+      date: string;
+      week: number;
+      season: number;
+      home_team_id: string;
+      away_team_id: string;
+      home_name: string;
+      away_name: string;
+      status: string;
+      completed: boolean;
+      venue: string;
+    }
+  >();
+
+  for (let i = 0; i <= SCHEDULE_DAYS_AHEAD; i++) {
+    const d = new Date(today);
+    d.setUTCDate(d.getUTCDate() + i);
+    const yyyymmdd =
+      d.getUTCFullYear().toString() +
+      String(d.getUTCMonth() + 1).padStart(2, "0") +
+      String(d.getUTCDate()).padStart(2, "0");
+
+    try {
+      const url = `https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/scoreboard?dates=${yyyymmdd}&limit=500`;
+      const resp = await fetch(url);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      const events: Array<{
+        id?: string | number;
+        date?: string;
+        competitions?: Array<{
+          competitors?: Array<{
+            homeAway?: string;
+            team?: { id?: string | number; displayName?: string };
+          }>;
+          venue?: { fullName?: string };
+        }>;
+        status?: { type?: { name?: string } };
+      }> = data?.events || [];
+
+      for (const ev of events) {
+        const comp = ev.competitions?.[0];
+        const home = comp?.competitors?.find((c) => c.homeAway === "home");
+        const away = comp?.competitors?.find((c) => c.homeAway === "away");
+        const homeId = String(home?.team?.id ?? "");
+        const awayId = String(away?.team?.id ?? "");
+        const gameId = String(ev.id ?? "");
+        if (!gameId || !homeId || !awayId) continue;
+        if (!trackedTeamIds.has(homeId) && !trackedTeamIds.has(awayId))
+          continue;
+
+        const status = STATUS_MAP[ev.status?.type?.name ?? ""] || "scheduled";
+        gamesSeen++;
+        rowsByGameId.set(gameId, {
+          game_id: gameId,
+          date: ev.date ?? "",
+          week: 1,
+          season: 2026,
+          home_team_id: homeId,
+          away_team_id: awayId,
+          home_name: home?.team?.displayName ?? "",
+          away_name: away?.team?.displayName ?? "",
+          status,
+          completed: status === "final",
+          venue: comp?.venue?.fullName ?? "",
+        });
+      }
+    } catch (err) {
+      console.error(
+        `[api/update] Schedule fetch ${yyyymmdd} failed: ${(err as Error).message}`,
+      );
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+
+  const rows = Array.from(rowsByGameId.values());
+  if (rows.length === 0) {
+    return {
+      daysChecked: SCHEDULE_DAYS_AHEAD + 1,
+      gamesSeen,
+      gamesInserted: 0,
+    };
+  }
+
+  const { data: inserted, error } = await supabase
+    .from("cbb_games")
+    .upsert(rows, { onConflict: "game_id", ignoreDuplicates: true })
+    .select("game_id");
+
+  if (error) {
+    console.error(`[api/update] Schedule upsert failed: ${error.message}`);
+    return {
+      daysChecked: SCHEDULE_DAYS_AHEAD + 1,
+      gamesSeen,
+      gamesInserted: 0,
+    };
+  }
+
+  return {
+    daysChecked: SCHEDULE_DAYS_AHEAD + 1,
+    gamesSeen,
+    gamesInserted: inserted?.length ?? 0,
+  };
+}
+
 // ─── Game Completion Status ──────────────────────────────────────────────────
 
 async function updateGameCompletionStatus(
@@ -789,6 +924,7 @@ export async function GET(request: Request) {
     skippedMaxAttempts: 0,
     totalPitchers: 0,
     completionUpdate: { checked: 0, completed: 0, errors: 0 },
+    scheduleUpsert: { daysChecked: 0, gamesSeen: 0, gamesInserted: 0 },
     games: [] as Array<{
       game_id: string;
       matchup: string;
@@ -810,7 +946,26 @@ export async function GET(request: Request) {
       (trackedTeams || []).map((t: { team_id: string }) => t.team_id),
     );
 
-    // 2. Update game completion status first
+    // 2. Upsert upcoming schedule (next 30 days) — pulls in conference
+    // championship + NCAA postseason bracket games as they get published by
+    // ESPN. Existing rows are skipped (ignoreDuplicates) so completion/score
+    // state is preserved.
+    results.scheduleUpsert = await upsertUpcomingSchedule(
+      supabase,
+      trackedTeamIds,
+      DELAY_MS,
+    );
+    await supabase.from("cbb_sync_log").insert({
+      sync_type: "schedule_upsert",
+      source: "vercel-cron",
+      records_count: results.scheduleUpsert.gamesInserted,
+      status: "success",
+    });
+    console.log(
+      `[api/update] Schedule upsert: ${results.scheduleUpsert.gamesInserted} new games (saw ${results.scheduleUpsert.gamesSeen} across ${results.scheduleUpsert.daysChecked} days)`,
+    );
+
+    // 3. Update game completion status first
     results.completionUpdate = await updateGameCompletionStatus(
       supabase,
       trackedTeamIds,
