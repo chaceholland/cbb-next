@@ -2,6 +2,15 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Headshot zoom: 1s delay before zoom-in, instant zoom-out */
+.headshot-zoom {
+  transition: transform 300ms ease, box-shadow 300ms ease, z-index 0ms;
+  transition-delay: 0ms;
+}
+.group\/hs:hover .headshot-zoom {
+  transition-delay: 1000ms;
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
