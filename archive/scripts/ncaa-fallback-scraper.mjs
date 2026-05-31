@@ -17,6 +17,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
+import path from "path";
 import { chromium as baseChromium } from "playwright-extra";
 import stealthPlugin from "puppeteer-extra-plugin-stealth";
 const chromium = baseChromium;
@@ -24,22 +25,52 @@ chromium.use(stealthPlugin());
 
 // ─── Supabase setup ───────────────────────────────────────────────────────────
 
-const envContent = fs.readFileSync(".env.local", "utf8");
 const env = {};
-envContent.split("\n").forEach((line) => {
-  const [key, ...rest] = line.split("=");
-  if (key && rest.length)
-    env[key.trim()] = rest
-      .join("=")
-      .trim()
-      .replace(/^["']|["']$/g, "")
-      .replace(/\\[nr]/g, "");
-});
+let envFileFound = false;
 
-const supabase = createClient(
-  env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-);
+// Try to read .env.local from current directory
+try {
+  const envPath = path.resolve(".env.local");
+  if (fs.existsSync(envPath)) {
+    envFileFound = true;
+    const envContent = fs.readFileSync(envPath, "utf8");
+    envContent.split("\n").forEach((line) => {
+      const [key, ...rest] = line.split("=");
+      if (key && rest.length)
+        env[key.trim()] = rest
+          .join("=")
+          .trim()
+          .replace(/^["']|["']$/g, "")
+          .replace(/\\[nr]/g, "");
+    });
+  }
+} catch (e) {
+  console.error("Error reading .env.local:", e.message);
+}
+
+// Fallback to process.env if .env.local not available
+const supabaseUrl =
+  env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  env.SUPABASE_SERVICE_ROLE_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseUrl.startsWith("https://")) {
+  console.error(
+    "ERROR: Invalid or missing SUPABASE_URL in ncaa-fallback-scraper",
+  );
+  console.error("  .env.local found:", envFileFound);
+  console.error("  URL from env:", env.NEXT_PUBLIC_SUPABASE_URL);
+  console.error(
+    "  URL from process.env:",
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+  );
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 

@@ -1,26 +1,56 @@
 #!/usr/bin/env node
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
+import path from "path";
 import { ncaaFallback } from "./archive/scripts/ncaa-fallback-scraper.mjs";
 import { d1BaseballFallback } from "./archive/scripts/d1baseball-scraper.mjs";
 
-const envContent = fs.readFileSync(".env.local", "utf8");
+// Load environment variables from .env.local
 const env = {};
-envContent.split("\n").forEach((line) => {
-  const [key, ...valueParts] = line.split("=");
-  if (key && valueParts.length) {
-    env[key.trim()] = valueParts
-      .join("=")
-      .trim()
-      .replace(/^["']|["']$/g, "")
-      .replace(/\\[nr]/g, "");
-  }
-});
+let envFileFound = false;
 
-const supabase = createClient(
-  env.NEXT_PUBLIC_SUPABASE_URL,
-  env.SUPABASE_SERVICE_ROLE_KEY || env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-);
+// Try to read .env.local from current directory
+try {
+  const envPath = path.resolve(".env.local");
+  if (fs.existsSync(envPath)) {
+    envFileFound = true;
+    const envContent = fs.readFileSync(envPath, "utf8");
+    envContent.split("\n").forEach((line) => {
+      const [key, ...valueParts] = line.split("=");
+      if (key && valueParts.length) {
+        env[key.trim()] = valueParts
+          .join("=")
+          .trim()
+          .replace(/^["']|["']$/g, "")
+          .replace(/\\[nr]/g, "");
+      }
+    });
+  }
+} catch (e) {
+  console.error("Error reading .env.local:", e.message);
+}
+
+// Fallback to process.env if .env.local not available
+const supabaseUrl =
+  env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey =
+  env.SUPABASE_SERVICE_ROLE_KEY ||
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.SUPABASE_SERVICE_ROLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseUrl.startsWith("https://")) {
+  console.error("ERROR: Invalid or missing SUPABASE_URL");
+  console.error("  .env.local found:", envFileFound);
+  console.error("  URL from env:", env.NEXT_PUBLIC_SUPABASE_URL);
+  console.error(
+    "  URL from process.env:",
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+  );
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Paginate around PostgREST's db_max_rows=1000 cap.
 async function fetchAllPages(buildPage, pageSize = 1000) {
@@ -167,9 +197,19 @@ async function updateScrapeStatus(gameId, status, incrementAttempts = true) {
  */
 async function findGamesMissingParticipation(daysBack = 7) {
   // Get tracked teams
-  const { data: trackedTeams } = await supabase
+  const { data: trackedTeams, error: teamsError } = await supabase
     .from("cbb_teams")
     .select("team_id");
+
+  if (teamsError) {
+    console.error("Error fetching tracked teams:", teamsError.message);
+    return [];
+  }
+
+  if (!trackedTeams || trackedTeams.length === 0) {
+    console.error("No tracked teams found in database");
+    return [];
+  }
 
   const trackedTeamIds = new Set(trackedTeams.map((t) => t.team_id));
 
