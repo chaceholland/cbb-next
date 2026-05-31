@@ -196,61 +196,120 @@ async function updateScrapeStatus(gameId, status, incrementAttempts = true) {
  * Finds games that are completed but missing pitcher participation data
  */
 async function findGamesMissingParticipation(daysBack = 7) {
-  // Get tracked teams
-  const { data: trackedTeams, error: teamsError } = await supabase
-    .from("cbb_teams")
-    .select("team_id");
+  const debugInfo = [];
 
-  if (teamsError) {
-    console.error("Error fetching tracked teams:", teamsError.message);
+  try {
+    // Get tracked teams
+    const { data: trackedTeams, error: teamsError } = await supabase
+      .from("cbb_teams")
+      .select("team_id");
+
+    if (teamsError) {
+      const msg = `Error fetching tracked teams: ${teamsError.message}`;
+      console.error(msg);
+      debugInfo.push(msg);
+      return [];
+    }
+
+    if (!trackedTeams || trackedTeams.length === 0) {
+      const msg = "No tracked teams found in database";
+      console.error(msg);
+      debugInfo.push(msg);
+      return [];
+    }
+
+    debugInfo.push(`Found ${trackedTeams.length} tracked teams`);
+    const trackedTeamIds = new Set(trackedTeams.map((t) => t.team_id));
+
+    // Get completed games from last N days
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysBack);
+    debugInfo.push(`Cutoff date: ${cutoffDate.toISOString()}`);
+
+    let games = [];
+    try {
+      games = await fetchAllPages((from, to) =>
+        supabase
+          .from("cbb_games")
+          .select("*")
+          .eq("completed", true)
+          .gte("date", cutoffDate.toISOString())
+          .order("date", { ascending: false })
+          .range(from, to),
+      );
+    } catch (fetchErr) {
+      const msg = `Error fetching games: ${fetchErr.message}`;
+      console.error(msg);
+      debugInfo.push(msg);
+      return [];
+    }
+
+    debugInfo.push(`Fetched ${games.length} completed games`);
+
+    // Filter to games involving tracked teams
+    const trackedGames = games.filter(
+      (g) =>
+        trackedTeamIds.has(g.home_team_id) ||
+        trackedTeamIds.has(g.away_team_id),
+    );
+
+    debugInfo.push(
+      `Filtered to ${trackedGames.length} games involving tracked teams`,
+    );
+
+    if (trackedGames.length === 0) {
+      return [];
+    }
+
+    // Get all participation data in one query
+    const gameIds = trackedGames.map((g) => g.game_id);
+    let allParticipation = [];
+    try {
+      allParticipation = await fetchInChunks(gameIds, (chunk) =>
+        supabase
+          .from("cbb_pitcher_participation")
+          .select("game_id")
+          .in("game_id", chunk),
+      );
+    } catch (participationErr) {
+      const msg = `Error fetching participation data: ${participationErr.message}`;
+      console.error(msg);
+      debugInfo.push(msg);
+      // Continue with empty participation data to find all games missing data
+      allParticipation = [];
+    }
+
+    // Create set of game IDs that have participation data
+    const gamesWithData = new Set(
+      allParticipation?.map((p) => p.game_id) || [],
+    );
+
+    // Return games without participation data
+    const gamesWithoutParticipation = trackedGames.filter(
+      (g) => !gamesWithData.has(g.game_id),
+    );
+
+    debugInfo.push(
+      `Found ${gamesWithoutParticipation.length} games missing participation data`,
+    );
+
+    // Store debug info for logging
+    if (typeof global.debugInfo === "undefined") {
+      global.debugInfo = [];
+    }
+    global.debugInfo.push(...debugInfo);
+
+    return gamesWithoutParticipation;
+  } catch (err) {
+    const msg = `Unexpected error in findGamesMissingParticipation: ${err.message}`;
+    console.error(msg);
+    debugInfo.push(msg);
+    if (typeof global.debugInfo === "undefined") {
+      global.debugInfo = [];
+    }
+    global.debugInfo.push(...debugInfo);
     return [];
   }
-
-  if (!trackedTeams || trackedTeams.length === 0) {
-    console.error("No tracked teams found in database");
-    return [];
-  }
-
-  const trackedTeamIds = new Set(trackedTeams.map((t) => t.team_id));
-
-  // Get completed games from last N days
-  const cutoffDate = new Date();
-  cutoffDate.setDate(cutoffDate.getDate() - daysBack);
-
-  const games = await fetchAllPages((from, to) =>
-    supabase
-      .from("cbb_games")
-      .select("*")
-      .eq("completed", true)
-      .gte("date", cutoffDate.toISOString())
-      .order("date", { ascending: false })
-      .range(from, to),
-  );
-
-  // Filter to games involving tracked teams
-  const trackedGames = games.filter(
-    (g) =>
-      trackedTeamIds.has(g.home_team_id) || trackedTeamIds.has(g.away_team_id),
-  );
-
-  // Get all participation data in one query
-  const gameIds = trackedGames.map((g) => g.game_id);
-  const allParticipation = await fetchInChunks(gameIds, (chunk) =>
-    supabase
-      .from("cbb_pitcher_participation")
-      .select("game_id")
-      .in("game_id", chunk),
-  );
-
-  // Create set of game IDs that have participation data
-  const gamesWithData = new Set(allParticipation?.map((p) => p.game_id) || []);
-
-  // Return games without participation data
-  const gamesWithoutParticipation = trackedGames.filter(
-    (g) => !gamesWithData.has(g.game_id),
-  );
-
-  return gamesWithoutParticipation;
 }
 
 /**
@@ -454,6 +513,8 @@ async function main() {
     espn: results,
     ...(d1Results && { d1: d1Results }),
     ...(ncaaResults && { ncaa: ncaaResults }),
+    ...(global.debugInfo &&
+      global.debugInfo.length > 0 && { _debug: global.debugInfo }),
   };
   fs.writeFileSync(logFile, JSON.stringify(logData, null, 2));
 
