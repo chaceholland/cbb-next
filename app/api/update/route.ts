@@ -582,6 +582,20 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
     }
   };
 
+  // Guard: skip writes for placeholder/unresolved bracket games.
+  // ESPN uses team_ids 1153 (East/South) and 1154 (West/Midwest) for TBD postseason matchups.
+  // Participation records written to these or null team_ids create mislabeled rows.
+  const PLACEHOLDER_TEAM_IDS = new Set(["1153", "1154"]);
+  const homeTeamIsPlaceholder = !game.home_team_id || PLACEHOLDER_TEAM_IDS.has(String(game.home_team_id));
+  const awayTeamIsPlaceholder = !game.away_team_id || PLACEHOLDER_TEAM_IDS.has(String(game.away_team_id));
+
+  if (homeTeamIsPlaceholder || awayTeamIsPlaceholder) {
+    console.log(
+      `[api/update] SIDEARM: skipping ${game.away_name} @ ${game.home_name} (TBD placeholder game: away=${game.away_team_id}, home=${game.home_team_id})`,
+    );
+    return { records: null, reason: "skipped TBD placeholder game" };
+  }
+
   // Worker convention: away pitchers first, home pitchers second
   // But if we scraped the home team's site, home = home_team, away = away_team
   const isHomeSite = !!homeConfig;
