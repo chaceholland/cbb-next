@@ -33,6 +33,29 @@ export type GameDataQualityIssue = {
   customNote?: string;
 };
 
+// Strip the " - P " position token the scraper embeds inside participation
+// names (e.g. "Aidan - P King" → "Aidan King") so boxscore names normalize the
+// same way as clean roster names. Mirrors the strip in GameCard's lookupHeadshot.
+// Require whitespace on BOTH sides of the token so real hyphenated surnames
+// (e.g. "Lugo-Canchola") are never touched.
+const cleanPitcherName = (s: string | null | undefined) =>
+  (s || "")
+    .replace(/\s+-\s+[A-Z0-9]{1,3}\s+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+// Order-insensitive name key: strips the " - P " token, drops punctuation, then
+// sorts the name tokens so "Aidan King", "Aidan - P King" and "King, Aidan" all
+// collapse to the same value.
+const matchKey = (s: string | null | undefined) =>
+  cleanPitcherName(s)
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .sort()
+    .join("");
+
 export function ScheduleView({
   favorites,
   toggleFavorite: toggleFavoriteProp,
@@ -238,6 +261,40 @@ export function ScheduleView({
     }
     return map;
   }, [favorites, pitcherById]);
+
+  // Resolve a participation/DNP row to its canonical cbb_pitchers synthetic id
+  // (the scheme cbb_favorites is keyed by). Participation rows arrive with ESPN
+  // numeric ids, NCAA-/D1- synthetic ids, or none — and ~49% of pitchers have no
+  // espn_id — so we fall back to team-scoped cleaned-name matching. This single
+  // canonical key is what makes favorite-detection, dedup, and the star toggle
+  // all agree.
+  const { espnToPid, nameToPid } = useMemo(() => {
+    const espn: Record<string, string> = {};
+    const name: Record<string, string | null> = {};
+    for (const [pid, info] of Object.entries(pitcherById)) {
+      if (info.espn_id) espn[info.espn_id] = pid;
+      const key = `${info.team_id}:${matchKey(info.name)}`;
+      // On a name collision within a team, mark ambiguous so we don't misassign.
+      name[key] = key in name ? null : pid;
+    }
+    return { espnToPid: espn, nameToPid: name };
+  }, [pitcherById]);
+
+  const resolvePitcherId = useCallback(
+    (row: { pitcher_id?: string; pitcher_name?: string; team_id?: string }) => {
+      // Already a synthetic roster id (e.g. DNP rows we synthesize).
+      if (row.pitcher_id && pitcherById[row.pitcher_id]) return row.pitcher_id;
+      if (row.pitcher_id && espnToPid[row.pitcher_id])
+        return espnToPid[row.pitcher_id];
+      if (row.team_id) {
+        const pid = nameToPid[`${row.team_id}:${matchKey(row.pitcher_name)}`];
+        if (pid) return pid;
+      }
+      return null;
+    },
+    [pitcherById, espnToPid, nameToPid],
+  );
+
   // team_id → TeamRecord map for showing records on game cards
   const [teamRecords, setTeamRecords] = useState<Record<string, TeamRecord>>(
     {},
@@ -1480,6 +1537,7 @@ export function ScheduleView({
                             pitcherFilter={pitcherFilter}
                             favsByTeam={favsByTeam}
                             onToggleFavoritePitcher={toggleFavoritePitcher}
+                            resolvePitcherId={resolvePitcherId}
                           />
                         </div>
                       ))
@@ -1533,6 +1591,7 @@ export function ScheduleView({
                               pitcherFilter={pitcherFilter}
                               favsByTeam={favsByTeam}
                               onToggleFavoritePitcher={toggleFavoritePitcher}
+                              resolvePitcherId={resolvePitcherId}
                             />
                           ))}
                         </div>

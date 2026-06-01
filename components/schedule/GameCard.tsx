@@ -39,6 +39,13 @@ interface Props {
   onToggleWatched?: () => void;
   favoritePitcherIds?: Set<string>;
   onToggleFavoritePitcher?: (pitcherId: string) => void;
+  /** Resolve any pitcher row to its canonical cbb_pitchers synthetic id (the
+   * scheme favorites are keyed by). Unifies favorite-detection, dedup & toggle. */
+  resolvePitcherId?: (row: {
+    pitcher_id?: string;
+    pitcher_name?: string;
+    team_id?: string;
+  }) => string | null;
   /** When "favorites-only", buildMergedRows omits DNP favorites and non-fav played */
   pitcherFilter?: string;
   favsByTeam?: Record<
@@ -152,6 +159,7 @@ function PitcherRow({
   onPitcherIssueToggle,
   isFavoritePitcher = false,
   onToggleFavoritePitcher,
+  favoriteToggleId,
 }: {
   row: ParticipationRow;
   teamId: string;
@@ -171,6 +179,9 @@ function PitcherRow({
   ) => void;
   isFavoritePitcher?: boolean;
   onToggleFavoritePitcher?: (pitcherId: string) => void;
+  /** Canonical favorites-table id to toggle (resolved from the row). Falls back
+   * to row.pitcher_id only when the row can't be matched to a roster pitcher. */
+  favoriteToggleId?: string | null;
 }) {
   const team = teams[teamId];
   const fallbackSrc = team?.logo || getEspnLogoUrl(teamId);
@@ -215,11 +226,11 @@ function PitcherRow({
             }}
           />
         )}
-        {onToggleFavoritePitcher && row.pitcher_id && (
+        {onToggleFavoritePitcher && (favoriteToggleId || row.pitcher_id) && (
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onToggleFavoritePitcher(row.pitcher_id!);
+              onToggleFavoritePitcher(favoriteToggleId || row.pitcher_id!);
             }}
             className={cn(
               "absolute top-1 right-1 p-1 rounded-full backdrop-blur-sm transition-colors z-10",
@@ -328,6 +339,7 @@ function TeamColumn({
   onPitcherIssueToggle,
   teamRecord,
   onToggleFavoritePitcher,
+  resolvePitcherId,
 }: {
   team: CbbTeam | undefined;
   teamId: string;
@@ -358,6 +370,11 @@ function TeamColumn({
     pitcher_name?: string;
   }) => boolean;
   onToggleFavoritePitcher?: (pitcherId: string) => void;
+  resolvePitcherId?: (row: {
+    pitcher_id?: string;
+    pitcher_name?: string;
+    team_id?: string;
+  }) => string | null;
 }) {
   const displayName = team?.display_name ?? name ?? "Unknown";
 
@@ -437,6 +454,11 @@ function TeamColumn({
                   false
                 }
                 onToggleFavoritePitcher={onToggleFavoritePitcher}
+                favoriteToggleId={resolvePitcherId?.({
+                  pitcher_id: row.pitcher_id ?? undefined,
+                  pitcher_name: row.pitcher_name,
+                  team_id: teamId,
+                })}
               />
             ))}
           </div>
@@ -464,6 +486,7 @@ export function GameCard({
   onToggleWatched,
   favoritePitcherIds,
   onToggleFavoritePitcher,
+  resolvePitcherId,
   pitcherFilter,
   favsByTeam,
 }: Props) {
@@ -514,56 +537,75 @@ export function GameCard({
   );
 
   // Merge favorites + participation for each team.
-  // cbb_pitchers uses synthetic IDs ("123-P7") while
-  // cbb_pitcher_participation uses ESPN numeric IDs. Reconciliation is
-  // primarily via the espn_id column on cbb_pitchers (backfilled
-  // 2026-04-09), with normalized-name fallback for walk-ons and any
-  // pitchers that haven't been matched yet.
-  const normName = (s: string | null | undefined) =>
-    (s || "").toLowerCase().replace(/[^a-z]/g, "");
+  //
+  // cbb_favorites is keyed by cbb_pitchers' synthetic id ("123-P7"), while
+  // participation rows arrive with ESPN-numeric / NCAA- / D1- ids — and the
+  // scraper embeds a " - P " position token inside the name ("Aidan - P King").
+  // resolvePitcherId (from ScheduleView) collapses every row to the one
+  // canonical synthetic id so favorite-detection and dedup agree; favoriteNames
+  // is a last-ditch fallback for rows that don't resolve to a roster pitcher.
+  // MUST stay identical to ScheduleView's matchKey: strip the " - P " token,
+  // drop punctuation, then sort name tokens so first/last order and the
+  // "Last, First" boxscore format all collapse to one key.
+  const matchKey = (s: string | null | undefined) =>
+    (s || "")
+      .replace(/\s+-\s+[A-Z0-9]{1,3}\s+/g, " ")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .split(/\s+/)
+      .filter(Boolean)
+      .sort()
+      .join("");
 
-  const favoriteEspnIds = new Set<string>();
   const favoriteNames = new Set<string>();
   if (favsByTeam) {
     for (const roster of Object.values(favsByTeam)) {
-      for (const f of roster as {
-        pitcher_name: string;
-        espn_id?: string | null;
-      }[]) {
-        if (f.espn_id) favoriteEspnIds.add(f.espn_id);
-        favoriteNames.add(normName(f.pitcher_name));
+      for (const f of roster as { pitcher_name: string }[]) {
+        favoriteNames.add(matchKey(f.pitcher_name));
       }
     }
   }
 
+  const rowPid = (r: {
+    pitcher_id?: string;
+    pitcher_name?: string;
+    team_id?: string;
+  }) => resolvePitcherId?.(r) ?? null;
+
   const isFavoritePitcherRow = (r: {
     pitcher_id?: string;
     pitcher_name?: string;
-  }) =>
-    Boolean(
-      (r.pitcher_id && favoriteEspnIds.has(r.pitcher_id)) ||
-      favoriteNames.has(normName(r.pitcher_name)),
-    );
+    team_id?: string;
+  }) => {
+    const pid = rowPid(r);
+    if (pid) return favoritePitcherIds?.has(pid) ?? false;
+    return favoriteNames.has(matchKey(r.pitcher_name));
+  };
 
   function buildMergedRows(
     teamId: string,
     participationRows: ParticipationRow[],
   ) {
-    const playedEspnIds = new Set(
-      participationRows.map((r) => r.pitcher_id).filter(Boolean) as string[],
+    const withTeam = (r: ParticipationRow) => ({
+      pitcher_id: r.pitcher_id ?? undefined,
+      pitcher_name: r.pitcher_name,
+      team_id: teamId,
+    });
+    // Canonical ids + cleaned names of everyone who actually pitched.
+    const playedPids = new Set(
+      participationRows.map((r) => rowPid(withTeam(r))).filter(Boolean),
     );
     const playedNames = new Set(
-      participationRows.map((r) => normName(r.pitcher_name)),
+      participationRows.map((r) => matchKey(r.pitcher_name)),
     );
 
-    // Favorited pitchers who DIDN'T play (DNP). Dedup by espn_id
-    // (preferred) or name — prevents double-rendering when the
-    // favorite record and the participation record reference the
-    // same player through different ID schemes.
+    // Favorited pitchers who DIDN'T play (DNP). Excluded if they map to any
+    // played row by canonical id OR cleaned name — this is what prevents the
+    // same favorite from rendering as both a played tile and a DNP tile.
     const favDnp: ParticipationRow[] = (favsByTeam?.[teamId] || [])
       .filter((f) => {
-        if (f.espn_id && playedEspnIds.has(f.espn_id)) return false;
-        if (playedNames.has(normName(f.pitcher_name))) return false;
+        if (playedPids.has(f.pitcher_id)) return false;
+        if (playedNames.has(matchKey(f.pitcher_name))) return false;
         return true;
       })
       .map((f) => ({
@@ -584,7 +626,9 @@ export function GameCard({
       return bIP - aIP;
     };
 
-    const favPlayed = participationRows.filter(isFavoritePitcherRow).sort(sortByIP);
+    const favPlayed = participationRows
+      .filter(isFavoritePitcherRow)
+      .sort(sortByIP);
     const nonFavPlayed = participationRows
       .filter((r) => !isFavoritePitcherRow(r))
       .sort(sortByIP);
@@ -595,7 +639,9 @@ export function GameCard({
       return favPlayed;
     }
 
-    return [...favPlayed, ...favDnp, ...nonFavPlayed];
+    // Display order (per user spec): favorited + played, then everyone else who
+    // played, then favorited pitchers who didn't play.
+    return [...favPlayed, ...nonFavPlayed, ...favDnp];
   }
 
   const sortedHomeRows = buildMergedRows(game.home_team_id, homeParticipation);
@@ -790,6 +836,7 @@ export function GameCard({
             favoritePitcherIds={favoritePitcherIds}
             checkFavoritePitcher={isFavoritePitcherRow}
             onToggleFavoritePitcher={onToggleFavoritePitcher}
+            resolvePitcherId={resolvePitcherId}
           />
           <div className="w-px bg-slate-700 shrink-0" />
           <TeamColumn
@@ -811,6 +858,7 @@ export function GameCard({
             favoritePitcherIds={favoritePitcherIds}
             checkFavoritePitcher={isFavoritePitcherRow}
             onToggleFavoritePitcher={onToggleFavoritePitcher}
+            resolvePitcherId={resolvePitcherId}
           />
         </div>
       ) : (
