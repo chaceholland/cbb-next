@@ -435,7 +435,10 @@ function TeamColumn({
           <div>
             {rows.map((row) => (
               <PitcherRow
-                key={row.id}
+                // row.id for DNP rows is a hashed pitcher_id and can collide
+                // (anagram ids → same hash), so compose with pitcher_id to keep
+                // React keys unique and avoid duplicated/dropped tiles.
+                key={`${row.id}:${row.pitcher_id ?? row.pitcher_name}`}
                 row={row}
                 teamId={teamId}
                 teams={teams}
@@ -633,15 +636,28 @@ export function GameCard({
       .filter((r) => !isFavoritePitcherRow(r))
       .sort(sortByIP);
 
+    // Final safety net: collapse any pitcher that still appears more than once
+    // (e.g. the same player reaching both the played and DNP lists), keeping the
+    // first — which, given the ordering below, is always the played instance.
+    const dedupe = (rows: ParticipationRow[]) => {
+      const seen = new Set<string>();
+      return rows.filter((r) => {
+        const key = r.pitcher_id || matchKey(r.pitcher_name);
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    };
+
     // When "Favs Played" filter is active, only show favorited pitchers
     // who actually played — hide DNP favorites and non-fav pitchers.
     if (pitcherFilter === "favorites-only") {
-      return favPlayed;
+      return dedupe(favPlayed);
     }
 
     // Display order (per user spec): favorited + played, then everyone else who
     // played, then favorited pitchers who didn't play.
-    return [...favPlayed, ...nonFavPlayed, ...favDnp];
+    return dedupe([...favPlayed, ...nonFavPlayed, ...favDnp]);
   }
 
   const sortedHomeRows = buildMergedRows(game.home_team_id, homeParticipation);
