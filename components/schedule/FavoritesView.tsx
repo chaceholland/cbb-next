@@ -9,8 +9,22 @@ import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 
 type SortMode = "date" | "favCount" | "favIP";
 
+// MUST stay identical to GameCard/ScheduleView matchKey, or the Favorites tab
+// silently drops games the Schedule tab shows. The participation scraper embeds
+// a " - P " position token inside names ("Aidan - P King") and uses "Last, First"
+// boxscore order; the old normalizer (strip non-letters only) turned those into
+// "aidanpking" / "kingaidan", neither of which equals the favorite's "aidanking".
+// Strip the " - P " infix, drop punctuation, then SORT tokens so first/last
+// order and "Last, First" all collapse to one key.
 const normName = (s: string | null | undefined) =>
-  (s || "").toLowerCase().replace(/[^a-z]/g, "");
+  (s || "")
+    .replace(/\s+-\s+[A-Z0-9]{1,3}\s+/g, " ")
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .sort()
+    .join("");
 
 interface FavoritesViewProps {
   favorites: string[];
