@@ -586,8 +586,10 @@ async function scrapeSidearm(game: GameRecord): Promise<SidearmOutcome> {
   // ESPN uses team_ids 1153 (East/South) and 1154 (West/Midwest) for TBD postseason matchups.
   // Participation records written to these or null team_ids create mislabeled rows.
   const PLACEHOLDER_TEAM_IDS = new Set(["1153", "1154"]);
-  const homeTeamIsPlaceholder = !game.home_team_id || PLACEHOLDER_TEAM_IDS.has(String(game.home_team_id));
-  const awayTeamIsPlaceholder = !game.away_team_id || PLACEHOLDER_TEAM_IDS.has(String(game.away_team_id));
+  const homeTeamIsPlaceholder =
+    !game.home_team_id || PLACEHOLDER_TEAM_IDS.has(String(game.home_team_id));
+  const awayTeamIsPlaceholder =
+    !game.away_team_id || PLACEHOLDER_TEAM_IDS.has(String(game.away_team_id));
 
   if (homeTeamIsPlaceholder || awayTeamIsPlaceholder) {
     console.log(
@@ -738,9 +740,14 @@ async function upsertUpcomingSchedule(
     };
   }
 
+  // Update on conflict (NOT ignoreDuplicates) so games self-heal: when a
+  // postseason bracket slot resolves from a TBD placeholder to a real team, or
+  // ESPN corrects a team id/name, the existing row is updated instead of frozen
+  // at its first-seen (often placeholder/wrong) value. scrape_status is not in
+  // these rows, so participation-scrape state is preserved.
   const { data: inserted, error } = await supabase
     .from("cbb_games")
-    .upsert(rows, { onConflict: "game_id", ignoreDuplicates: true })
+    .upsert(rows, { onConflict: "game_id", ignoreDuplicates: false })
     .select("game_id");
 
   if (error) {

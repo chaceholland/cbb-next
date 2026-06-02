@@ -411,37 +411,43 @@ function assignTeamIds(pitchers, game) {
   const homeName = normalize(game.home_name || "");
   const awayName = normalize(game.away_name || "");
 
-  return pitchers.map((p, idx) => {
+  const rows = [];
+  for (const p of pitchers) {
     let teamId;
 
-    // Primary: use teamSide set during parsing
+    // Primary: use teamSide set during parsing (reliable)
     if (p.teamSide === "home") {
       teamId = game.home_team_id;
     } else if (p.teamSide === "visitor") {
       teamId = game.away_team_id;
     } else {
-      // Fallback: fuzzy label match
+      // Fallback: fuzzy label match. Require a STRICT winner with a real token
+      // hit; on a tie or no match, SKIP rather than defaulting to home (which
+      // silently mislabeled opponents onto the home team).
       const label = (p.teamLabel || "").toLowerCase();
-      const homeTokens = homeName.split(/\s+/).filter((t) => t.length > 2);
-      const awayTokens = awayName.split(/\s+/).filter((t) => t.length > 2);
+      const homeTokens = homeName.split(/\s+/).filter((t) => t.length > 3);
+      const awayTokens = awayName.split(/\s+/).filter((t) => t.length > 3);
       const homeScore = homeTokens.filter((t) => label.includes(t)).length;
       const awayScore = awayTokens.filter((t) => label.includes(t)).length;
-      teamId = homeScore >= awayScore ? game.home_team_id : game.away_team_id;
+      if (homeScore > awayScore && homeScore > 0) teamId = game.home_team_id;
+      else if (awayScore > homeScore && awayScore > 0)
+        teamId = game.away_team_id;
+      else continue; // ambiguous -> skip
     }
+    if (teamId == null) continue;
 
     const normalizedName = p.pitcherName
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "");
-    const pitcherId = `D1-${game.game_id}-${teamId}-${normalizedName}`;
-
-    return {
+    rows.push({
       game_id: game.game_id,
       team_id: teamId,
-      pitcher_id: pitcherId,
+      pitcher_id: `D1-${game.game_id}-${teamId}-${normalizedName}`,
       pitcher_name: p.pitcherName,
       stats: p.stats,
-    };
-  });
+    });
+  }
+  return rows;
 }
 
 // ─── Database helpers ─────────────────────────────────────────────────────────

@@ -6,11 +6,9 @@ import { CbbGame, CbbTeam, ParticipationRow } from "@/lib/supabase/types";
 import { GameCard } from "./GameCard";
 import { GameDetailModal } from "./GameDetailModal";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { matchKey, headshotKey } from "@/lib/pitcher-name";
 
 type SortMode = "date" | "favCount" | "favIP";
-
-const normName = (s: string | null | undefined) =>
-  (s || "").toLowerCase().replace(/[^a-z]/g, "");
 
 interface FavoritesViewProps {
   favorites: string[];
@@ -126,12 +124,6 @@ export function FavoritesView({
         // Match ScheduleView's headshot-map key scheme so GameCard's
         // lookupHeadshot hits: keep spaces/digits in the normalized
         // key, plus a team-scoped last-name-only key for D1Baseball.
-        const normHeadshot = (s: string) =>
-          s
-            .toLowerCase()
-            .replace(/[^a-z0-9\s]/g, "")
-            .replace(/\s+/g, " ")
-            .trim();
         const hMap: Record<string, string | null> = {};
         for (const p of allPitchers) {
           if (p.pitcher_id) {
@@ -143,7 +135,7 @@ export function FavoritesView({
             };
           }
           if (p.headshot) {
-            const n = normHeadshot(p.name);
+            const n = headshotKey(p.name);
             hMap[n] = p.headshot;
             hMap[`${p.team_id}:${n}`] = p.headshot;
             const parts = p.name.trim().split(/\s+/);
@@ -173,7 +165,7 @@ export function FavoritesView({
           const info = pMap[pid];
           if (!info) continue;
           if (info.espn_id) favoriteEspnIds.push(info.espn_id);
-          if (info.name) favoriteNames.add(normName(info.name));
+          if (info.name) favoriteNames.add(matchKey(info.name));
         }
 
         // 4. Query participation rows matching favorites (by espn_id or name)
@@ -210,7 +202,7 @@ export function FavoritesView({
               game_id: string;
               pitcher_name: string;
             }[]) {
-              if (favoriteNames.has(normName(r.pitcher_name))) {
+              if (favoriteNames.has(matchKey(r.pitcher_name))) {
                 favGameIds.add(r.game_id);
               }
             }
@@ -275,11 +267,11 @@ export function FavoritesView({
       const info = pitcherById[pid];
       if (!info) continue;
       if (info.espn_id) favoriteEspnIds.add(info.espn_id);
-      if (info.name) favoriteNames.add(normName(info.name));
+      if (info.name) favoriteNames.add(matchKey(info.name));
     }
     const isFavRow = (r: ParticipationRow) =>
       (r.pitcher_id && favoriteEspnIds.has(r.pitcher_id)) ||
-      favoriteNames.has(normName(r.pitcher_name));
+      favoriteNames.has(matchKey(r.pitcher_name));
 
     for (const game of games) {
       const rows = participationByGame[game.game_id] || [];
@@ -320,13 +312,13 @@ export function FavoritesView({
       const info = pitcherById[pid];
       if (!info) continue;
       if (info.espn_id) favoriteEspnIds.add(info.espn_id);
-      if (info.name) favoriteNames.add(normName(info.name));
+      if (info.name) favoriteNames.add(matchKey(info.name));
     }
     for (const [gid, rows] of Object.entries(participationByGame)) {
       const filtered = rows.filter(
         (r) =>
           (r.pitcher_id && favoriteEspnIds.has(r.pitcher_id)) ||
-          favoriteNames.has(normName(r.pitcher_name)),
+          favoriteNames.has(matchKey(r.pitcher_name)),
       );
       if (filtered.length > 0) out[gid] = filtered;
     }

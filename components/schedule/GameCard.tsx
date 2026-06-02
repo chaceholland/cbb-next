@@ -3,6 +3,7 @@ import { formatGameDate, cn, getEspnLogoUrl } from "@/lib/utils";
 import Image from "next/image";
 import { PitcherDataQualityIssue, GameDataQualityIssue } from "./ScheduleView";
 import { TeamRecord } from "@/lib/stats/types";
+import { cleanPitcherName, matchKey } from "@/lib/pitcher-name";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -106,7 +107,7 @@ function lookupHeadshot(
   pitcherName: string,
 ): string | null {
   if (!headshotsMap) return null;
-  const raw = pitcherName.replace(/ - P /g, " ").trim();
+  const raw = cleanPitcherName(pitcherName);
   const norm = normalizeName(raw);
 
   // 1. Team-scoped exact match
@@ -277,7 +278,7 @@ function PitcherRow({
               isDnp ? "text-slate-400" : "text-slate-100",
             )}
           >
-            {row.pitcher_name.replace(/ - P /g, " ").trim()}
+            {cleanPitcherName(row.pitcher_name)}
           </span>
           {isDnp ? (
             <span className="text-xs font-bold text-slate-500 bg-slate-700 px-1.5 py-0.5 rounded">
@@ -547,18 +548,7 @@ export function GameCard({
   // resolvePitcherId (from ScheduleView) collapses every row to the one
   // canonical synthetic id so favorite-detection and dedup agree; favoriteNames
   // is a last-ditch fallback for rows that don't resolve to a roster pitcher.
-  // MUST stay identical to ScheduleView's matchKey: strip the " - P " token,
-  // drop punctuation, then sort name tokens so first/last order and the
-  // "Last, First" boxscore format all collapse to one key.
-  const matchKey = (s: string | null | undefined) =>
-    (s || "")
-      .replace(/\s+-\s+[A-Z0-9]{1,3}\s+/g, " ")
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, " ")
-      .split(/\s+/)
-      .filter(Boolean)
-      .sort()
-      .join("");
+  // matchKey is imported from @/lib/pitcher-name (shared canonical helper).
 
   const favoriteNames = new Set<string>();
   if (favsByTeam) {
@@ -639,10 +629,16 @@ export function GameCard({
     // Final safety net: collapse any pitcher that still appears more than once
     // (e.g. the same player reaching both the played and DNP lists), keeping the
     // first — which, given the ordering below, is always the played instance.
+    // Dedupe by the CANONICAL pitcher id (resolvePitcherId), not the raw
+    // participation pitcher_id. The same pitcher can arrive as two rows with
+    // different raw ids (ESPN-numeric + NCAA-/D1- synthetic) — keying on raw id
+    // let both survive, rendering a favorited+played pitcher's headshot twice.
+    // rowPid collapses them to one id; matchKey(name) is the fallback for rows
+    // that don't resolve to a roster pitcher.
     const dedupe = (rows: ParticipationRow[]) => {
       const seen = new Set<string>();
       return rows.filter((r) => {
-        const key = r.pitcher_id || matchKey(r.pitcher_name);
+        const key = rowPid(withTeam(r)) || matchKey(r.pitcher_name);
         if (seen.has(key)) return false;
         seen.add(key);
         return true;
@@ -655,9 +651,9 @@ export function GameCard({
       return dedupe(favPlayed);
     }
 
-    // Display order (per user spec): favorited + played, then everyone else who
-    // played, then favorited pitchers who didn't play.
-    return dedupe([...favPlayed, ...nonFavPlayed, ...favDnp]);
+    // Display order (per user spec): favorited + played first, then favorited
+    // pitchers who didn't play, then the rest of the pitchers who played.
+    return dedupe([...favPlayed, ...favDnp, ...nonFavPlayed]);
   }
 
   const sortedHomeRows = buildMergedRows(game.home_team_id, homeParticipation);

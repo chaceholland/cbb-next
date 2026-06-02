@@ -151,6 +151,67 @@ function nameMatches(espnName, ncaaText) {
   return tokens.some((t) => haystack.includes(t));
 }
 
+// Generic tokens that do NOT distinguish one school from another. Without this,
+// "State" matches every "* State", and "Arizona" matches both "Arizona" and
+// "Arizona State" — the root cause of cross-game contest mismatches that dumped
+// foreign pitchers onto the wrong team (e.g. team_id 59 / Arizona State).
+const GENERIC_TOKENS = new Set([
+  "state",
+  "st",
+  "university",
+  "univ",
+  "college",
+  "tech",
+  "mens",
+  "womens",
+  "baseball",
+  "saint",
+]);
+
+/**
+ * Distinctive (school-identifying) tokens for a team name: length >= 4 and not
+ * generic. e.g. "Arizona State Sun Devils" -> ["arizona","devils"].
+ */
+function distinctiveTokens(name) {
+  return tokenize(name).filter((t) => t.length >= 4 && !GENERIC_TOKENS.has(t));
+}
+
+/**
+ * Resolve which side of the game a box-score team label belongs to, using
+ * distinctive-token overlap. Returns "home" | "away" | null. Returns null when
+ * the label matches neither team or matches both equally (ambiguous) — callers
+ * MUST skip rather than guess, which is what prevents mislabeling.
+ */
+function matchLabelToSide(label, game) {
+  const labelTokens = new Set(tokenize(label));
+  const homeD = distinctiveTokens(game.home_name || "");
+  const awayD = distinctiveTokens(game.away_name || "");
+  const homeScore = homeD.filter((t) => labelTokens.has(t)).length;
+  const awayScore = awayD.filter((t) => labelTokens.has(t)).length;
+  if (homeScore > awayScore && homeScore > 0) return "home";
+  if (awayScore > homeScore && awayScore > 0) return "away";
+  return null;
+}
+
+/**
+ * Validate that a fetched contest is actually the game we asked for: every
+ * distinct team label in the box score must distinctively resolve to one of the
+ * game's two teams, and both sides must be represented. If any label resolves to
+ * neither team, we matched the WRONG contest — reject the whole box score.
+ */
+function validateContestTeams(pitchers, game) {
+  const labels = [...new Set(pitchers.map((p) => p.teamLabel).filter(Boolean))];
+  if (labels.length === 0) return false;
+  const sides = new Set();
+  for (const label of labels) {
+    const side = matchLabelToSide(label, game);
+    if (!side) return false; // foreign team present => wrong contest
+    sides.add(side);
+  }
+  // A real two-team box must cover both sides (guards same-token false matches).
+  return sides.has("home") && sides.has("away");
+}
+
 /**
  * Convert ISO date string (YYYY-MM-DD or full ISO) to MM/DD/YYYY for NCAA.
  */
@@ -230,54 +291,80 @@ async function fetchNcaaScoreboard(dateStr) {
 
 /**
  * Parse contest IDs and team names from the scoreboard HTML.
- * Returns array of { contestId, text } where text is the surrounding HTML chunk.
+ * Returns array of { contestId, text } where text is the game's full block.
+ *
+ * NCAA lists each game as: away-team row ... home-team row ... box_score link.
+ * The away team sits ~2000 chars before the link, so a fixed back-window only
+ * captured the home team — which let single-team token overlap match the WRONG
+ * contest. Instead, slice from the PREVIOUS game's link to this one, which
+ * bounds exactly one game block (both teams) with no bleed into neighbors.
  */
 function parseScoreboardContests(html) {
-  const contests = [];
-  // Match links like /contests/12345678/box_score
   const linkRe = /href="\/contests\/(\d+)\/box_score"/g;
+  const matches = [];
   let match;
   while ((match = linkRe.exec(html)) !== null) {
-    const contestId = match[1];
-    // Grab surrounding 800 chars for team name matching
-    const start = Math.max(0, match.index - 600);
-    const end = Math.min(html.length, match.index + 200);
-    contests.push({ contestId, text: html.slice(start, end) });
+    // Dedupe repeated links for the same contest (keep first occurrence)
+    if (matches.length && matches[matches.length - 1].contestId === match[1])
+      continue;
+    matches.push({
+      contestId: match[1],
+      idx: match.index,
+      end: linkRe.lastIndex,
+    });
+  }
+  const contests = [];
+  for (let i = 0; i < matches.length; i++) {
+    const cur = matches[i];
+    // Start at the previous distinct game's link end, capped to ~3000 chars back
+    const prevEnd = i > 0 ? matches[i - 1].end : 0;
+    const start = Math.max(prevEnd, cur.idx - 3000);
+    contests.push({
+      contestId: cur.contestId,
+      text: html.slice(start, cur.idx + 200),
+    });
   }
   return contests;
 }
 
-/**
- * Find the NCAA contest ID for a game given team names.
- */
-async function findNcaaContest(game) {
-  const html = await fetchNcaaScoreboard(game.date);
+/** Best both-team distinctive match within one date's scoreboard, or null. */
+async function findContestOnDate(dateStr, homeD, awayD) {
+  const html = await fetchNcaaScoreboard(dateStr);
   const contests = parseScoreboardContests(html);
-
   if (contests.length === 0) return null;
-
+  let best = null;
   for (const { contestId, text } of contests) {
-    const homeMatch = nameMatches(game.home_name || "", text);
-    const awayMatch = nameMatches(game.away_name || "", text);
-    if (homeMatch && awayMatch) return contestId;
-  }
-
-  // Looser pass: match just one team if scoreboard is sparse
-  for (const { contestId, text } of contests) {
-    const homeMatch = nameMatches(game.home_name || "", text);
-    const awayMatch = nameMatches(game.away_name || "", text);
-    if (homeMatch || awayMatch) {
-      // Require at least one distinctive token match, not just short words
-      const homeTokens = tokenize(game.home_name || "");
-      const awayTokens = tokenize(game.away_name || "");
-      const haystack = text.toLowerCase();
-      const strongMatch =
-        homeTokens.some((t) => t.length > 4 && haystack.includes(t)) ||
-        awayTokens.some((t) => t.length > 4 && haystack.includes(t));
-      if (strongMatch) return contestId;
+    const haystack = text.toLowerCase();
+    const homeScore = homeD.filter((t) => haystack.includes(t)).length;
+    const awayScore = awayD.filter((t) => haystack.includes(t)).length;
+    if (homeScore > 0 && awayScore > 0) {
+      const score = homeScore + awayScore;
+      if (!best || score > best.score) best = { contestId, score };
     }
   }
+  return best ? best.contestId : null;
+}
 
+/**
+ * Find the NCAA contest ID for a game given team names.
+ *
+ * Requires BOTH teams to appear via DISTINCTIVE tokens (the old "match either
+ * team" pass matched the wrong contest on shared/generic tokens). Tries the
+ * game's UTC date and the prior day, because late-night games stored in UTC
+ * (e.g. 01:35Z = previous evening US time) fall on the prior NCAA game_date.
+ * The prior-day attempt is safe: a wrong date can't yield a both-team match.
+ */
+async function findNcaaContest(game) {
+  const homeD = distinctiveTokens(game.home_name || "");
+  const awayD = distinctiveTokens(game.away_name || "");
+  if (homeD.length === 0 || awayD.length === 0) return null; // can't disambiguate
+
+  const base = new Date(game.date);
+  const prior = new Date(base.getTime() - 24 * 60 * 60 * 1000);
+  for (const d of [base.toISOString(), prior.toISOString()]) {
+    const contestId = await findContestOnDate(d, homeD, awayD);
+    if (contestId) return contestId;
+  }
   return null;
 }
 
@@ -377,42 +464,32 @@ function parseNcaaPitchers(html) {
 }
 
 /**
- * Match NCAA pitcher rows to team IDs using the team label vs game team names.
+ * Match NCAA pitcher rows to team IDs using distinctive-token resolution of the
+ * box-score team label against the game's two teams. Pitchers whose label cannot
+ * be confidently resolved to exactly one side are SKIPPED (never guessed onto the
+ * home team), which is what prevents opponents from being mislabeled.
  */
 function assignTeamIds(pitchers, game) {
-  const homeName = game.home_name || "";
-  const awayName = game.away_name || "";
-
-  return pitchers.map((p) => {
-    const label = p.teamLabel;
-    const homeScore = tokenize(homeName).filter((t) =>
-      label.toLowerCase().includes(t),
-    ).length;
-    const awayScore = tokenize(awayName).filter((t) =>
-      label.toLowerCase().includes(t),
-    ).length;
-
-    let teamId;
-    if (homeScore >= awayScore) {
-      teamId = game.home_team_id;
-    } else {
-      teamId = game.away_team_id;
-    }
+  const rows = [];
+  for (const p of pitchers) {
+    const side = matchLabelToSide(p.teamLabel || "", game);
+    if (!side) continue; // ambiguous/foreign label -> skip rather than guess
+    const teamId = side === "home" ? game.home_team_id : game.away_team_id;
+    if (teamId == null) continue;
 
     // Generate a synthetic pitcher_id since we don't have ESPN athlete IDs
     const normalizedName = p.pitcherName
       .toLowerCase()
       .replace(/[^a-z0-9]/g, "");
-    const pitcherId = `NCAA-${game.game_id}-${teamId}-${normalizedName}`;
-
-    return {
+    rows.push({
       game_id: game.game_id,
       team_id: teamId,
-      pitcher_id: pitcherId,
+      pitcher_id: `NCAA-${game.game_id}-${teamId}-${normalizedName}`,
       pitcher_name: p.pitcherName,
       stats: p.stats,
-    };
-  });
+    });
+  }
+  return rows;
 }
 
 // ─── Database helpers ─────────────────────────────────────────────────────────
@@ -595,13 +672,35 @@ async function ncaaFallback(options = {}) {
         continue;
       }
 
-      // Step 3: Assign team IDs and save
+      // Step 3: Validate the contest actually matches this game before saving.
+      // findNcaaContest can match the wrong contest (loose token overlap); the
+      // gate rejects any box whose team labels don't both resolve to this game.
+      if (!validateContestTeams(pitchers, game)) {
+        if (verbose)
+          console.log(
+            `⚠️  Contest ${contestId} teams don't match game — rejecting`,
+          );
+        await updateScrapeStatus(game.game_id, "ncaa_no_data");
+        results.noData++;
+        results.games.push({
+          game_id: game.game_id,
+          matchup,
+          status: "team_mismatch",
+          contestId,
+        });
+        await sleep(delayMs);
+        continue;
+      }
+
+      // Step 4: Assign team IDs and save (rows with unresolved labels skipped)
       const rows = assignTeamIds(pitchers, game);
       const { success } = await savePitchers(rows);
       await updateScrapeStatus(game.game_id, "ncaa_has_data");
 
       if (verbose)
-        console.log(`✅ ${pitchers.length} pitchers (contest ${contestId})`);
+        console.log(
+          `✅ ${rows.length}/${pitchers.length} pitchers saved (contest ${contestId})`,
+        );
       results.successful++;
       results.totalPitchers += success;
       results.games.push({
@@ -682,7 +781,17 @@ async function main() {
   process.exit(results.errors > results.successful ? 1 : 0);
 }
 
-export { ncaaFallback };
+export {
+  ncaaFallback,
+  findNcaaContest,
+  fetchNcaaBoxScore,
+  parseNcaaPitchers,
+  assignTeamIds,
+  validateContestTeams,
+  matchLabelToSide,
+  tokenize,
+  closeBrowser,
+};
 
 // Only run CLI main when executed directly, not when imported
 if (process.argv[1] === new URL(import.meta.url).pathname) {

@@ -14,6 +14,7 @@ import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
 import { cn } from "@/lib/utils";
 import { getTeamRecord } from "@/lib/stats/team-records";
 import { TeamRecord } from "@/lib/stats/types";
+import { matchKey, headshotKey } from "@/lib/pitcher-name";
 
 export type PitcherDataQualityIssue = {
   pitcherKey: string; // game_id:pitcher_id or game_id:pitcher_name
@@ -33,28 +34,8 @@ export type GameDataQualityIssue = {
   customNote?: string;
 };
 
-// Strip the " - P " position token the scraper embeds inside participation
-// names (e.g. "Aidan - P King" → "Aidan King") so boxscore names normalize the
-// same way as clean roster names. Mirrors the strip in GameCard's lookupHeadshot.
-// Require whitespace on BOTH sides of the token so real hyphenated surnames
-// (e.g. "Lugo-Canchola") are never touched.
-const cleanPitcherName = (s: string | null | undefined) =>
-  (s || "")
-    .replace(/\s+-\s+[A-Z0-9]{1,3}\s+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-// Order-insensitive name key: strips the " - P " token, drops punctuation, then
-// sorts the name tokens so "Aidan King", "Aidan - P King" and "King, Aidan" all
-// collapse to the same value.
-const matchKey = (s: string | null | undefined) =>
-  cleanPitcherName(s)
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .sort()
-    .join("");
+// cleanPitcherName / matchKey / headshotKey are imported from @/lib/pitcher-name
+// (shared canonical helpers — do not redefine locally).
 
 export function ScheduleView({
   favorites,
@@ -338,16 +319,10 @@ export function ScheduleView({
           if (pd.length < 1000) break;
           pitcherPage++;
         }
-        const normName = (s: string) =>
-          s
-            .toLowerCase()
-            .replace(/[^a-z0-9\s]/g, "")
-            .replace(/\s+/g, " ")
-            .trim();
         const hMap: Record<string, string | null> = {};
         allPitchers.forEach((p) => {
           if (p.headshot) {
-            const norm = normName(p.name);
+            const norm = headshotKey(p.name);
             // Plain name key (e.g. "john smith")
             hMap[norm] = p.headshot;
             // Team-scoped key (e.g. "414:john smith")
@@ -824,15 +799,13 @@ export function ScheduleView({
     // Reconcile favorites↔participation by espn_id where available,
     // falling back to normalized name (walk-ons without espn_id backfill).
     if (pitcherFilter !== "favorites-or-played" && pitcherFilter !== "all") {
-      const normName = (s: string | null | undefined) =>
-        (s || "").toLowerCase().replace(/[^a-z]/g, "");
       const favoriteEspnIds = new Set<string>();
       const favoriteNames = new Set<string>();
       for (const pid of favorites) {
         const info = pitcherById[pid];
         if (!info) continue;
         if (info.espn_id) favoriteEspnIds.add(info.espn_id);
-        if (info.name) favoriteNames.add(normName(info.name));
+        if (info.name) favoriteNames.add(matchKey(info.name));
       }
       result = result.filter((g) => {
         const gameParticipation = participationByGame[g.game_id] || [];
@@ -842,7 +815,7 @@ export function ScheduleView({
           return gameParticipation.some(
             (row) =>
               (row.pitcher_id && favoriteEspnIds.has(row.pitcher_id)) ||
-              favoriteNames.has(normName(row.pitcher_name)),
+              favoriteNames.has(matchKey(row.pitcher_name)),
           );
         } else if (pitcherFilter === "played-only") {
           return gameParticipation.length > 0;
