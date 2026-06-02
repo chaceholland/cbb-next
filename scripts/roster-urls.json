@@ -1,0 +1,16 @@
+[
+  { "team_id": "84", "name": "Western Kentucky Hilltoppers", "url": "https://wkusports.com/sports/baseball/roster/2026" },
+  { "team_id": "98", "name": "Creighton Bluejays", "url": "https://gocreighton.com/sports/baseball/roster" },
+  { "team_id": "312", "name": "Xavier Musketeers", "url": "https://goxavier.com/sports/baseball/roster" },
+  { "team_id": "142", "name": "UC Irvine Anteaters", "url": "https://ucirvinesports.com/sports/baseball/roster" },
+  { "team_id": "412", "name": "Oakland Golden Grizzlies", "url": "https://goldengrizzlies.com/sports/baseball/roster" },
+  { "team_id": "74", "name": "Stetson Hatters", "url": "https://gohatters.com/sports/baseball/roster" },
+  { "team_id": "394", "name": "Murray State Racers", "url": "https://goracers.com/sports/baseball/roster" },
+  { "team_id": "455", "name": "Utah Valley Wolverines", "url": "https://gouvu.com/sports/baseball/roster" },
+  { "team_id": "165", "name": "Cal State Fullerton Titans", "url": "https://fullertontitans.com/sports/baseball/roster" },
+  { "team_id": "125", "name": "UT Arlington Mavericks", "url": "https://utamavs.com/sports/baseball/roster" },
+  { "team_id": "174", "name": "Loyola Marymount Lions", "url": "https://lmulions.com/sports/baseball/roster" },
+  { "team_id": "270", "name": "Wright State Raiders", "url": "https://wsuraiders.com/sports/baseball/roster" },
+  { "team_id": "180", "name": "Charlotte 49ers", "url": "https://charlotte49ers.com/sports/baseball/roster" },
+  { "team_id": "348", "name": "Eastern Kentucky Colonels", "url": "https://ekusports.com/sports/baseball/roster" }
+]
