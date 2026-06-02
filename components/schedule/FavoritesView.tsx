@@ -13,11 +13,15 @@ type SortMode = "date" | "favCount" | "favIP";
 interface FavoritesViewProps {
   favorites: string[];
   toggleFavorite: (id: string) => void;
+  favoriteGameIds: string[];
+  toggleFavoriteGame: (gameId: string) => void;
 }
 
 export function FavoritesView({
   favorites,
   toggleFavorite,
+  favoriteGameIds,
+  toggleFavoriteGame,
 }: FavoritesViewProps) {
   const [teams, setTeams] = useState<Record<string, CbbTeam>>({});
   const [pitcherById, setPitcherById] = useState<
@@ -42,10 +46,6 @@ export function FavoritesView({
   const [sortMode, setSortMode] = useState<SortMode>("date");
   const [favoriteGamesOnly, setFavoriteGamesOnly] = useState(false);
   const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
-  const [favoriteGameIds, setFavoriteGameIds] = useLocalStorage<string[]>(
-    "cbb-favorite-games",
-    [],
-  );
   const [watchedGameIds, setWatchedGameIds] = useLocalStorage<string[]>(
     "cbb-watched-games",
     [],
@@ -337,17 +337,6 @@ export function FavoritesView({
   }, [participationByGame, favorites, pitcherById]);
 
   const trackedTeamIds = useMemo(() => new Set(Object.keys(teams)), [teams]);
-
-  const toggleFavoriteGame = useCallback(
-    (gameId: string) => {
-      setFavoriteGameIds((prev) =>
-        prev.includes(gameId)
-          ? prev.filter((id) => id !== gameId)
-          : [...prev, gameId],
-      );
-    },
-    [setFavoriteGameIds],
-  );
 
   const toggleWatchedGame = useCallback(
     (gameId: string) => {

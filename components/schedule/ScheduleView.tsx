@@ -40,9 +40,13 @@ export type GameDataQualityIssue = {
 export function ScheduleView({
   favorites,
   toggleFavorite: toggleFavoriteProp,
+  favoriteGameIds,
+  toggleFavoriteGame,
 }: {
   favorites: string[];
   toggleFavorite: (id: string) => void;
+  favoriteGameIds: string[];
+  toggleFavoriteGame: (gameId: string) => void;
 }) {
   const [games, setGames] = useState<CbbGame[]>([]);
   const [teams, setTeams] = useState<Record<string, CbbTeam>>({});
@@ -54,10 +58,6 @@ export function ScheduleView({
   const favoritePitcherIds = useMemo(() => new Set(favorites), [favorites]);
   const [favoriteTeamIds, setFavoriteTeamIds] = useState<Set<string>>(
     new Set(),
-  );
-  const [favoriteGameIds, setFavoriteGameIds] = useLocalStorage<string[]>(
-    "cbb-favorite-games",
-    [],
   );
   const [watchedGameIds, setWatchedGameIds] = useLocalStorage<string[]>(
     "cbb-watched-games",
@@ -941,19 +941,6 @@ export function ScheduleView({
       return next;
     });
   };
-
-  const toggleFavoriteGame = useCallback(
-    (gameId: string) => {
-      setFavoriteGameIds((prev) => {
-        if (prev.includes(gameId)) {
-          return prev.filter((id) => id !== gameId);
-        } else {
-          return [...prev, gameId];
-        }
-      });
-    },
-    [setFavoriteGameIds],
-  );
 
   const toggleWatchedGame = useCallback(
     (gameId: string) => {

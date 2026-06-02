@@ -13,12 +13,14 @@ import { registerNavigationCommands } from "@/lib/commands/navigation";
 import { registerHelpCommands } from "@/lib/commands/help";
 import { useKeyboard } from "@/lib/hooks/useKeyboard";
 import { useFavorites } from "@/lib/hooks/useFavorites";
+import { useGameFavorites } from "@/lib/hooks/useGameFavorites";
 
 type Tab = "schedule" | "rosters" | "analytics" | "favorites";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
   const { favorites, toggleFavorite } = useFavorites();
+  const { favoriteGameIds, toggleFavoriteGame } = useGameFavorites();
   const [activateFavorites, setActivateFavorites] = useState(false);
 
   // Sync tab with URL hash
@@ -72,8 +74,17 @@ export default function Home() {
       <HeroSection />
       <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="min-h-screen bg-slate-900">
-        <div className={`mx-auto px-4 py-8 ${activeTab === "schedule" ? "max-w-[1600px]" : "max-w-7xl"}`}>
-          {activeTab === "schedule" && <ScheduleView favorites={favorites} toggleFavorite={toggleFavorite} />}
+        <div
+          className={`mx-auto px-4 py-8 ${activeTab === "schedule" ? "max-w-[1600px]" : "max-w-7xl"}`}
+        >
+          {activeTab === "schedule" && (
+            <ScheduleView
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              favoriteGameIds={favoriteGameIds}
+              toggleFavoriteGame={toggleFavoriteGame}
+            />
+          )}
           {activeTab === "rosters" && (
             <RosterView
               activateFavorites={activateFavorites}
@@ -87,6 +98,8 @@ export default function Home() {
             <FavoritesView
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              favoriteGameIds={favoriteGameIds}
+              toggleFavoriteGame={toggleFavoriteGame}
             />
           )}
         </div>
