@@ -55,7 +55,13 @@ async function main() {
     const urls = await fetchColumn(t, c);
     for (const u of urls) {
       try {
-        hosts.add(new URL(u).hostname);
+        const parsed = new URL(u);
+        // Only http(s) hosts with a non-empty hostname belong in remotePatterns.
+        // data:/blob:/relative URLs yield an empty hostname which Next.js rejects
+        // with "Expected a non-empty string", failing the whole build.
+        if ((parsed.protocol === 'http:' || parsed.protocol === 'https:') && parsed.hostname) {
+          hosts.add(parsed.hostname);
+        }
       } catch {
         /* skip */
       }

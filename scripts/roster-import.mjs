@@ -42,7 +42,7 @@ const urls = JSON.parse(
 );
 
 async function headOk(url) {
-  if (!url) return false;
+  if (!url || !/^https?:\/\//i.test(url)) return false; // reject data:/blob:/relative placeholders
   try {
     const r = await fetch(url, {
       method: "GET",
