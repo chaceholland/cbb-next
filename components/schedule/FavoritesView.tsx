@@ -40,6 +40,7 @@ export function FavoritesView({
   >({});
   const [loading, setLoading] = useState(true);
   const [sortMode, setSortMode] = useState<SortMode>("date");
+  const [favoriteGamesOnly, setFavoriteGamesOnly] = useState(false);
   const [selectedGame, setSelectedGame] = useState<CbbGame | null>(null);
   const [favoriteGameIds, setFavoriteGameIds] = useLocalStorage<string[]>(
     "cbb-favorite-games",
@@ -301,6 +302,16 @@ export function FavoritesView({
     return arr;
   }, [favGamesComputed, sortMode]);
 
+  // When the "Favorited games only" toggle is on, narrow the list to games
+  // the user has hearted (cbb-favorite-games), not just games containing a
+  // favorited pitcher.
+  const displayedFavGames = useMemo(() => {
+    if (!favoriteGamesOnly) return sortedFavGames;
+    return sortedFavGames.filter(({ game }) =>
+      favoriteGameIds.includes(game.game_id),
+    );
+  }, [sortedFavGames, favoriteGamesOnly, favoriteGameIds]);
+
   // Pre-filter participation per game so GameCard only ever sees rows
   // belonging to favorited pitchers — the Favorites tab must show the
   // intersection (favorited AND pitched), never anyone else.
@@ -372,11 +383,44 @@ export function FavoritesView({
         <h2 className="text-2xl font-extrabold text-slate-100">
           Favorite Pitcher Games
           <span className="ml-2 text-sm font-normal text-slate-400">
-            ({sortedFavGames.length}{" "}
-            {sortedFavGames.length === 1 ? "game" : "games"})
+            ({displayedFavGames.length}{" "}
+            {displayedFavGames.length === 1 ? "game" : "games"})
           </span>
         </h2>
         <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setFavoriteGamesOnly((v) => !v)}
+            aria-pressed={favoriteGamesOnly}
+            title="Show only games you've favorited (♥)"
+            className={
+              "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 " +
+              (favoriteGamesOnly
+                ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-500/30"
+                : "bg-slate-700 text-slate-200 hover:bg-slate-600 border border-slate-600")
+            }
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="w-4 h-4"
+              fill={favoriteGamesOnly ? "currentColor" : "none"}
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+            Favorited games only
+            <span
+              className={
+                "ml-0.5 inline-flex items-center justify-center min-w-[1.25rem] px-1.5 py-0.5 rounded-full text-xs font-bold " +
+                (favoriteGamesOnly
+                  ? "bg-white/25 text-white"
+                  : "bg-slate-800 text-slate-300")
+              }
+            >
+              {favoriteGameIds.length}
+            </span>
+          </button>
           <label htmlFor="fav-sort" className="text-sm text-slate-400">
             Sort by:
           </label>
@@ -393,13 +437,15 @@ export function FavoritesView({
         </div>
       </div>
 
-      {sortedFavGames.length === 0 ? (
+      {displayedFavGames.length === 0 ? (
         <p className="text-center text-slate-500 py-8">
-          No games yet with pitching data for your favorites.
+          {favoriteGamesOnly
+            ? "You haven't favorited any of these games yet. Tap the ♥ on a game to add it."
+            : "No games yet with pitching data for your favorites."}
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {sortedFavGames.map(({ game, favCount, favIP }) => (
+          {displayedFavGames.map(({ game, favCount, favIP }) => (
             <div key={game.game_id} className="space-y-1">
               <div className="flex items-center gap-3 px-2 text-xs">
                 <span className="font-semibold text-amber-300">
