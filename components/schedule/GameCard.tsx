@@ -3,6 +3,7 @@ import { formatGameDate, cn, getEspnLogoUrl } from "@/lib/utils";
 import Image from "next/image";
 import { PitcherDataQualityIssue, GameDataQualityIssue } from "./ScheduleView";
 import { TeamRecord } from "@/lib/stats/types";
+import { cleanPitcherName, matchKey } from "@/lib/pitcher-name";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 
@@ -106,7 +107,7 @@ function lookupHeadshot(
   pitcherName: string,
 ): string | null {
   if (!headshotsMap) return null;
-  const raw = pitcherName.replace(/ - P /g, " ").trim();
+  const raw = cleanPitcherName(pitcherName);
   const norm = normalizeName(raw);
 
   // 1. Team-scoped exact match
@@ -277,7 +278,7 @@ function PitcherRow({
               isDnp ? "text-slate-400" : "text-slate-100",
             )}
           >
-            {row.pitcher_name.replace(/ - P /g, " ").trim()}
+            {cleanPitcherName(row.pitcher_name)}
           </span>
           {isDnp ? (
             <span className="text-xs font-bold text-slate-500 bg-slate-700 px-1.5 py-0.5 rounded">
@@ -547,18 +548,7 @@ export function GameCard({
   // resolvePitcherId (from ScheduleView) collapses every row to the one
   // canonical synthetic id so favorite-detection and dedup agree; favoriteNames
   // is a last-ditch fallback for rows that don't resolve to a roster pitcher.
-  // MUST stay identical to ScheduleView's matchKey: strip the " - P " token,
-  // drop punctuation, then sort name tokens so first/last order and the
-  // "Last, First" boxscore format all collapse to one key.
-  const matchKey = (s: string | null | undefined) =>
-    (s || "")
-      .replace(/\s+-\s+[A-Z0-9]{1,3}\s+/g, " ")
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, " ")
-      .split(/\s+/)
-      .filter(Boolean)
-      .sort()
-      .join("");
+  // matchKey is imported from @/lib/pitcher-name (shared canonical helper).
 
   const favoriteNames = new Set<string>();
   if (favsByTeam) {
