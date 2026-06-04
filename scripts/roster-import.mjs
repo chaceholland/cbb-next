@@ -152,6 +152,7 @@ for (const team of urls) {
         headshot: a.headshot_url,
         year: a.year_class || null,
         hometown: (a.hometown || "").slice(0, 120),
+        number: a.number || a.jersey_number || null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: "pitcher_id" },
