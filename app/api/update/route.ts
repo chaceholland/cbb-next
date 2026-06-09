@@ -776,6 +776,9 @@ async function updateGameCompletionStatus(
   const { data: incompleteGames, error: incErr } = await supabase
     .from("cbb_games")
     .select("*")
+    // Skip games we've given up on (see 404 handling below) so the loop
+    // doesn't re-fetch phantom "if-necessary" postseason events every run.
+    .eq("completion_abandoned", false)
     .eq("completed", false)
     .lte("date", new Date().toISOString())
     .order("date", { ascending: false });
@@ -808,6 +811,37 @@ async function updateGameCompletionStatus(
     try {
       const url = `https://site.api.espn.com/apis/site/v2/sports/baseball/college-baseball/summary?event=${game.game_id}`;
       const response = await fetch(url);
+
+      // A 404 means ESPN has no such event. The common case is an
+      // "if-necessary" postseason game (best-of-3 Game 3) that ESPN scheduled
+      // a placeholder for but was never played once the series clinched 2-0.
+      // These never resolve, so without this they'd be re-checked every cron
+      // run forever, eventually starving the 5-minute budget. After 2 such
+      // 404s on a game already >2 days old, abandon it so it drops out of the
+      // incomplete-games query above. A real game ESPN simply hasn't posted
+      // yet returns 200 (state "pre"), not 404, so this won't strand live games.
+      if (response.status === 404) {
+        const count = (game.completion_404_count ?? 0) + 1;
+        const ageDays =
+          (Date.now() - new Date(game.date).getTime()) / 86_400_000;
+        const abandon = count >= 2 && ageDays > 2;
+        await supabase
+          .from("cbb_games")
+          .update({
+            completion_404_count: count,
+            ...(abandon && { completion_abandoned: true }),
+          })
+          .eq("game_id", game.game_id);
+        if (abandon) {
+          console.log(
+            `[api/update] Abandoned phantom game ${game.game_id} (${game.away_name} @ ${game.home_name}, ${count} 404s, ${ageDays.toFixed(0)}d old)`,
+          );
+        }
+        if (i < trackedIncomplete.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
+        continue;
+      }
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
