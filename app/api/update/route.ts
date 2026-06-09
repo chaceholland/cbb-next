@@ -952,6 +952,15 @@ export async function GET(request: Request) {
   const supabase = getSupabaseAdmin();
   const MAX_SCRAPE_ATTEMPTS = 5;
   const DELAY_MS = 300;
+  // Wall-clock budget. maxDuration is 300s; if the per-game scrape loop runs
+  // past this it gets hard-killed at 300s, leaving the sync_log row stuck on
+  // "started" and never writing a clean result (this is what silently dropped
+  // a day's games during the postseason). Every phase runs newest-first, so
+  // stopping at the budget always means the freshest games are already done
+  // and only the stale no-data backlog tail is deferred to the next run / the
+  // local run-update.mjs backup. 250s leaves ~50s of headroom for cleanup.
+  const HANDLER_START = Date.now();
+  const TIME_BUDGET_MS = 250_000;
 
   // Heartbeat row — written before the long-running work begins so a Vercel
   // 300s timeout still leaves an audit trail in cbb_sync_log. Clean exits
@@ -983,6 +992,7 @@ export async function GET(request: Request) {
     errors: 0,
     sidearmFallback: 0,
     skippedMaxAttempts: 0,
+    deferredToBudget: 0,
     totalPitchers: 0,
     completionUpdate: { checked: 0, completed: 0, errors: 0 },
     scheduleUpsert: { daysChecked: 0, gamesSeen: 0, gamesInserted: 0 },
@@ -1128,6 +1138,16 @@ export async function GET(request: Request) {
 
     // 7. Scrape each game: ESPN first, then SIDEARM school site fallback
     for (let i = 0; i < gamesToScrape.length; i++) {
+      // Stop before the 300s hard kill so we always exit cleanly and log a
+      // result. Games are ordered newest-first, so anything deferred here is
+      // the old no-data backlog, never current games.
+      if (Date.now() - HANDLER_START > TIME_BUDGET_MS) {
+        results.deferredToBudget = gamesToScrape.length - i;
+        console.log(
+          `[api/update] Time budget reached after ${i}/${gamesToScrape.length} games; stopping cleanly, ${results.deferredToBudget} deferred to next run.`,
+        );
+        break;
+      }
       const game = gamesToScrape[i];
       const matchup = `${game.away_name} @ ${game.home_name}`;
       const currentAttempts = (game.scrape_attempts || 0) + 1;
@@ -1297,7 +1317,9 @@ export async function GET(request: Request) {
       status: hasErrors ? "error" : "success",
       error_message: hasErrors
         ? `${results.errors} game(s) failed out of ${results.total}`
-        : null,
+        : results.deferredToBudget > 0
+          ? `ok; ${results.deferredToBudget} stale game(s) deferred to next run (time budget)`
+          : null,
     });
 
     console.log(
