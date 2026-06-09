@@ -236,14 +236,28 @@ export function FavoritesView({
         const partByGame: Record<string, ParticipationRow[]> = {};
         for (let i = 0; i < gameIdList.length; i += chunk) {
           const slice = gameIdList.slice(i, i + chunk);
-          const { data } = await supabase
-            .from("cbb_pitcher_participation")
-            .select("*")
-            .in("game_id", slice);
-          (data || []).forEach((row: ParticipationRow) => {
-            if (!partByGame[row.game_id]) partByGame[row.game_id] = [];
-            partByGame[row.game_id].push(row);
-          });
+          // PostgREST caps each response at db_max_rows (1000). A 200-game
+          // chunk has ~1600 participation rows, so a single .in() silently
+          // truncates — and because rows come back in physical (insertion)
+          // order, the newest games (e.g. this weekend's) are exactly the ones
+          // dropped, making them vanish from the Favorites list. Page through
+          // each chunk with a stable order so every game's rows are loaded.
+          const pageSize = 1000;
+          for (let from = 0; ; from += pageSize) {
+            const { data } = await supabase
+              .from("cbb_pitcher_participation")
+              .select("*")
+              .in("game_id", slice)
+              .order("game_id", { ascending: true })
+              .order("pitcher_id", { ascending: true })
+              .range(from, from + pageSize - 1);
+            if (!data || data.length === 0) break;
+            (data as ParticipationRow[]).forEach((row) => {
+              if (!partByGame[row.game_id]) partByGame[row.game_id] = [];
+              partByGame[row.game_id].push(row);
+            });
+            if (data.length < pageSize) break;
+          }
         }
         setParticipationByGame(partByGame);
       } catch (e) {
