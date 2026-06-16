@@ -2,6 +2,8 @@
 
 _Project instructions for Claude Code. Global rules: `~/.claude/CLAUDE.md`. Deep reference: `~/claude-shared/memory/`._
 
+**Accounts (canonical — do not deviate):** GitHub **`chaceholland`** · commit & push as `Chace Holland <chace_holland@yahoo.com>` · Vercel team **`chace-holland-4133's projects`**. Never commit as gmail / `mchaceholland-hub`, and never set a local `user.email` override. Verify: `git config user.email` + `gh auth status`. (Full detail: `~/.claude/CLAUDE.md`.)
+
 **Purpose:** D1 college-baseball pitcher participation tracker. **This (`cbb-next`) is the current Next.js app** — `~/Desktop/CBB` is the retired older version. Repo: `chaceholland/cbb-next`.
 
 **Stack:** Next.js 16.1.6 + React 19, Tailwind v4. Vercel + Cron. Supabase P1 `dtnozcqkuzhjmjvsfjqk`.
