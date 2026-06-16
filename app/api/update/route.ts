@@ -2,6 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 // @ts-ignore — plain JS ESM module
 import { requireInSeason } from "../_lib/seasonGuard.js";
+// @ts-ignore — plain JS ESM module (no .d.ts); soft-disabled until NTFY_TOPIC is set
+import { alert, shouldAlertWarn } from "../_lib/alert.js";
 
 export const maxDuration = 300; // 5 minutes
 export const dynamic = "force-dynamic";
@@ -1361,10 +1363,23 @@ export async function GET(request: Request) {
       `[api/update] Done: ${results.successful} success (${results.sidearmFallback} via SIDEARM), ${results.noData} no-data, ${results.errors} errors, ${results.skippedMaxAttempts} skipped, ${results.totalPitchers} pitchers`,
     );
 
+    // Normalize CBB's result shape to the generic alert fields (errors/total/
+    // successful) so shouldAlertWarn() is meaningful for this tracker.
+    if (
+      shouldAlertWarn({
+        attempted: results.total,
+        ok: results.successful,
+        failed: results.errors,
+      })
+    ) {
+      await alert("warn", results);
+    }
+
     return NextResponse.json({ ok: true, results });
   } catch (error) {
     const message = (error as Error).message || String(error);
     console.error(`[api/update] Fatal error: ${message}`);
+    await alert("error", { message, ...results });
 
     try {
       await supabase.from("cbb_sync_log").insert({
