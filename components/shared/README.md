@@ -15,6 +15,10 @@ Peer deps the folder assumes: `react`, `clsx`, `tailwind-merge`, Tailwind 4.
 - `StatusChip.tsx` — presentational status pill built on the tokens.
 - `DataFreshnessChip.tsx` — "Updated 2h ago · 70% coverage" pill; green/amber/slate by
   freshness. Feed it the latest `*_sync_log` time + optional coverage %.
+- `SectionHeader.tsx` — generic section header (title + optional count pill / subtitle /
+  right-aligned action slot).
+- `StatCard.tsx` — generic stat tile (label, big value, optional hint/icon/tone) for KPI
+  rows, analytics tiles, and data-health summaries.
 - `index.ts` — barrel export.
 
 ## Usage

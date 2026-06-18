@@ -2,6 +2,8 @@
 // other React trackers (MLB, swim). See README.md in this folder.
 export { cn } from "./cn";
 export { StatusChip, type StatusChipProps } from "./StatusChip";
+export { SectionHeader, type SectionHeaderProps } from "./SectionHeader";
+export { StatCard, type StatCardProps } from "./StatCard";
 export {
   DataFreshnessChip,
   type DataFreshnessChipProps,
