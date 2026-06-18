@@ -1,16 +1,31 @@
 'use client';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
+import { cn } from './cn';
 
-type Tab = 'schedule' | 'rosters' | 'analytics' | 'favorites';
-
-interface Props {
-  activeTab: Tab;
-  onTabChange: (tab: Tab) => void;
+export interface TabItem<T extends string = string> {
+  id: T;
+  label: string;
 }
 
-export function TabBar({ activeTab, onTabChange }: Props) {
+export interface TabBarProps<T extends string = string> {
+  items: TabItem<T>[];
+  activeTab: T;
+  onTabChange: (tab: T) => void;
+  /**
+   * Tailwind gradient classes for the active-tab pill. Defaults to CBB's brand
+   * gradient so existing callers stay pixel-identical. Per-app callers can
+   * override once the suite settles on a shared identity (Pass 3 §C).
+   */
+  activeGradient?: string;
+}
+
+export function TabBar<T extends string = string>({
+  items,
+  activeTab,
+  onTabChange,
+  activeGradient = 'from-[#1a73e8] to-[#ea4335]',
+}: TabBarProps<T>) {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -22,13 +37,6 @@ export function TabBar({ activeTab, onTabChange }: Props) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const tabs = [
-    { id: 'schedule' as const, label: '📅 Schedule' },
-    { id: 'rosters' as const, label: '⚾ Rosters' },
-    { id: 'analytics' as const, label: '📊 Analytics' },
-    { id: 'favorites' as const, label: '★ Favorites' },
-  ];
-
   return (
     <div className={cn(
       'sticky top-16 z-40 transition-shadow duration-200',
@@ -37,7 +45,7 @@ export function TabBar({ activeTab, onTabChange }: Props) {
       <div className="bg-slate-900 py-4">
         <div className="flex justify-center">
           <div className="flex gap-2 p-1 bg-slate-800 rounded-xl w-fit">
-            {tabs.map(tab => (
+            {items.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => onTabChange(tab.id)}
@@ -49,7 +57,7 @@ export function TabBar({ activeTab, onTabChange }: Props) {
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute inset-0 rounded-lg bg-gradient-to-r from-[#1a73e8] to-[#ea4335]"
+                    className={cn('absolute inset-0 rounded-lg bg-gradient-to-r', activeGradient)}
                     transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}

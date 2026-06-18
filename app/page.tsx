@@ -1,8 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Navigation } from "@/components/Navigation";
+import { Navigation, TabBar } from "@/components/shared";
 import { HeroSection } from "@/components/HeroSection";
-import { TabBar } from "@/components/TabBar";
 import { ScheduleView } from "@/components/schedule/ScheduleView";
 import { FavoritesView } from "@/components/schedule/FavoritesView";
 import { RosterView } from "@/components/roster/RosterView";
@@ -16,6 +15,13 @@ import { useFavorites } from "@/lib/hooks/useFavorites";
 import { useGameFavorites } from "@/lib/hooks/useGameFavorites";
 
 type Tab = "schedule" | "rosters" | "analytics" | "favorites";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "schedule", label: "📅 Schedule" },
+  { id: "rosters", label: "⚾ Rosters" },
+  { id: "analytics", label: "📊 Analytics" },
+  { id: "favorites", label: "★ Favorites" },
+];
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
@@ -72,7 +78,7 @@ export default function Home() {
         }}
       />
       <HeroSection />
-      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+      <TabBar items={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
       <main className="min-h-screen bg-slate-900">
         <div
           className={`mx-auto px-4 py-8 ${activeTab === "schedule" ? "max-w-[1600px]" : "max-w-7xl"}`}

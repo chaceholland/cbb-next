@@ -1,19 +1,32 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { cn } from '@/lib/utils';
-import { ThemeToggle } from '@/components/shared';
+import { cn } from './cn';
+import { ThemeToggle } from './ThemeToggle';
 
-interface NavigationProps {
+export interface NavigationProps {
   onSearch?: (query: string) => void;
   favoritesCount?: number;
   onFavoritesClick?: () => void;
+  /** Brand mark at left. Defaults to CBB's so existing callers stay pixel-identical. */
+  brand?: { icon: string; title: string };
+  /** Search input placeholder. Defaults to CBB's. */
+  searchPlaceholder?: string;
+  /**
+   * Tailwind gradient classes for the brand text + favorites buttons. Defaults
+   * to CBB's brand gradient; per-app callers override once the suite settles on
+   * a shared identity (Pass 3 §C).
+   */
+  brandGradient?: string;
 }
 
 export function Navigation({
   onSearch,
   favoritesCount = 0,
   onFavoritesClick,
+  brand = { icon: '⚾', title: 'CBB Pitcher Tracker' },
+  searchPlaceholder = 'Search pitchers...',
+  brandGradient = 'from-[#1a73e8] to-[#ea4335]',
 }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [searchValue, setSearchValue] = useState('');
@@ -44,9 +57,9 @@ export function Navigation({
         <div className="flex items-center justify-between h-16">
           {/* Logo/Title */}
           <div className="flex items-center gap-3">
-            <span className="text-2xl" aria-hidden="true">⚾</span>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#1a73e8] to-[#ea4335] bg-clip-text text-transparent">
-              CBB Pitcher Tracker
+            <span className="text-2xl" aria-hidden="true">{brand.icon}</span>
+            <h1 className={cn('text-xl sm:text-2xl font-bold bg-gradient-to-r bg-clip-text text-transparent', brandGradient)}>
+              {brand.title}
             </h1>
           </div>
 
@@ -61,7 +74,7 @@ export function Navigation({
                 type="text"
                 value={searchValue}
                 onChange={handleSearchChange}
-                placeholder="Search pitchers..."
+                placeholder={searchPlaceholder}
                 className={cn(
                   'w-full px-4 py-2 rounded-lg text-sm',
                   'bg-slate-800 border border-slate-600',
@@ -77,7 +90,8 @@ export function Navigation({
               onClick={onFavoritesClick}
               className={cn(
                 'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium',
-                'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white',
+                'bg-gradient-to-r text-white',
+                brandGradient,
                 'hover:opacity-90 transition-opacity duration-200',
                 'shadow-md shadow-blue-500/20'
               )}
@@ -114,7 +128,8 @@ export function Navigation({
               onClick={onFavoritesClick}
               className={cn(
                 'flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium',
-                'bg-gradient-to-r from-[#1a73e8] to-[#ea4335] text-white',
+                'bg-gradient-to-r text-white',
+                brandGradient,
                 'hover:opacity-90 transition-opacity duration-200'
               )}
             >
@@ -147,7 +162,7 @@ export function Navigation({
             type="text"
             value={searchValue}
             onChange={handleSearchChange}
-            placeholder="Search pitchers..."
+            placeholder={searchPlaceholder}
             className={cn(
               'w-full px-4 py-2 rounded-lg text-sm',
               'bg-slate-800 border border-slate-600',

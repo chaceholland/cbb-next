@@ -19,3 +19,10 @@ export {
 // components/ in Pass 3 B1; app-agnostic, safe to copy to other trackers.
 export { ThemeProvider } from "./ThemeProvider";
 export { ThemeToggle } from "./ThemeToggle";
+
+// Top-level chrome — promoted from CBB components/ in Pass 3 B2. Generalized to
+// props (brand, gradient, tab items) that default to CBB's values, so CBB stays
+// pixel-identical and MLB/swim can override on adoption. TabBar needs the
+// framer-motion peer dep.
+export { Navigation, type NavigationProps } from "./Navigation";
+export { TabBar, type TabBarProps, type TabItem } from "./TabBar";
