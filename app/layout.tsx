@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/shared';
+import { ThemeProvider, DataFreshnessFooter } from '@/components/shared';
 import { CommandProvider } from '@/components/command/CommandProvider';
 
 const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -27,6 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           <CommandProvider>
             {children}
+            <footer className="flex justify-center py-4">
+              <DataFreshnessFooter />
+            </footer>
           </CommandProvider>
         </ThemeProvider>
       </body>
