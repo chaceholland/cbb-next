@@ -8,6 +8,12 @@ export {
   DataFreshnessChip,
   type DataFreshnessChipProps,
 } from "./DataFreshnessChip";
+// Pass 3 B4 (prep): client wrapper that reads /api/health and renders the chip.
+// Additive + not yet mounted — mounting/placement is the gated B4 step (Chace).
+export {
+  DataFreshnessFooter,
+  type DataFreshnessFooterProps,
+} from "./DataFreshnessFooter";
 export {
   STATUS_TOKENS,
   getStatusToken,
