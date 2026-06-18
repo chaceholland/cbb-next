@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Navigation, TabBar } from "@/components/shared";
-import { HeroSection } from "@/components/HeroSection";
+import { Navigation, TabBar, HeroSection } from "@/components/shared";
 import { ScheduleView } from "@/components/schedule/ScheduleView";
 import { FavoritesView } from "@/components/schedule/FavoritesView";
 import { RosterView } from "@/components/roster/RosterView";

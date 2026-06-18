@@ -3,13 +3,13 @@
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useState } from "react";
 
-interface StatCardProps {
+interface HeroStatCardProps {
   value: number;
   label: string;
   suffix?: string;
 }
 
-function StatCard({ value, label, suffix = "" }: StatCardProps) {
+function HeroStatCard({ value, label, suffix = "" }: HeroStatCardProps) {
   const [count, setCount] = useState(0);
   const [inView, setInView] = useState(false);
 
@@ -61,7 +61,33 @@ function StatCard({ value, label, suffix = "" }: StatCardProps) {
   );
 }
 
-export function HeroSection() {
+export interface HeroStat {
+  value: number;
+  label: string;
+  suffix?: string;
+}
+
+export interface HeroSectionProps {
+  /** First (gradient) headline line. Defaults to CBB's. */
+  titleLine1?: string;
+  /** Second (white) headline line. Defaults to CBB's. */
+  titleLine2?: string;
+  /** Sub-headline copy. Defaults to CBB's. */
+  subtitle?: string;
+  /** Animated stat tiles. Defaults to CBB's three. */
+  stats?: HeroStat[];
+}
+
+export function HeroSection({
+  titleLine1 = "College Baseball",
+  titleLine2 = "Pitcher Tracker",
+  subtitle = "Track 1,341 pitchers across 64 Division I programs",
+  stats = [
+    { value: 64, label: "Division I Teams" },
+    { value: 1341, label: "Pitchers Tracked" },
+    { value: 2343, label: "Games in Database" },
+  ],
+}: HeroSectionProps = {}) {
   const controls = useAnimation();
   const [mounted, setMounted] = useState(false);
 
@@ -114,11 +140,11 @@ export function HeroSection() {
                   animation: "gradient 4s ease infinite",
                 }}
               >
-                College Baseball
+                {titleLine1}
               </span>
               <br />
               <span className="text-white text-4xl md:text-5xl lg:text-6xl">
-                Pitcher Tracker
+                {titleLine2}
               </span>
             </h1>
 
@@ -128,7 +154,7 @@ export function HeroSection() {
               transition={{ delay: 0.3, duration: 0.8 }}
               className="text-xl md:text-2xl text-white/75 max-w-3xl mx-auto"
             >
-              Track 1,341 pitchers across 64 Division I programs
+              {subtitle}
             </motion.p>
           </motion.div>
 
@@ -139,9 +165,14 @@ export function HeroSection() {
             transition={{ delay: 0.5, duration: 0.8 }}
             className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10"
           >
-            <StatCard value={64} label="Division I Teams" />
-            <StatCard value={1341} label="Pitchers Tracked" />
-            <StatCard value={2343} label="Games in Database" />
+            {stats.map((stat) => (
+              <HeroStatCard
+                key={stat.label}
+                value={stat.value}
+                label={stat.label}
+                suffix={stat.suffix}
+              />
+            ))}
           </motion.div>
 
           {/* Last updated */}

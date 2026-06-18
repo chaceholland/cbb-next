@@ -26,3 +26,18 @@ export { ThemeToggle } from "./ThemeToggle";
 // framer-motion peer dep.
 export { Navigation, type NavigationProps } from "./Navigation";
 export { TabBar, type TabBarProps, type TabItem } from "./TabBar";
+
+// Filter primitives — promoted from CBB components/FilterPills.tsx in Pass 3 B3.
+// Pill's active gradient is a prop defaulting to CBB's brand gradient (pixel-
+// identical for CBB). FilterPillGroup is an additive generic group for MLB/swim.
+export { Pill, type PillProps } from "./Pill";
+export {
+  FilterPillGroup,
+  type FilterPillGroupProps,
+  type FilterPillOption,
+} from "./FilterPillGroup";
+
+// Landing hero — promoted from CBB components/HeroSection.tsx in Pass 3 B3.
+// Content (title/subtitle/stats) is prop-driven, defaulting to CBB's exact
+// current values (pixel-identical). Visual size/identity left for a later step.
+export { HeroSection, type HeroSectionProps, type HeroStat } from "./HeroSection";
