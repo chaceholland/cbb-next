@@ -19,6 +19,8 @@ Peer deps the folder assumes: `react`, `clsx`, `tailwind-merge`, Tailwind 4.
   right-aligned action slot).
 - `StatCard.tsx` — generic stat tile (label, big value, optional hint/icon/tone) for KPI
   rows, analytics tiles, and data-health summaries.
+- `ThemeProvider.tsx` / `ThemeToggle.tsx` — next-themes wrappers (dark/light toggle),
+  promoted from CBB `components/` (Pass 3 B1). Client components; app-agnostic.
 - `index.ts` — barrel export.
 
 ## Usage
@@ -35,5 +37,6 @@ Copy this folder into the target repo's `components/`, confirm `clsx` +
 copy as the source — port changes here first, then re-copy. (A future `claude-shared`
 local package can replace the copy step.)
 
-Status 2026-06-18: primitives added (Pass 3 A1), not yet consumed by any view.
-First real consumer planned = CBB layout footer (Pass 3 B4).
+Status 2026-06-18: net-new primitives added (Pass 3 A1/A2); ThemeProvider/ThemeToggle
+promoted into the set and CBB re-pointed to consume them via the barrel (Pass 3 B1).
+Next freshness-chip consumer planned = CBB layout footer (Pass 3 B4).

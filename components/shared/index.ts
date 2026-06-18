@@ -14,3 +14,8 @@ export {
   type TrackerStatus,
   type StatusToken,
 } from "./statusTokens";
+
+// Theme wrappers (next-themes) — client components. Promoted from CBB
+// components/ in Pass 3 B1; app-agnostic, safe to copy to other trackers.
+export { ThemeProvider } from "./ThemeProvider";
+export { ThemeToggle } from "./ThemeToggle";
