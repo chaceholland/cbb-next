@@ -8,6 +8,7 @@ import { GameCard } from "./GameCard";
 import { GameDetailModal } from "./GameDetailModal";
 import { FiltersModal } from "./FiltersModal";
 import { ScheduleSkeleton } from "./ScheduleSkeleton";
+import { TodayStrip } from "./TodayStrip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
 import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
@@ -857,6 +858,26 @@ export function ScheduleView({
     return Math.max(1, Math.floor(daysDiff / 7) + 1);
   }, []);
 
+  // D1 (Chace's pick): label each week with its ACTUAL first–last game date.
+  // Parses the YYYY-MM-DD parts directly to avoid any timezone day-shift.
+  const formatWeekDateRange = useCallback((weekGames: CbbGame[]): string => {
+    const ds = (weekGames || [])
+      .map((g) => (g.date || "").slice(0, 10))
+      .filter(Boolean)
+      .sort();
+    if (ds.length === 0) return "";
+    const MONTHS = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+    ];
+    const lo = ds[0].split("-").map(Number);
+    const hi = ds[ds.length - 1].split("-").map(Number);
+    const loStr = `${MONTHS[lo[1] - 1]} ${lo[2]}`;
+    if (ds[0] === ds[ds.length - 1]) return loStr;
+    if (lo[1] === hi[1]) return `${loStr}–${hi[2]}`;
+    return `${loStr} – ${MONTHS[hi[1] - 1]} ${hi[2]}`;
+  }, []);
+
   const gamesByWeek = useMemo(() => {
     const groups: Record<number, CbbGame[]> = {};
     filteredGames.forEach((g) => {
@@ -1421,6 +1442,14 @@ export function ScheduleView({
         {conferences.size > 0 && ` in ${Array.from(conferences).join(", ")}`}
       </p>
 
+      <TodayStrip
+        games={games}
+        teams={teams}
+        favoriteTeamIds={favoriteTeamIds}
+        favoriteGameIds={favoriteGameIds}
+        onSelectGame={setSelectedGame}
+      />
+
       <div className="space-y-6">
         {weeks
           .filter((week) => selectedWeeks.size === 0 || selectedWeeks.has(week))
@@ -1434,6 +1463,9 @@ export function ScheduleView({
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-bold text-slate-300 bg-gradient-to-r from-[#1a73e8]/10 to-[#ea4335]/10 border border-blue-800 px-3 py-1 rounded-full">
                       Week {week}
+                    </span>
+                    <span className="text-xs font-medium text-slate-400">
+                      {formatWeekDateRange(gamesByWeek[week])}
                     </span>
                     <span className="text-xs text-slate-400">
                       {gamesByWeek[week].length} games
