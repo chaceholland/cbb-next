@@ -298,10 +298,10 @@ export function GameDetailModal({ game, teams, favoritePitcherIds, onClose }: Pr
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none"
           >
             <div
-              className="relative bg-slate-800 rounded-3xl shadow-2xl shadow-black/30 w-full max-w-2xl max-h-[90vh] flex flex-col pointer-events-auto"
+              className="relative bg-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl shadow-black/30 w-full max-w-2xl max-h-[88vh] sm:max-h-[90vh] flex flex-col pointer-events-auto"
               onClick={e => e.stopPropagation()}
             >
               {/* Close */}

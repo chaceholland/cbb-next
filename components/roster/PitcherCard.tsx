@@ -126,11 +126,11 @@ function IssueModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="bg-slate-800 rounded-xl shadow-2xl shadow-black/30 w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col"
+        className="bg-slate-800 rounded-t-2xl sm:rounded-xl shadow-2xl shadow-black/30 w-full max-w-md max-h-[88vh] sm:max-h-[90vh] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b border-slate-700 flex-shrink-0">
@@ -255,9 +255,9 @@ export function PitcherCard({
 
   // Shared card content
   const cardContent = (
-    <div className="rounded-2xl bg-slate-800 shadow-md shadow-black/30 hover:shadow-xl transition-shadow duration-200 overflow-hidden border border-slate-700">
-      {/* Headshot / Team logo area */}
-      <div className="relative aspect-square bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center overflow-hidden">
+    <div className="rounded-2xl bg-slate-800 shadow-md shadow-black/30 hover:shadow-xl transition-shadow duration-200 overflow-hidden border border-slate-700 flex sm:block">
+      {/* Headshot / Team logo area — headshot-left row on mobile (Pass 3 D4), card on sm+ */}
+      <div className="relative w-24 min-h-[6rem] shrink-0 self-stretch sm:w-auto sm:min-h-0 sm:aspect-square bg-gradient-to-br from-slate-700 to-slate-600 flex items-center justify-center overflow-hidden">
         {showHeadshot ? (
           <>
             {imgLoading && (
@@ -342,7 +342,7 @@ export function PitcherCard({
       </div>
 
       {/* Info section */}
-      <div className="p-3">
+      <div className="p-3 flex-1 min-w-0">
         <h3 className="font-bold text-slate-100 text-sm leading-tight truncate">
           {pitcher.display_name || pitcher.name}
         </h3>

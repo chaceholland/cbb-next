@@ -146,12 +146,16 @@ export function FiltersModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 pointer-events-none"
           >
             <div
-              className="relative bg-slate-800 rounded-3xl shadow-2xl shadow-black/30 w-full max-w-2xl max-h-[85vh] flex flex-col pointer-events-auto"
+              className="relative bg-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl shadow-black/30 w-full max-w-2xl max-h-[88vh] sm:max-h-[85vh] flex flex-col pointer-events-auto"
               onClick={e => e.stopPropagation()}
             >
+              {/* Pass 3 D4 — bottom-sheet drag handle (mobile only) */}
+              <div className="sm:hidden pt-2 pb-1 flex justify-center shrink-0" aria-hidden>
+                <span className="block h-1.5 w-10 rounded-full bg-slate-600" />
+              </div>
               {/* Header */}
               <div className="px-6 pt-6 pb-4 border-b border-slate-700 shrink-0">
                 <div className="flex items-center justify-between">
