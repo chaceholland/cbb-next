@@ -28,12 +28,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <CommandProvider>
             {children}
             <footer className="flex flex-col items-center gap-2 py-4">
-              <a
-                href="/hub"
-                className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
-              >
-                ★ My Sports hub
-              </a>
+              <div className="flex items-center gap-3">
+                <a
+                  href="/hub"
+                  className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                >
+                  ★ My Sports hub
+                </a>
+                <a
+                  href="/health"
+                  className="text-xs text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                >
+                  ♥ Data health
+                </a>
+              </div>
               <DataFreshnessFooter />
             </footer>
           </CommandProvider>
