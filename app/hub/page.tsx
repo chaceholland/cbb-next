@@ -179,6 +179,31 @@ export default function HubPage() {
         </div>
       </header>
 
+      {/* Tracker launcher — the "one link" nav to every app */}
+      <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <div className="max-w-5xl mx-auto px-6 py-2 flex flex-wrap items-center gap-2">
+          {[
+            { label: "⚾ CBB", url: "/" },
+            { label: "⚾ MLB", url: "https://mlb-pitcher-tracker.vercel.app" },
+            { label: "🏈 NFL", url: "https://nfl-qb-tracker.vercel.app" },
+            { label: "🏈 CFB", url: "https://cfb-qb-tracker.vercel.app" },
+            { label: "🏊 Swim", url: "https://ncaa-swim-dive-tracker.vercel.app" },
+            { label: "🔁 Portal", url: "https://cfb-portal.vercel.app" },
+            { label: "♥ Data health", url: "/health" },
+          ].map((t) => (
+            <a
+              key={t.label}
+              href={t.url}
+              target={t.url.startsWith("http") ? "_blank" : undefined}
+              rel="noopener noreferrer"
+              className="text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-blue-100 dark:hover:bg-slate-600 transition-colors"
+            >
+              {t.label}
+            </a>
+          ))}
+        </div>
+      </nav>
+
       <main className="max-w-5xl mx-auto px-6 py-6">
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg px-4 py-3 text-sm text-red-700 dark:text-red-300 mb-4">

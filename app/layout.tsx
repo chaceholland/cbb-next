@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider, DataFreshnessFooter } from '@/components/shared';
+import { ThemeProvider, DataFreshnessFooter, SeasonBanner } from '@/components/shared';
 import { CommandProvider } from '@/components/command/CommandProvider';
 
 const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -26,6 +26,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <CommandProvider>
+            <SeasonBanner
+              inSeasonMonths={[2, 3, 4, 5, 6]}
+              sportLabel="College baseball"
+              resumeNote="Season resumes in February."
+            />
             {children}
             <footer className="flex flex-col items-center gap-2 py-4">
               <div className="flex items-center gap-3">

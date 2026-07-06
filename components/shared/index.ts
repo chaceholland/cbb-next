@@ -3,6 +3,7 @@
 export { cn } from "./cn";
 export { StatusChip, type StatusChipProps } from "./StatusChip";
 export { BottomSheet } from "./BottomSheet";
+export { SeasonBanner, type SeasonBannerProps } from "./SeasonBanner";
 export { SectionHeader, type SectionHeaderProps } from "./SectionHeader";
 export { StatCard, type StatCardProps } from "./StatCard";
 export {
