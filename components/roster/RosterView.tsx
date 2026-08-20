@@ -852,6 +852,10 @@ export function RosterView({
               : undefined
           }
           onIssueToggle={handlePitcherIssueToggle}
+          isFollowed={
+            selectedPitcher ? follows.includes(selectedPitcher.pitcher_id) : false
+          }
+          onToggleFollow={toggleFollow}
         />
       </div>
     );
@@ -1036,6 +1040,9 @@ export function RosterView({
             const favCount = (pitchersByTeam[team.team_id] || []).filter((p) =>
               favorites.includes(p.pitcher_id),
             ).length;
+            const followCount = (pitchersByTeam[team.team_id] || []).filter(
+              (p) => follows.includes(p.pitcher_id),
+            ).length;
             const logoSrc = team.logo || getEspnLogoUrl(team.team_id);
             return (
               <button
@@ -1069,6 +1076,11 @@ export function RosterView({
                   {favCount > 0 && (
                     <p className="text-xs text-yellow-600 group-hover:text-yellow-400 mt-0.5">
                       ★ {favCount} fav
+                    </p>
+                  )}
+                  {followCount > 0 && (
+                    <p className="text-xs text-emerald-600 group-hover:text-emerald-400 mt-0.5">
+                      ● {followCount} following
                     </p>
                   )}
                 </div>
