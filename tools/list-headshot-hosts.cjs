@@ -13,8 +13,15 @@ const SUPABASE_KEY =
   process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error('Missing SUPABASE env vars');
-  process.exit(1);
+  // No DB access in this environment (e.g. Vercel preview deployments, which
+  // don't carry the SUPABASE env vars). There is nothing to check against, so
+  // keep the committed next.config.ts remotePatterns as-is instead of failing
+  // the whole build. Production and CI have the vars, so real drift is still
+  // caught where it matters.
+  console.warn(
+    'SUPABASE env vars not set — skipping headshot-host drift check, using committed remotePatterns',
+  );
+  process.exit(0);
 }
 
 async function fetchColumn(table, column) {
