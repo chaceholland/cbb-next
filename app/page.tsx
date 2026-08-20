@@ -12,20 +12,24 @@ import { registerHelpCommands } from "@/lib/commands/help";
 import { useKeyboard } from "@/lib/hooks/useKeyboard";
 import { useFavorites } from "@/lib/hooks/useFavorites";
 import { useGameFavorites } from "@/lib/hooks/useGameFavorites";
+import { useFollows } from "@/lib/hooks/useFollows";
+import { FollowView } from "@/components/follow/FollowView";
 
-type Tab = "schedule" | "rosters" | "analytics" | "favorites";
+type Tab = "schedule" | "rosters" | "analytics" | "favorites" | "follow";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "schedule", label: "📅 Schedule" },
   { id: "rosters", label: "⚾ Rosters" },
   { id: "analytics", label: "📊 Analytics" },
   { id: "favorites", label: "★ Favorites" },
+  { id: "follow", label: "👤 Follow" },
 ];
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
   const { favorites, toggleFavorite } = useFavorites();
   const { favoriteGameIds, toggleFavoriteGame } = useGameFavorites();
+  const { follows, toggleFollow } = useFollows();
   const [activateFavorites, setActivateFavorites] = useState(false);
 
   // Sync tab with URL hash
@@ -34,7 +38,8 @@ export default function Home() {
       v === "schedule" ||
       v === "rosters" ||
       v === "analytics" ||
-      v === "favorites";
+      v === "favorites" ||
+      v === "follow";
     const hash = window.location.hash.slice(1);
     if (isTab(hash)) setActiveTab(hash);
 
@@ -63,6 +68,7 @@ export default function Home() {
     { key: "2", action: () => handleTabChange("rosters") },
     { key: "3", action: () => handleTabChange("analytics") },
     { key: "4", action: () => handleTabChange("favorites") },
+    { key: "5", action: () => handleTabChange("follow") },
   ]);
 
   return (
@@ -99,6 +105,9 @@ export default function Home() {
             />
           )}
           {activeTab === "analytics" && <AnalyticsView />}
+          {activeTab === "follow" && (
+            <FollowView follows={follows} toggleFollow={toggleFollow} />
+          )}
           {activeTab === "favorites" && (
             <FavoritesView
               favorites={favorites}

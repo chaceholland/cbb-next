@@ -24,6 +24,8 @@ interface Props {
     selectedIssues: string[],
     customNote?: string,
   ) => void;
+  isFollowed?: boolean;
+  onToggleFollow?: (pitcherId: string) => void;
 }
 
 function getHandBadge(
@@ -222,6 +224,8 @@ export function PitcherCard({
   hasIssue = false,
   issueData,
   onIssueToggle,
+  isFollowed = false,
+  onToggleFollow,
 }: Props) {
   const [imgError, setImgError] = useState(false);
   const [imgLoading, setImgLoading] = useState(true);
@@ -251,6 +255,11 @@ export function PitcherCard({
   const handleIssueClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowIssueModal(true);
+  };
+
+  const handleFollowClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFollow?.(pitcher.pitcher_id);
   };
 
   // Shared card content
@@ -367,6 +376,34 @@ export function PitcherCard({
               </span>
             )}
           </div>
+          {/* Follow button — sits beside the issues button, toggles on click */}
+          {onToggleFollow && (
+            <button
+              onClick={handleFollowClick}
+              className={cn(
+                "p-2 rounded-lg transition-all shrink-0",
+                isFollowed
+                  ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                  : "bg-slate-700 text-slate-400 hover:bg-slate-600",
+              )}
+              title={isFollowed ? "Following — click to unfollow" : "Follow"}
+              type="button"
+            >
+              <svg
+                className="w-4 h-4"
+                fill={isFollowed ? "currentColor" : "none"}
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                />
+              </svg>
+            </button>
+          )}
           {/* Issue button */}
           {onIssueToggle && (
             <button

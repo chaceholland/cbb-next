@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import { supabase } from "@/lib/supabase/client";
 import { CbbPitcher, CbbTeam, EnrichedPitcher } from "@/lib/supabase/types";
 import { useLocalStorage } from "@/lib/hooks/useLocalStorage";
+import { useFollows } from "@/lib/hooks/useFollows";
 import { useFilterMemory } from "@/lib/hooks/useFilterMemory";
 import { PitcherCard } from "./PitcherCard";
 import { PitcherModal } from "./PitcherModal";
@@ -139,6 +140,8 @@ export function RosterView({
   const [teamDataQualityIssues, setTeamDataQualityIssues] = useLocalStorage<
     TeamDataQualityIssue[]
   >("cbb-team-data-quality-issues", []);
+  // Follow list (own cloud-backed list, toggled from the player card)
+  const { follows, toggleFollow } = useFollows();
   const [showIssuesOnly, setShowIssuesOnly] = useState(false);
 
   async function handleImportFavorites() {
@@ -786,6 +789,8 @@ export function RosterView({
                     `${pitcher.team_id}:${pitcher.pitcher_id}`,
                   )}
                   onIssueToggle={handlePitcherIssueToggle}
+                  isFollowed={follows.includes(pitcher.pitcher_id)}
+                  onToggleFollow={toggleFollow}
                 />
               </div>
             ))}
