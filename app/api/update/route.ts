@@ -953,6 +953,27 @@ async function updateGameCompletionStatus(
  *   7. Log to cbb_sync_log
  */
 export async function GET(request: Request) {
+  // Verify the cron secret BEFORE the offseason guard. The guard writes a skip
+  // row to cbb_sync_log on every call, so leaving auth until after it let an
+  // anonymous caller spam the log out of season. `?force=<CRON_FORCE_SECRET>`
+  // is self-authenticating and the guard already honours it, so it also
+  // satisfies this check — otherwise a manual force-run would 401.
+  // Fail-open when CRON_SECRET is unset so local dev keeps working.
+  {
+    const forceParam = new URL(request.url).searchParams.get("force");
+    const forced =
+      !!process.env.CRON_FORCE_SECRET &&
+      forceParam === process.env.CRON_FORCE_SECRET;
+    const authHeader = request.headers.get("authorization");
+    if (
+      !forced &&
+      process.env.CRON_SECRET &&
+      authHeader !== `Bearer ${process.env.CRON_SECRET}`
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   // Offseason guard — returns 200 {skipped:true} outside season window unless ?force=<secret>
   {
     const url = new URL(request.url);
@@ -975,15 +996,6 @@ export async function GET(request: Request) {
     ) {
       return guardResponse!;
     }
-  }
-
-  // Verify cron secret in production (Vercel sends this header)
-  const authHeader = request.headers.get("authorization");
-  if (
-    process.env.CRON_SECRET &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = getSupabaseAdmin();
